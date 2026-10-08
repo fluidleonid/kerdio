@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 20 50% 8%;
+    --foreground: 30 15% 98%;
+    --card: 20 40% 10%;
+    --card-foreground: 30 15% 98%;
+    --popover: 20 40% 9%;
+    --popover-foreground: 30 15% 98%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 30% 15%;
+    --secondary-foreground: 30 15% 98%;
+    --muted: 20 30% 14%;
+    --muted-foreground: 0 14% 38%;
+    --secondary-text: 0 14% 44%; /* #806060 */
+    --tertiary-text: 0 14% 38%;  /* #6E5353 */
+    --subtle-text: 0 14% 38%;    /* #6E5353 */
+    --accent: 24 60% 22%;
+    --accent-foreground: 30 15% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 24 35% 18%;
+    --input: 24 35% 18%;
+    --ring: 24 95% 53%;
+    --radius: 0.75rem;
+
+    /* Terracotta & Warm Ember Accents */
+    --terracotta-core: #E25822;
+    --terracotta-dark: #7C2D12;
+    --amber-glow: #F59E0B;
+  }
+
+  .dark {
+    --background: 16 60% 6%;
+    --foreground: 30 15% 98%;
+    --card: 16 50% 8%;
+    --card-foreground: 30 15% 98%;
+    --popover: 16 50% 8%;
+    --popover-foreground: 30 15% 98%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 16 35% 13%;
+    --secondary-foreground: 30 15% 98%;
+    --muted: 16 35% 13%;
+    --muted-foreground: 0 14% 38%;
+    --secondary-text: 0 14% 44%; /* #806060 */
+    --tertiary-text: 0 14% 38%;  /* #6E5353 */
+    --subtle-text: 0 14% 38%;    /* #6E5353 */
+    --accent: 20 45% 18%;
+    --accent-foreground: 30 15% 98%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 35% 16%;
+    --input: 20 35% 17%;
+    --ring: 24 95% 53%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  /* IMMERSIVE WARM AMBER / BURNT ORANGE GRADIENT BACKGROUND MATCHING REFERENCE */
+  body {
+    background: radial-gradient(circle at 50% 32%, #ca4b10 0%, #9a3412 28%, #571d05 58%, #200802 85%, #140501 100%);
+    background-attachment: fixed;
+    color: hsl(var(--foreground));
+    font-family: 'Oxanium', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .oxanium {
+    font-family: 'Oxanium', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+
+  /* Solid palette */
+  .text-secondary-solid {
+    color: #806060;
+  }
+  .text-tertiary-solid {
+    color: #6E5353;
+  }
+  .text-subtle-solid {
+    color: #6E5353;
+  }
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: #6E5353;
+  --color-secondary-text: #806060;
+  --color-tertiary-text: #6E5353;
+  --color-subtle-text: #6E5353;
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: 'Oxanium', sans-serif;
+  --font-oxanium: 'Oxanium', sans-serif;
+  --font-mono: 'Oxanium', sans-serif;
+}
+
+/* Custom scrollbars for calendar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Sunbeam caustics animation ("солнечные зайчики") */
+@keyframes sunbeam-drift-1 {
+  0%, 100% {
+    transform: translate(-14px, 14px) scale(0.9) rotate(-8deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(18px, 20px) scale(1.2) rotate(12deg);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sunbeam-drift-2 {
+  0%, 100% {
+    transform: translate(16px, 16px) scale(1.15) rotate(10deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-16px, 12px) scale(0.85) rotate(-10deg);
+    opacity: 0.75;
+  }
+}
+
+@keyframes sunbeam-drift-3 {
+  0%, 100% {
+    transform: translate(-22px, 22px) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(10px, 16px) scale(1.25);
+    opacity: 0.85;
+  }
+}
+
+@keyframes sunbeam-drift-4 {
+  0%, 100% {
+    transform: translate(22px, 18px) scale(0.95);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(-8px, 24px) scale(1.3);
+    opacity: 0.3;
+  }
+}
+
+.animate-sunbeam-1 {
+  animation: sunbeam-drift-1 4s ease-in-out infinite;
+}
+.animate-sunbeam-2 {
+  animation: sunbeam-drift-2 3.2s ease-in-out infinite;
+}
+.animate-sunbeam-3 {
+  animation: sunbeam-drift-3 2.6s ease-in-out infinite;
+}
+.animate-sunbeam-4 {
+  animation: sunbeam-drift-4 3.6s ease-in-out infinite;
+}
