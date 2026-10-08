@@ -3,7 +3,7 @@ import { Sidebar } from '@/widgets/sidebar'
 import { MemoryRouter } from 'react-router-dom'
 
 const meta: Meta<typeof Sidebar> = {
-  title: 'Widgets/Sidebar',
+  title: 'Components/Navigation Sidebar',
   component: Sidebar,
   parameters: {
     layout: 'fullscreen',

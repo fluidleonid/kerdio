@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TokenCommandInput } from '@/features/tracker-command-bar'
 
 const meta: Meta<typeof TokenCommandInput> = {
-  title: 'Features/TokenCommandInput',
+  title: 'Components/Command Input Bar',
   component: TokenCommandInput,
   parameters: {
     layout: 'centered',

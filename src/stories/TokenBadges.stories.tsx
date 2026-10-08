@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ProjectBadge, BillingBadge } from '@/shared/ui'
 
 const meta: Meta = {
-  title: 'Shared/TokenBadges',
+  title: 'Components/Token Badges',
   parameters: {
     layout: 'centered',
   },

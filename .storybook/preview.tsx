@@ -16,12 +16,24 @@ const preview: Preview = {
     ),
   ],
   parameters: {
-    layout: 'centered',
+    layout: 'padded',
+    options: {
+      storySort: {
+        order: [
+          'Design System',
+          ['Colors & Gradients', 'Typography', 'Glass & Shadows'],
+          'Components',
+          ['Analogue Chronograph', 'Command Input Bar', 'Token Badges', 'UI Primitives', 'Navigation Sidebar'],
+          'Screens',
+          ['Full Application Views'],
+        ],
+      },
+    },
     backgrounds: {
-      default: 'dark',
+      default: 'terracotta-glow',
       values: [
-        { name: 'dark', value: '#0d0d0f' },
         { name: 'terracotta-glow', value: '#140501' },
+        { name: 'dark', value: '#0d0d0f' },
       ],
     },
     controls: {

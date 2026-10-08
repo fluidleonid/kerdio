@@ -4,7 +4,7 @@ import { useTrackerStore } from '@/entities/tracker'
 import { useEffect } from 'react'
 
 const meta: Meta<typeof Chronograph> = {
-  title: 'Features/Chronograph',
+  title: 'Components/Analogue Chronograph',
   component: Chronograph,
   parameters: {
     layout: 'centered',
