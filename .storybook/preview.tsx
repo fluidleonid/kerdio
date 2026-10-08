@@ -1,15 +1,18 @@
 import type { Preview } from '@storybook/react-vite'
 import '@/app/styles/index.css'
 import { TooltipProvider } from '@/shared/ui'
+import { MemoryRouter } from 'react-router-dom'
 
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <TooltipProvider delayDuration={150}>
-        <div className="font-sans antialiased text-white">
-          <Story />
-        </div>
-      </TooltipProvider>
+      <MemoryRouter>
+        <TooltipProvider delayDuration={150}>
+          <div className="font-sans antialiased text-white">
+            <Story />
+          </div>
+        </TooltipProvider>
+      </MemoryRouter>
     ),
   ],
   parameters: {
