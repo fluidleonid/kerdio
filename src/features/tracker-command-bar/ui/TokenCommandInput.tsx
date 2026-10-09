@@ -186,8 +186,19 @@ export function TokenCommandInput({
     return [{ id: "seg-init", type: "text", text: "" }]
   })
   const [activeSegId, setActiveSegId] = useState<string>(() => {
-    if (isEditingActive && initialMemo) {
-      return "seg-memo"
+    if (isEditingActive) {
+      const segs: TokenSegment[] = []
+      if (initialMemo) segs.push({ id: "seg-memo", type: "text", text: initialMemo })
+      if (initialProjectId) {
+        const proj = projects.find((p) => p.id === initialProjectId)
+        if (proj) segs.push({ id: "seg-proj", type: "project", project: proj })
+      }
+      if (initialBilling && initialBilling.type !== "none") {
+        segs.push({ id: "seg-bill", type: "billing", billing: initialBilling })
+      }
+      const initialCleaned = cleanupSegments(segs)
+      const lastText = [...initialCleaned].reverse().find((s) => s.type === "text")
+      if (lastText) return lastText.id
     }
     return "seg-init"
   })
@@ -1665,7 +1676,27 @@ export function TokenCommandInput({
       )}
 
       {/* TWO-ROW BORDERLESS INPUT CONTAINER WITH SOFT DIFFUSED SHADOW */}
-      <div className="relative flex flex-col justify-between rounded-3xl bg-black/50 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.32)] backdrop-blur-3xl transition-all border-none outline-none focus-within:bg-black/60 focus-within:shadow-[0_24px_60px_rgba(0,0,0,0.38)]">
+      <div
+        onClick={(e) => {
+          if (
+            (e.target as HTMLElement).closest("button") ||
+            (e.target as HTMLElement).closest("[role='button']")
+          ) {
+            return
+          }
+          const lastTextSeg = [...segments].reverse().find((s) => s.type === "text")
+          if (lastTextSeg) {
+            setActiveSegId(lastTextSeg.id)
+            const el = inputRefs.current[lastTextSeg.id]
+            if (el) {
+              el.focus()
+              const len = el.value.length
+              el.setSelectionRange(len, len)
+            }
+          }
+        }}
+        className="relative flex flex-col justify-between rounded-3xl bg-black/50 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.32)] backdrop-blur-3xl transition-all border-none outline-none focus-within:bg-black/60 focus-within:shadow-[0_24px_60px_rgba(0,0,0,0.38)] cursor-text"
+      >
         {/* ROW 1: INLINE RICH TOKENS FLOW (моя мемка *бейдж* по работе *бейдж*) */}
         <div
           onClick={(e) => {
@@ -1673,7 +1704,12 @@ export function TokenCommandInput({
             const lastTextSeg = [...segments].reverse().find((s) => s.type === "text")
             if (lastTextSeg) {
               setActiveSegId(lastTextSeg.id)
-              inputRefs.current[lastTextSeg.id]?.focus()
+              const el = inputRefs.current[lastTextSeg.id]
+              if (el) {
+                el.focus()
+                const len = el.value.length
+                el.setSelectionRange(len, len)
+              }
             } else if (activeSeg) {
               inputRefs.current[activeSeg.id]?.focus()
             }
@@ -1842,9 +1878,14 @@ export function TokenCommandInput({
                   onClick={(e) => {
                     e.stopPropagation()
                     setActiveSegId(seg.id)
-                    inputRefs.current[seg.id]?.focus()
+                    const el = inputRefs.current[seg.id]
+                    if (el) {
+                      el.focus()
+                      const len = el.value.length
+                      el.setSelectionRange(len, len)
+                    }
                   }}
-                  className={`relative inline-flex items-center shrink-0 ${
+                  className={`relative inline-flex items-center shrink-0 min-h-[32px] ${
                     isTrailingText || isPendingBillingTarget ? "flex-1 min-w-[140px]" : ""
                   }`}
                   style={{
@@ -1856,12 +1897,12 @@ export function TokenCommandInput({
                 >
                   <span
                     aria-hidden="true"
-                    className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal"
+                    className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[28px]"
                     style={{
                       minWidth: showPlaceholder ? undefined : (seg.text ? undefined : "12px"),
                     }}
                   >
-                    {seg.text || (showPlaceholder ? specificPlaceholder : "")}
+                    {seg.text || (showPlaceholder ? specificPlaceholder : "\u200B")}
                   </span>
                   <input
                     ref={(el) => {
@@ -1914,7 +1955,7 @@ export function TokenCommandInput({
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
-                    className="absolute inset-0 w-full h-full bg-transparent text-lg text-white caret-white placeholder:text-[#6E5353] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
+                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#6E5353] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
                   />
                 </span>
               )
