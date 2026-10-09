@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { Project, BillingType } from "@/entities/project"
+import type { Project, BillingType, ProjectMilestone } from "@/entities/project"
 import { INITIAL_PROJECTS } from "@/entities/project"
 import type { TimeSession } from "@/entities/session"
 import { INITIAL_SESSIONS } from "@/entities/session"
@@ -60,6 +60,9 @@ interface TrackerStore {
   addProject: (project: Omit<Project, "id" | "createdAt">) => Project
   updateProject: (id: string, updates: Partial<Project>) => void
   deleteProject: (id: string) => void
+  toggleMilestoneStatus: (projectId: string, milestoneId: string) => void
+  markMilestoneDelivered: (projectId: string, milestoneId: string) => void
+  addProjectMilestone: (projectId: string, milestone: Omit<ProjectMilestone, "id">) => ProjectMilestone
 
   // Sessions actions
   updateSession: (id: string, updates: Partial<TimeSession>) => void
@@ -347,6 +350,58 @@ export const useTrackerStore = create<TrackerStore>()(
         set((state) => ({
           projects: state.projects.filter((p) => p.id !== id),
         }))
+      },
+
+      toggleMilestoneStatus: (projectId, milestoneId) => {
+        set((state) => ({
+          projects: state.projects.map((p) => {
+            if (p.id !== projectId) return p
+            const updated = (p.milestones || []).map((m) => {
+              if (m.id !== milestoneId) return m
+              const newStatus = m.status === "open" ? ("delivered" as const) : ("open" as const)
+              return {
+                ...m,
+                status: newStatus,
+                deliveredAt: newStatus === "delivered" ? Date.now() : undefined,
+              }
+            })
+            return { ...p, milestones: updated }
+          }),
+        }))
+      },
+
+      markMilestoneDelivered: (projectId, milestoneId) => {
+        set((state) => ({
+          projects: state.projects.map((p) => {
+            if (p.id !== projectId) return p
+            const updated = (p.milestones || []).map((m) => {
+              if (m.id !== milestoneId) return m
+              return {
+                ...m,
+                status: "delivered" as const,
+                deliveredAt: Date.now(),
+              }
+            })
+            return { ...p, milestones: updated }
+          }),
+        }))
+      },
+
+      addProjectMilestone: (projectId, milestoneData) => {
+        const newMs: ProjectMilestone = {
+          ...milestoneData,
+          id: `ms-${Date.now()}`,
+        }
+        set((state) => ({
+          projects: state.projects.map((p) => {
+            if (p.id !== projectId) return p
+            return {
+              ...p,
+              milestones: [...(p.milestones || []), newMs],
+            }
+          }),
+        }))
+        return newMs
       },
 
       updateSession: (id, updates) => {

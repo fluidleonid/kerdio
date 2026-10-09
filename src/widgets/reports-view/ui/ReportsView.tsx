@@ -195,7 +195,7 @@ export function ReportsView() {
 
       {/* 4 Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-white/10 bg-black/40 backdrop-blur-2xl">
+        <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between text-[#6E5353]">
               <span className="text-xs font-mono uppercase tracking-wider">Billable Hours</span>
@@ -210,7 +210,7 @@ export function ReportsView() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-black/40 backdrop-blur-2xl">
+        <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between text-[#6E5353]">
               <span className="text-xs font-mono uppercase tracking-wider">Total Value</span>
@@ -225,7 +225,7 @@ export function ReportsView() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-black/40 backdrop-blur-2xl">
+        <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between text-[#6E5353]">
               <span className="text-xs font-mono uppercase tracking-wider">Effective Rate</span>
@@ -240,7 +240,7 @@ export function ReportsView() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/10 bg-black/40 backdrop-blur-2xl">
+        <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between text-[#6E5353]">
               <span className="text-xs font-mono uppercase tracking-wider">Active Clients</span>
@@ -257,7 +257,7 @@ export function ReportsView() {
       </div>
 
       {/* Project Distribution Breakdown */}
-      <Card className="border-white/10 bg-black/40 backdrop-blur-2xl">
+      <Card>
         <CardHeader>
           <CardTitle className="text-lg font-bold text-white">Client Distribution</CardTitle>
           <CardDescription className="text-xs text-[#806060]">

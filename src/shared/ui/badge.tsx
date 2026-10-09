@@ -1,10 +1,11 @@
 import * as React from "react"
+import { Loader2 } from "lucide-react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/shared/lib/utils"
 import { Slot } from "radix-ui"
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border-none px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border-none px-2.5 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg:not([class*='animate-spin'])]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
@@ -25,23 +26,43 @@ const badgeVariants = cva(
   }
 )
 
+export interface BadgeProps
+  extends React.ComponentProps<"span">,
+    VariantProps<typeof badgeVariants> {
+  asChild?: boolean
+  loading?: boolean
+  disabled?: boolean
+}
+
 function Badge({
   className,
   variant = "default",
   asChild = false,
+  loading = false,
+  disabled = false,
+  children,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: BadgeProps) {
   const Comp = asChild ? Slot.Root : "span"
 
   return (
     <Comp
       data-slot="badge"
       data-variant={variant}
-      className={cn(badgeVariants({ variant }), className)}
+      data-loading={loading ? "true" : undefined}
+      aria-disabled={disabled}
+      className={cn(
+        badgeVariants({ variant }),
+        disabled && "opacity-40 cursor-not-allowed pointer-events-none",
+        className
+      )}
       {...props}
-    />
+    >
+      {loading && <Loader2 className="size-3 animate-spin shrink-0 text-current" />}
+      {children}
+    </Comp>
   )
 }
 
 export { Badge, badgeVariants }
+

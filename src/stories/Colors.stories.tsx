@@ -1,9 +1,36 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
+/**
+ * # Color System & Tokens
+ *
+ * Atmospheric warm amber and burnt orange palette combining analogue
+ * chronograph physics with ultra-modern glassmorphism.
+ *
+ * ### Architectural Tiers
+ * - **Atmospheric Glow**: Terracotta (\`#E25822\`) and Amber (\`#F59E0B\`) radial bloom.
+ * - **Dark obsidian Canvas**: Ultra-deep substrate (\`#140501\`, \`#0d0d0f\`).
+ * - **Project Accents**: 8 distinct chromatic tokens for multi-client organization.
+ * - **Semantic Typography**: 100% white primary, warm muted secondary (\`#806060\`), tertiary (\`#6E5353\`).
+ */
 const meta: Meta = {
   title: 'Design System/Colors & Gradients',
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+### Color Tokens & Semantic Palettes
+
+Designed to evoke luxury horological instruments and high-contrast digital displays.
+
+#### Design Tokens
+- **Brand Core**: \`#E25822\` (Terracotta Core), \`#F59E0B\` (Amber Glow), \`#7C2D12\` (Terracotta Deep).
+- **Substrate**: \`#140501\` (Dark Obsidian Base).
+- **Typography Scale**: High-contrast white \`#FFFFFF\`, Warm Muted \`#806060\`, Tertiary Placeholder \`#6E5353\`.
+        `,
+      },
+    },
   },
 }
 

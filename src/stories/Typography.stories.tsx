@@ -1,9 +1,35 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
+/**
+ * # Typography & Digital Numerals
+ *
+ * Tabular figures, monospaced counters, and modern sans-serif type scales
+ * engineered for high-precision digital clock instruments and dashboard legibility.
+ *
+ * ### Core Typographic Guidelines
+ * - **Tabular Numerals**: \`tabular-nums\` ensures fixed-width numbers so digits never jitter or jump on live timer ticks.
+ * - **Micro-Labels**: Uppercase \`10px\` to \`12px\` metadata labels in muted warm tones (\`#806060\`).
+ * - **Keyboard Kbd**: Tactile bordered keycap representations for shortcuts.
+ */
 const meta: Meta = {
   title: 'Design System/Typography',
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+### Typography & Numerical System
+
+Engineered for optimal readability across real-time counters, currency accruals, and command menus.
+
+#### Key Principles
+1. **Tabular Figures (\`tabular-nums\`)**: Mandatory for all timer counters and financial metrics to prevent character jitter.
+2. **High-Contrast Hierarchy**: Bold white display headlines paired with warm muted secondary copy (\`#806060\`).
+3. **Keyboard Shortcuts**: Embedded \`<kbd>\` elements with tactile micro-borders.
+        `,
+      },
+    },
   },
 }
 
@@ -15,7 +41,7 @@ export const TypographyScale: StoryObj = {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white mb-2">Typography & Digital Numerals</h1>
         <p className="text-sm text-[#806060]">
-          Custom display typeface <strong>Oxanium</strong> with tabular numbers, engineered for high-precision digital instruments.
+          Custom display typography with tabular numbers, engineered for high-precision digital instruments.
         </p>
       </div>
 

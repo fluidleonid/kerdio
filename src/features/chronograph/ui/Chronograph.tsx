@@ -191,10 +191,16 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
           hint: "Fixed budget not set",
         }
       }
+      const elapsedHours = timer.elapsedSeconds / 3600
+      const effectiveRate =
+        elapsedHours > 0 ? timer.fixedBudget / elapsedHours : timer.fixedBudget
+      const effectiveRateFormatted = `${currency}${Math.round(effectiveRate)}/h`
+
       return {
         hasBilling: true,
         amountText: `${currency}${timer.fixedBudget.toFixed(2)}`,
         hint: timer.billingType === "fixed" ? "Fixed budget" : "Milestone",
+        effectiveRateText: effectiveRateFormatted,
       }
     }
 
@@ -310,8 +316,20 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
             ) : (
               /* РЕЖИМ 2: ДЕНЬГИ */
               moneyDisplay.hasBilling ? (
-                <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none group-hover:text-amber-200 transition-colors">
-                  {moneyDisplay.amountText}
+                <div className="flex flex-col items-center">
+                  <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none group-hover:text-amber-200 transition-colors">
+                    {moneyDisplay.amountText}
+                  </div>
+                  {moneyDisplay.effectiveRateText ? (
+                    <div className="text-xs font-semibold font-mono text-amber-300/90 mt-1 flex items-center justify-center gap-1">
+                      <span className="text-[#806060]">Полезный рейт:</span>
+                      <span className="text-white font-bold">{moneyDisplay.effectiveRateText}</span>
+                    </div>
+                  ) : (
+                    <div className="text-xs font-semibold text-[#806060] mt-1">
+                      {moneyDisplay.hint}
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* ЕСЛИ БИЛЛИНГ НЕ ВВЕДЕН: СООБЩЕНИЕ О ВВОДЕ СТАВКИ */

@@ -37,7 +37,7 @@ const BILLING_OPTIONS = [
 ]
 
 export function ProjectsView() {
-  const { projects, sessions, addProject, updateProject, deleteProject } = useTrackerStore()
+  const { projects, sessions, addProject, updateProject, deleteProject, toggleMilestoneStatus } = useTrackerStore()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingProj, setEditingProj] = useState<Project | null>(null)
@@ -265,6 +265,60 @@ export function ProjectsView() {
                   </div>
                 </div>
 
+                {/* Project Milestones List */}
+                {p.milestones && p.milestones.length > 0 && (
+                  <div className="space-y-2 pt-2 border-t border-white/10">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-[#806060] uppercase tracking-wider">
+                      <span>Milestones ({p.milestones.length})</span>
+                      <span className="text-[10px] lowercase text-[#6E5353]">
+                        {p.milestones.filter((m) => m.status === "delivered").length} delivered
+                      </span>
+                    </div>
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      {p.milestones.map((m) => {
+                        const isDelivered = m.status === "delivered"
+                        return (
+                          <div
+                            key={m.id}
+                            className={`flex items-center justify-between p-2 rounded-xl text-xs transition-colors ${
+                              isDelivered ? "bg-white/5 opacity-70" : "bg-black/30 border border-white/5"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Flag className={`h-3.5 w-3.5 shrink-0 ${isDelivered ? "text-emerald-400" : "text-orange-400"}`} />
+                              <span className={`truncate font-medium ${isDelivered ? "line-through text-white/50" : "text-white"}`}>
+                                {m.name}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 ml-2">
+                              <span className="font-mono font-semibold text-[#806060]">
+                                ${m.amount}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleMilestoneStatus(p.id, m.id)}
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full transition-all flex items-center gap-1 cursor-pointer ${
+                                  isDelivered
+                                    ? "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 border border-emerald-500/30"
+                                    : "bg-orange-600/20 text-orange-300 hover:bg-orange-600/35 border border-orange-500/30 hover:scale-105"
+                                }`}
+                              >
+                                {isDelivered ? (
+                                  <>
+                                    <Check className="h-2.5 w-2.5" /> Delivered
+                                  </>
+                                ) : (
+                                  "Mark as delivered"
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-1 pt-2 border-t border-white/10">
                   <Button
@@ -298,7 +352,7 @@ export function ProjectsView() {
 
       {/* Add / Edit Project Modal (Card-style glass backdrop & shadow) */}
       {isAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">

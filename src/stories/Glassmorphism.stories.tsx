@@ -1,9 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
+/**
+ * # Glassmorphism & Elevation
+ *
+ * Multi-layer optical hierarchy: borderless glass, deep blurs, and diffused ambient shadows
+ * adhering to Linear and Apple HIG visual design standards.
+ *
+ * ### Elevation Tiers
+ * - **Tier 1 (Card Glass)**: \`bg-black/50\`, \`blur-3xl\`, diffused 50px black shadow.
+ * - **Tier 2 (Input Field)**: \`bg-black/40\`, \`blur-3xl\`, \`shadow-[0_10px_25px_rgba(0,0,0,0.25)]\`.
+ * - **Tier 3 (Floating Popover)**: \`bg-black/95\`, \`blur-3xl\`, high-contrast contrast border.
+ * - **Tier 4 (Token Badge)**: \`bg-white/10\`, \`blur-xl\`, rounded-full pill.
+ */
 const meta: Meta = {
   title: 'Design System/Glass & Shadows',
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+### Optical Glass System & Elevation
+
+Our multi-layered optical hierarchy eliminates harsh solid borders in favor of diffused backdrop blurs and ambient shadows.
+
+#### Core Tiers
+1. **Container Glass**: Used for main dashboard cards and the command palette shell.
+2. **Field Glass**: Semi-translucent inputs that gracefully deepen upon focus.
+3. **Floating Popovers**: Ultra-dense backdrop blur ensuring crisp legibility over active graphics.
+4. **Interactive Chips**: Micro-pill tokens with translucent white fills.
+        `,
+      },
+    },
   },
 }
 

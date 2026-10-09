@@ -304,7 +304,7 @@ export function JournalView() {
       </div>
 
       {/* 24-HOUR WEEKLY CALENDAR GRID */}
-      <div className="rounded-2xl border border-white/15 bg-black/50 backdrop-blur-2xl overflow-hidden shadow-2xl">
+      <div className="rounded-3xl border-none bg-black/50 backdrop-blur-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.32)]">
         {/* Sticky Calendar Days Header */}
         <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-white/10 bg-black/70 backdrop-blur-md sticky top-0 z-20">
           {/* Time Gutter Corner */}
@@ -456,7 +456,7 @@ export function JournalView() {
 
       {/* Edit Session Modal */}
       {selectedSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">Edit Session</h3>
@@ -566,7 +566,7 @@ export function JournalView() {
 
       {/* Manual Add Session Modal */}
       {isManualModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">Log Work Session</h3>

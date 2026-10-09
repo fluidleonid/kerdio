@@ -14,7 +14,7 @@ import { useTrackerStore } from "@/entities/tracker"
 import type { Project, BillingType } from "@/entities/project"
 import type { TimeSession } from "@/entities/session"
 import { AppTooltip, ProjectBadge, BillingBadge } from "@/shared/ui"
-import { capitalizeMemo, formatAsMilestone, getProjectMilestones } from "@/shared/lib"
+import { capitalizeMemo, formatAsMilestone, getProjectMilestones, parseMilestoneWithAmount } from "@/shared/lib"
 
 interface TokenCommandInputProps {
   onStart?: () => void
@@ -109,6 +109,30 @@ export function cleanupSegments(rawList: TokenSegment[]): TokenSegment[] {
   return interleaved
 }
 
+export function getProjectDefaultBilling(proj: Project | null | undefined): BillingConfig | null {
+  if (!proj) return null
+  if (proj.billingType === "hourly" && proj.hourlyRate && proj.hourlyRate > 0) {
+    return { type: "hourly", amount: proj.hourlyRate }
+  }
+  if (
+    (proj.billingType === "fixed" || proj.billingType === "milestone") &&
+    proj.fixedBudget &&
+    proj.fixedBudget > 0
+  ) {
+    return { type: proj.billingType, amount: proj.fixedBudget }
+  }
+  if (proj.hourlyRate && proj.hourlyRate > 0) {
+    return { type: "hourly", amount: proj.hourlyRate }
+  }
+  if (proj.fixedBudget && proj.fixedBudget > 0) {
+    return { type: "fixed", amount: proj.fixedBudget }
+  }
+  if (proj.billingType === "none") {
+    return { type: "none", amount: 0 }
+  }
+  return null
+}
+
 export function TokenCommandInput({
   onStart,
   autoFocus = true,
@@ -168,6 +192,7 @@ export function TokenCommandInput({
   const [mode, setMode] = useState<"projects" | "recents" | "slash">("recents")
   const [atQuery, setAtQuery] = useState<string | null>(null)
   const [slashQuery, setSlashQuery] = useState<string | null>(null)
+  const [activeBillingPrompt, setActiveBillingPrompt] = useState<"hourly" | "fixed" | "milestone" | null>(null)
 
   // Dynamic input refs for each text segment
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
@@ -230,17 +255,104 @@ export function TokenCommandInput({
     currentProject?.id ||
     (segments.find((s) => s.type === "project") as { project?: { id: string } } | undefined)?.project?.id
 
-  // Project milestones analysis
+  // Active project from token badges or matched by name from text
+  const activeProjectOrMatch = useMemo(() => {
+    if (currentProject) return currentProject
+    const fullText = segments
+      .filter((s) => s.type === "text")
+      .map((s) => (s as { text: string }).text)
+      .join(" ")
+      .toLowerCase()
+    return (
+      projects.find((p) => {
+        const pName = p.name.toLowerCase()
+        const pSlug = p.slug.toLowerCase()
+        return (
+          fullText.includes(`@${pSlug}`) ||
+          fullText.includes(`@${pName}`) ||
+          fullText.includes(pName) ||
+          fullText.includes(pSlug)
+        )
+      }) || null
+    )
+  }, [currentProject, segments, projects])
+
+  // Open (not delivered) milestones for this project
+  const openMilestones = useMemo(() => {
+    if (!activeProjectOrMatch) return []
+    return (activeProjectOrMatch.milestones || []).filter((m) => m.status === "open")
+  }, [activeProjectOrMatch])
+
+  // Active custom billing token in segments
+  const activeBilling = useMemo(() => {
+    const billSeg = segments.find((s) => s.type === "billing")
+    if (billSeg && billSeg.type === "billing") {
+      return billSeg.billing
+    }
+    return null
+  }, [segments])
+
+  // Flag if an override is active: project default exists and differs from active custom billing
+  const billingOverrideInfo = useMemo(() => {
+    const activeProj = currentProject || activeProjectOrMatch
+    if (!activeProj || !activeBilling) return null
+
+    const projectDefault = getProjectDefaultBilling(activeProj)
+    if (!projectDefault) return null
+
+    const isDifferent =
+      activeBilling.type !== projectDefault.type ||
+      activeBilling.amount !== projectDefault.amount
+
+    if (!isDifferent) return null
+
+    const formatBill = (b: BillingConfig) => {
+      if (b.type === "hourly") return `$${b.amount}/ч`
+      if (b.type === "fixed") return `$${b.amount} (фикс)`
+      if (b.type === "milestone") return `$${b.amount} (этап)`
+      return "Без оплаты"
+    }
+
+    return {
+      project: activeProj,
+      projectDefault,
+      activeBilling,
+      projectDefaultText: formatBill(projectDefault),
+      overrideText: formatBill(activeBilling),
+    }
+  }, [currentProject, activeProjectOrMatch, activeBilling])
+
+  const [overrideConfirmed, setOverrideConfirmed] = useState(false)
+
+  // Reset confirmation whenever billing or project changes
+  useEffect(() => {
+    setOverrideConfirmed(false)
+  }, [activeBilling?.type, activeBilling?.amount, currentProject?.id])
+
+  // Project milestones analysis from sessions
   const milestoneStats = useMemo(() => {
-    if (!activeProjId) {
+    const projId = activeProjId || activeProjectOrMatch?.id
+    if (!projId) {
       return { milestones: [], latestMilestone: null, maxNumber: 0, nextNumber: 1, totalCount: 0 }
     }
-    return getProjectMilestones(sessions, activeProjId)
-  }, [sessions, activeProjId])
+    return getProjectMilestones(sessions, projId)
+  }, [sessions, activeProjId, activeProjectOrMatch?.id])
 
-  const activePlaceholder = isMilestoneActive
-    ? `Milestone ${milestoneStats.nextNumber}: What are you delivering?`
-    : "What are you working on?"
+  const activePlaceholder = useMemo(() => {
+    if (activeBillingPrompt === "hourly") {
+      return "Введите рейт (например, 85)"
+    }
+    if (activeBillingPrompt === "fixed") {
+      return "Введите стоимость проекта (например, 2500)"
+    }
+    if (activeBillingPrompt === "milestone") {
+      return "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)"
+    }
+    if (isMilestoneActive) {
+      return `M ${milestoneStats.nextNumber}: What are you delivering?`
+    }
+    return "What are you working on?"
+  }, [activeBillingPrompt, isMilestoneActive, milestoneStats.nextNumber])
 
   const handleContinueMilestone = (memoText: string) => {
     setSegments((prev) => {
@@ -264,75 +376,58 @@ export function TokenCommandInput({
     )
   }, [projects, atQuery])
 
-  // Dynamic slash options parsed from user input without hardcoded presets
+  // Slash options: brief description of purpose only. NO dynamic amounts in command title
   const parsedSlashOptions = useMemo(() => {
     const raw = (slashQuery || "").trim().toLowerCase()
-    const parts = raw.split(/\s+/)
-    const cmdToken = parts[0] || ""
-    const numToken = parts[1] ? parseFloat(parts[1]) : (parseFloat(cmdToken) || null)
 
-    const isRate = "rate".startsWith(cmdToken) || cmdToken === "r"
-    const isFixed = "fixed".startsWith(cmdToken) || cmdToken === "f"
-    const isMilestone = "milestone".startsWith(cmdToken) || cmdToken === "m"
-    const isNobill = "nobill".startsWith(cmdToken) || cmdToken === "free"
-
-    const options = []
-
-    if (!raw || isRate) {
-      options.push({
-        id: "rate",
-        command: "/rate",
+    const allOptions = [
+      {
+        id: "hourly",
+        command: "/hourly",
         type: "hourly" as const,
-        amount: numToken,
-        title: numToken ? `Hourly Rate: $${numToken}/h` : "/rate <amount>",
-        description: numToken
-          ? "Press Enter ↵ to apply hourly billing"
-          : "Bill per hour with real-time dollar accrual",
+        title: "/hourly",
+        description: "Почасовая ставка (начисление в реальном времени)",
+        placeholder: "Введите рейт (например, 85)",
         icon: Clock,
-      })
-    }
-
-    if (!raw || isFixed) {
-      options.push({
+      },
+      {
         id: "fixed",
         command: "/fixed",
         type: "fixed" as const,
-        amount: numToken,
-        title: numToken ? `Fixed Fee: $${numToken}` : "/fixed <amount>",
-        description: numToken
-          ? "Press Enter ↵ to apply fixed task fee"
-          : "Flat rate for entire task/project, tracks hourly yield",
+        title: "/fixed",
+        description: "Фиксированная стоимость задачи или проекта",
+        placeholder: "Введите стоимость проекта (например, 2500)",
         icon: Briefcase,
-      })
-    }
-
-    if (!raw || isMilestone) {
-      options.push({
+      },
+      {
         id: "milestone",
         command: "/milestone",
         type: "milestone" as const,
-        amount: numToken,
-        title: numToken ? `Milestone: $${numToken}` : "/milestone <amount>",
-        description: numToken
-          ? "Press Enter ↵ to apply milestone payment"
-          : "Fixed payout for this specific delivery",
+        title: "/milestone",
+        description: "Оплата за этап (майлстоун сдачи)",
+        placeholder: "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)",
         icon: Flag,
-      })
-    }
-
-    if (!raw || isNobill) {
-      options.push({
+      },
+      {
         id: "nobill",
         command: "/nobill",
         type: "none" as const,
-        amount: 0,
-        title: "Non-billable (Free)",
-        description: "Track focus time only without client billing or money",
+        title: "/nobill",
+        description: "Нетарифицируемое время (без оплаты клиенту)",
+        placeholder: "Без оплаты",
         icon: ShieldOff,
-      })
-    }
+      },
+    ]
 
-    return options
+    if (!raw) return allOptions
+
+    return allOptions.filter(
+      (opt) =>
+        opt.command.slice(1).startsWith(raw) ||
+        opt.id.startsWith(raw) ||
+        (raw === "rate" && opt.id === "hourly") ||
+        (raw === "free" && opt.id === "nobill")
+    )
   }, [slashQuery])
 
   // Last 5 unique recent entries (always capitalized)
@@ -458,8 +553,11 @@ export function TokenCommandInput({
       const atIdx = currText.lastIndexOf("@")
       const textBefore = atIdx !== -1 ? currText.slice(0, atIdx).trimEnd() : currText
 
-      // Remove any existing project badge and billing badge so project's own setting takes effect immediately
-      const cleaned = prev.filter((s) => s.type !== "project" && s.type !== "billing")
+      // Check if user already entered a custom billing badge before selecting project!
+      const existingBillingSeg = prev.find((s) => s.type === "billing")
+
+      // Remove any existing project badge. Preserve existing custom billing badge if entered first!
+      const cleaned = prev.filter((s) => s.type !== "project" && (existingBillingSeg ? true : s.type !== "billing"))
       let newTargetIndex = cleaned.findIndex((s) => s.id === currSeg?.id)
       if (newTargetIndex === -1) {
         newTargetIndex = cleaned.length
@@ -481,28 +579,17 @@ export function TokenCommandInput({
       const projId = `proj-${Date.now()}`
       newSegs.push({ id: projId, type: "project", project: proj })
 
-      // 4. "с проектом если у него установлен билинг он должен встать сразу"
-      let projBill: BillingConfig | null = null
-      if (proj.billingType === "hourly" && proj.hourlyRate && proj.hourlyRate > 0) {
-        projBill = { type: "hourly", amount: proj.hourlyRate }
-      } else if (
-        (proj.billingType === "fixed" || proj.billingType === "milestone") &&
-        proj.fixedBudget &&
-        proj.fixedBudget > 0
-      ) {
-        projBill = { type: proj.billingType, amount: proj.fixedBudget }
-      } else if (proj.hourlyRate && proj.hourlyRate > 0) {
-        projBill = { type: "hourly", amount: proj.hourlyRate }
-      } else if (proj.fixedBudget && proj.fixedBudget > 0) {
-        projBill = { type: "fixed", amount: proj.fixedBudget }
-      }
-
-      if (projBill) {
-        newSegs.push({
-          id: `bill-${Date.now()}`,
-          type: "billing",
-          billing: projBill,
-        })
+      // 4. If custom billing was entered first, DO NOT add project default billing badge!
+      // Otherwise, if project has default billing configured, insert it inline:
+      if (!existingBillingSeg) {
+        const projBill = getProjectDefaultBilling(proj)
+        if (projBill && projBill.type !== "none") {
+          newSegs.push({
+            id: `bill-${Date.now()}`,
+            type: "billing",
+            billing: projBill,
+          })
+        }
       }
 
       // 5. Follow-up text segment for further typing
@@ -582,28 +669,71 @@ export function TokenCommandInput({
       })
     }
 
-    // If current project exists and billing differs, confirm scope with user!
-    if (currentProject) {
-      const isSame =
-        type === currentProject.billingType &&
-        ((type === "hourly" && currentProject.hourlyRate === finalAmount) ||
-          (type !== "hourly" && currentProject.fixedBudget === finalAmount))
-
-      if (!isSame) {
-        setPendingBillingChange({
-          project: currentProject,
-          newBilling,
-          apply,
-        })
-        setIsDropdownOpen(false)
-        setSlashQuery(null)
-        return
-      }
-    }
-
     apply()
     setIsDropdownOpen(false)
     setSlashQuery(null)
+    setActiveBillingPrompt(null)
+  }
+
+  // Select slash option from dropdown: activates input prompt with required placeholder without showing typed number in command
+  const selectSlashOption = (opt: (typeof parsedSlashOptions)[0]) => {
+    if (opt.type === "none") {
+      applySlashCommand("none", 0)
+      setIsDropdownOpen(false)
+      setSlashQuery(null)
+      setActiveBillingPrompt(null)
+      return
+    }
+
+    // Strip slash prefix from active text segment
+    setSegments((prev) => {
+      return prev.map((s) => {
+        if (s.id === activeSegId && s.type === "text") {
+          const slashIdx = s.text.lastIndexOf("/")
+          const cleanText = slashIdx !== -1 ? s.text.slice(0, slashIdx).trimEnd() : s.text
+          return { ...s, text: cleanText }
+        }
+        return s
+      })
+    })
+
+    setActiveBillingPrompt(opt.type)
+    setIsDropdownOpen(false)
+    setSlashQuery(null)
+
+    setTimeout(() => {
+      const el = inputRefs.current[activeSegId]
+      if (el) {
+        el.focus()
+      }
+    }, 20)
+  }
+
+  // Select open milestone chip from under input
+  const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
+    const proj = activeProjectOrMatch || currentProject || projects[0]
+    setSegments(() => {
+      const newSegs: TokenSegment[] = [
+        { id: `seg-ms-${Date.now()}`, type: "text", text: ms.name },
+      ]
+      if (proj) {
+        newSegs.push({ id: `proj-${Date.now()}`, type: "project", project: proj })
+      }
+      newSegs.push({
+        id: `bill-${Date.now()}`,
+        type: "billing",
+        billing: { type: "milestone", amount: ms.amount },
+      })
+      newSegs.push({ id: `seg-tail-${Date.now()}`, type: "text", text: "" })
+
+      const cleaned = cleanupSegments(newSegs)
+      const lastText = [...cleaned].reverse().find((s) => s.type === "text")
+      const focusId = lastText ? lastText.id : `seg-tail-${Date.now()}`
+      setActiveSegId(focusId)
+      setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
+      return cleaned
+    })
+    setActiveBillingPrompt(null)
   }
 
   // Pick recent entry: text assembled, project and billing badges placed immediately
@@ -733,7 +863,7 @@ export function TokenCommandInput({
           e.preventDefault()
           const chosen = parsedSlashOptions[dropdownIndex] || parsedSlashOptions[0]
           if (chosen) {
-            applySlashCommand(chosen.type, chosen.amount)
+            selectSlashOption(chosen)
           }
           return
         }
@@ -892,8 +1022,67 @@ export function TokenCommandInput({
       }
     }
 
-    // Enter when dropdown is closed launches tracking!
+    // Enter when dropdown is closed
     if (e.key === "Enter" && !isDropdownOpen) {
+      // 1. If in activeBillingPrompt mode, tokenize the value!
+      if (activeBillingPrompt) {
+        e.preventDefault()
+        const currSeg = segments.find((s) => s.id === segId)
+        const textVal = currSeg && currSeg.type === "text" ? currSeg.text.trim() : ""
+
+        if (activeBillingPrompt === "hourly") {
+          const num = parseFloat(textVal)
+          if (!isNaN(num) && num > 0) {
+            applySlashCommand("hourly", num)
+            setSegments((prev) =>
+              prev.map((s) => (s.id === segId && s.type === "text" ? { ...s, text: "" } : s))
+            )
+            setActiveBillingPrompt(null)
+            return
+          }
+        } else if (activeBillingPrompt === "fixed") {
+          const num = parseFloat(textVal)
+          if (!isNaN(num) && num > 0) {
+            applySlashCommand("fixed", num)
+            setSegments((prev) =>
+              prev.map((s) => (s.id === segId && s.type === "text" ? { ...s, text: "" } : s))
+            )
+            setActiveBillingPrompt(null)
+            return
+          }
+        } else if (activeBillingPrompt === "milestone") {
+          const parsed = parseMilestoneWithAmount(textVal)
+          const amount = parsed.amount || (currentProject?.fixedBudget || 500)
+          applySlashCommand("milestone", amount)
+          setSegments((prev) =>
+            prev.map((s) =>
+              s.id === segId && s.type === "text" ? { ...s, text: parsed.memo } : s
+            )
+          )
+          setActiveBillingPrompt(null)
+          return
+        }
+      }
+
+      // 2. Check if user typed e.g. "M 1 Design phase 1 2300" in normal text without prior /milestone
+      const currSeg = segments.find((s) => s.id === segId)
+      const textVal = currSeg && currSeg.type === "text" ? currSeg.text.trim() : ""
+      const milestoneParsed = parseMilestoneWithAmount(textVal)
+      if (
+        milestoneParsed.isMilestone &&
+        milestoneParsed.amount !== null &&
+        !segments.some((s) => s.type === "billing")
+      ) {
+        e.preventDefault()
+        applySlashCommand("milestone", milestoneParsed.amount)
+        setSegments((prev) =>
+          prev.map((s) =>
+            s.id === segId && s.type === "text" ? { ...s, text: milestoneParsed.memo } : s
+          )
+        )
+        return
+      }
+
       e.preventDefault()
       if (canStart) {
         handleStartSession()
@@ -901,10 +1090,7 @@ export function TokenCommandInput({
     }
   }
 
-  // Session start: assembling all text segments into clean memo!
-  const handleStartSession = () => {
-    if (!canStart) return
-
+  const executeStartSession = () => {
     // 2. Project from project badge
     const projSeg = segments.find((s) => s.type === "project")
     const proj = projSeg && projSeg.type === "project" ? projSeg.project : null
@@ -935,7 +1121,17 @@ export function TokenCommandInput({
 
     let finalMemo = capitalizeMemo(assembledMemo || (proj ? proj.name : "Focused session"))
 
-    if (isMilestoneActive) {
+    // Check if user entered e.g. "M 1 Design phase 1 2300"
+    const parsedWithAmount = parseMilestoneWithAmount(assembledMemo)
+    if (parsedWithAmount.isMilestone && parsedWithAmount.amount !== null) {
+      finalMemo = parsedWithAmount.memo
+      if (!bill) {
+        billingType = "milestone"
+        fixedBudget = parsedWithAmount.amount
+      } else if (bill.type === "milestone" || bill.type === "fixed") {
+        fixedBudget = parsedWithAmount.amount
+      }
+    } else if (isMilestoneActive) {
       finalMemo = formatAsMilestone(assembledMemo, milestoneStats.nextNumber)
     }
 
@@ -965,6 +1161,37 @@ export function TokenCommandInput({
     setActiveSegId(freshId)
     setIsDropdownOpen(false)
     onStart?.()
+  }
+
+  // Session start: assembling all text segments into clean memo!
+  const handleStartSession = () => {
+    if (!canStart) return
+
+    // If an override is active and hasn't been confirmed yet, ask scope on confirmation!
+    if (billingOverrideInfo && !overrideConfirmed) {
+      setPendingBillingChange({
+        project: billingOverrideInfo.project,
+        newBilling: billingOverrideInfo.activeBilling,
+        apply: () => {
+          setOverrideConfirmed(true)
+          executeStartSession()
+        },
+      })
+      return
+    }
+
+    executeStartSession()
+  }
+
+  const handleTriggerOverrideModal = () => {
+    if (!billingOverrideInfo) return
+    setPendingBillingChange({
+      project: billingOverrideInfo.project,
+      newBilling: billingOverrideInfo.activeBilling,
+      apply: () => {
+        setOverrideConfirmed(true)
+      },
+    })
   }
 
   handleStartSessionRef.current = handleStartSession
@@ -1324,6 +1551,26 @@ export function TokenCommandInput({
 
         {/* ROW 2: CONTROLS (Right: @ project, / billing, primary Run button) */}
         <div className="mt-2 flex items-center justify-end gap-1.5 border-none">
+          {/* Billing Override Badge with hover tooltip showing project default vs override */}
+          {billingOverrideInfo && (
+            <AppTooltip
+              content={`Настройка проекта: ${billingOverrideInfo.projectDefaultText}. Будет применен оверрайд: ${billingOverrideInfo.overrideText}`}
+              side="top"
+            >
+              <button
+                type="button"
+                onClick={handleTriggerOverrideModal}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-amber-200 text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                <span>Override</span>
+                <span className="font-mono text-[11px] text-amber-200/90 font-bold">
+                  {billingOverrideInfo.overrideText}
+                </span>
+              </button>
+            </AppTooltip>
+          )}
+
           {/* Ghost @ button (icon-only, no label) with custom AppTooltip */}
           <AppTooltip content="Select project" shortcut="@" side="top">
             <button
@@ -1385,6 +1632,27 @@ export function TokenCommandInput({
           </AppTooltip>
         </div>
       </div>
+
+      {/* CHIPS WITH OPEN MILESTONES OFFERED UNDER THE INPUT CONTAINER */}
+      {activeProjectOrMatch && openMilestones.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
+          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060]">
+            Открытые этапы:
+          </span>
+          {openMilestones.map((ms) => (
+            <button
+              key={ms.id}
+              type="button"
+              onClick={() => selectOpenMilestone(ms)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-orange-600/25 text-white/90 hover:text-white text-xs font-medium backdrop-blur-xl border border-white/5 hover:border-orange-500/30 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
+            >
+              <Flag className="h-2.5 w-2.5 text-orange-400" />
+              <span>{ms.name}</span>
+              <span className="text-orange-300 font-mono font-semibold">${ms.amount}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* DROPDOWN IN THE EXACT SAME ULTRA-MODERN GLASS STYLE */}
       {isDropdownOpen && (
@@ -1537,7 +1805,7 @@ export function TokenCommandInput({
                   return (
                     <div
                       key={opt.id}
-                      onClick={() => applySlashCommand(opt.type, opt.amount)}
+                      onClick={() => selectSlashOption(opt)}
                       className={`flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
                         isSelected
                           ? "bg-white/10 text-white"
@@ -1558,12 +1826,6 @@ export function TokenCommandInput({
                           </div>
                         </div>
                       </div>
-
-                      {opt.amount !== null && opt.amount > 0 && (
-                        <span className="font-mono text-sm text-[#806060] font-semibold shrink-0">
-                          {opt.type === "hourly" ? `$${opt.amount}/h` : `$${opt.amount}`}
-                        </span>
-                      )}
                     </div>
                   )
                 })}
@@ -1575,7 +1837,7 @@ export function TokenCommandInput({
 
       {/* SCOPE CONFIRMATION MODAL FOR BILLING CHANGE */}
       {pendingBillingChange && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
             {/* Header */}
             <div className="flex items-start justify-between">
@@ -1590,18 +1852,23 @@ export function TokenCommandInput({
                   </span>
                 </div>
                 <h3 className="text-base font-bold text-white mt-1">
-                  Изменение биллинга проекта
+                  Оверрайд биллинга проекта
                 </h3>
                 <p className="text-xs text-[#806060] mt-0.5">
                   Новая ставка:{" "}
-                  <span className="text-white font-mono font-semibold">
+                  <span className="text-amber-300 font-mono font-semibold">
                     {pendingBillingChange.newBilling.type === "hourly"
                       ? `$${pendingBillingChange.newBilling.amount}/h`
                       : pendingBillingChange.newBilling.type === "none"
-                      ? "Non-billable"
+                      ? "Без оплаты"
                       : `$${pendingBillingChange.newBilling.amount}`}
                   </span>
-                  . Для каких сессий применить изменение?
+                  {billingOverrideInfo && (
+                    <span className="text-[#6E5353] ml-1">
+                      (настройка проекта: {billingOverrideInfo.projectDefaultText})
+                    </span>
+                  )}
+                  . Для каких сессий применить?
                 </p>
               </div>
               <button
