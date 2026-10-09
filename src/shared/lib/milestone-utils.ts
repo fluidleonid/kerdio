@@ -83,10 +83,25 @@ export function parseMilestoneWithAmount(rawInput: string): ParsedMilestoneInput
   let remainder = trimmed
   let amount: number | null = null
 
-  const trailingAmountMatch = trimmed.match(/^(.*?)\s+[$€£]?(\d+(?:\.\d{1,2})?)[$€£]?$/)
-  if (trailingAmountMatch) {
-    remainder = trailingAmountMatch[1].trim()
-    amount = parseFloat(trailingAmountMatch[2])
+  const pureNumberMatch = trimmed.match(/^[$€£]?(\d+(?:\.\d{1,2})?)[$€£]?$/)
+  if (pureNumberMatch) {
+    remainder = ""
+    amount = parseFloat(pureNumberMatch[1])
+  } else {
+    const trailingAmountMatch = trimmed.match(/^(.*?)\s+[$€£]?(\d+(?:\.\d{1,2})?)[$€£]?$/)
+    if (trailingAmountMatch) {
+      remainder = trailingAmountMatch[1].trim()
+      amount = parseFloat(trailingAmountMatch[2])
+    }
+  }
+
+  if (!remainder) {
+    return {
+      memo: "",
+      title: "",
+      amount,
+      isMilestone: amount !== null,
+    }
   }
 
   // 2. Parse milestone pattern from remainder: "M 1 ...", "M1 ...", "Milestone 1 ...", "1: ..."

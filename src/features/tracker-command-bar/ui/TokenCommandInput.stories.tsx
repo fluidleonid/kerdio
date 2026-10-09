@@ -309,7 +309,7 @@ export const InteractiveSlashBillingCommand: Story = {
     // 4. Verify input prompt displays specific rate placeholder
     const activeInputs = canvas.getAllByRole('textbox')
     const activeInput = activeInputs[activeInputs.length - 1]
-    await expect(activeInput).toHaveAttribute('placeholder', 'Введите рейт (например, 85)')
+    await expect(activeInput).toHaveAttribute('placeholder', 'Rate (e.g. 85)')
   },
 }
 
@@ -370,7 +370,7 @@ export const BillingOverrideBadge: Story = {
  *
  * Simulates confirming a session with an active billing override,
  * verifying that the scope modal pops up asking to apply to
- * "Для текущей сессии" vs "Для текущей и будущих".
+ * "Current session only" vs "Current & future sessions".
  */
 export const InteractiveBillingOverrideConfirmation: Story = {
   render: () => (
@@ -396,13 +396,13 @@ export const InteractiveBillingOverrideConfirmation: Story = {
     await userEvent.click(startButton)
 
     // 3. Verify scope selection modal is displayed
-    const modalTitle = await canvas.findByText(/Оверрайд биллинга проекта/i)
+    const modalTitle = await canvas.findByText(/Project Billing Override/i)
     await expect(modalTitle).toBeInTheDocument()
 
-    const currentSessionOption = await canvas.findByText(/Для текущей сессии/i)
+    const currentSessionOption = await canvas.findByText(/Current session only/i)
     await expect(currentSessionOption).toBeInTheDocument()
 
-    const futureSessionsOption = await canvas.findByText(/Для текущей и будущих/i)
+    const futureSessionsOption = await canvas.findByText(/Current & future sessions/i)
     await expect(futureSessionsOption).toBeInTheDocument()
   },
 }

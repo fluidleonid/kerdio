@@ -370,15 +370,106 @@ export function TokenCommandInput({
     return getProjectMilestones(sessions, projId)
   }, [sessions, activeProjId, activeProjectOrMatch?.id])
 
+  function getLiveBillingDetails(
+    type: "hourly" | "fixed" | "milestone" | "none",
+    rawInput: string
+  ) {
+  const trimmed = rawInput.trim()
+
+  if (type === "hourly") {
+    const num = parseFloat(trimmed.replace(/[^0-9.]/g, ""))
+    if (!isNaN(num) && num > 0) {
+      return {
+        amount: num,
+        title: "Hourly rate",
+        description: `Set hourly rate to $${num}/h`,
+        isReady: true,
+      }
+    }
+    return {
+      amount: null,
+      title: "Hourly rate",
+      description: "Set hourly rate ($/h)",
+      isReady: false,
+    }
+  }
+
+  if (type === "fixed") {
+    const num = parseFloat(trimmed.replace(/[^0-9.]/g, ""))
+    if (!isNaN(num) && num > 0) {
+      return {
+        amount: num,
+        title: "Fixed fee",
+        description: `Set fixed fee to $${num.toLocaleString("en-US")}`,
+        isReady: true,
+      }
+    }
+    return {
+      amount: null,
+      title: "Fixed fee",
+      description: "Set fixed project fee ($)",
+      isReady: false,
+    }
+  }
+
+  if (type === "milestone") {
+    const parsed = parseMilestoneWithAmount(trimmed)
+    const amount = parsed.amount
+    const displayName = parsed.memo || parsed.title
+
+    if (amount !== null && amount > 0 && displayName) {
+      return {
+        amount,
+        title: "Milestone payout",
+        description: `Set milestone "${displayName}" to $${amount.toLocaleString("en-US")}`,
+        memo: parsed.memo,
+        isReady: true,
+      }
+    }
+    if (amount !== null && amount > 0) {
+      return {
+        amount,
+        title: "Milestone payout",
+        description: `Set milestone payout to $${amount.toLocaleString("en-US")}`,
+        memo: parsed.memo,
+        isReady: true,
+      }
+    }
+    if (displayName) {
+      return {
+        amount: null,
+        title: "Milestone payout",
+        description: `Set milestone "${displayName}" (enter amount)`,
+        memo: parsed.memo,
+        isReady: false,
+      }
+    }
+    return {
+      amount: null,
+      title: "Milestone payout",
+      description: "Set milestone payout (e.g. M1 Design 2300)",
+      memo: "",
+      isReady: false,
+    }
+  }
+
+  return {
+    amount: 0,
+    title: "Non-billable",
+    description: "Track focus time without billing",
+    isReady: true,
+  }
+}
+
   const activePlaceholder = useMemo(() => {
     if (activeBillingPrompt === "hourly") {
-      return "Введите рейт (например, 85)"
+      return "Rate (e.g. 85)"
     }
     if (activeBillingPrompt === "fixed") {
-      return "Введите стоимость проекта (например, 2500)"
+      return "Fixed fee (e.g. 2500)"
     }
     if (activeBillingPrompt === "milestone") {
-      return "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)"
+      return "Milestone & amount (e.g. M1 Design 2300)"
     }
     if (isMilestoneActive) {
       return `M ${milestoneStats.nextNumber}: What are you delivering?`
@@ -408,59 +499,124 @@ export function TokenCommandInput({
     )
   }, [projects, atQuery])
 
-  // Slash options: brief description of purpose only. NO dynamic amounts in command title
+  // Slash options: live dynamic parsing of amounts, milestone names, and descriptions on the fly
   const parsedSlashOptions = useMemo(() => {
-    const raw = (slashQuery || "").trim().toLowerCase()
+    // Check if user is typing in value input after pending-billing badge
+    const segIdx = segments.findIndex((s) => s.id === activeSegId)
+    const prevSeg = segIdx > 0 ? segments[segIdx - 1] : undefined
+    const isPendingValue = prevSeg && prevSeg.type === "pending-billing"
+    const currentVal = activeSeg ? activeSeg.text : ""
 
-    const allOptions = [
+    if (isPendingValue && prevSeg) {
+      const details = getLiveBillingDetails(prevSeg.billingType, currentVal)
+      const Icon =
+        prevSeg.billingType === "hourly"
+          ? Clock
+          : prevSeg.billingType === "fixed"
+          ? Briefcase
+          : Flag
+
+      return [
+        {
+          id: prevSeg.billingType,
+          command: prevSeg.commandText,
+          type: prevSeg.billingType,
+          title: details.title,
+          description: details.description,
+          icon: Icon,
+          amount: details.amount,
+          memo: details.memo,
+          isPending: true,
+        },
+      ]
+    }
+
+    const raw = (slashQuery || "").trim()
+    const match = raw.match(/^([a-zA-Z]+)(?:\s+(.*))?$/)
+    const cmdWord = match ? match[1].toLowerCase() : raw.toLowerCase()
+    const paramVal = match && match[2] ? match[2].trim() : ""
+
+    const baseOptions = [
       {
         id: "hourly",
         command: "/hourly",
         type: "hourly" as const,
-        title: "/hourly",
-        description: "Почасовая ставка (начисление в реальном времени)",
-        placeholder: "Введите рейт (например, 85)",
+        title: "Hourly rate",
+        defaultDesc: "Set hourly rate ($/h)",
         icon: Clock,
       },
       {
         id: "fixed",
         command: "/fixed",
         type: "fixed" as const,
-        title: "/fixed",
-        description: "Фиксированная стоимость задачи или проекта",
-        placeholder: "Введите стоимость проекта (например, 2500)",
+        title: "Fixed fee",
+        defaultDesc: "Set fixed project fee ($)",
         icon: Briefcase,
       },
       {
         id: "milestone",
         command: "/milestone",
         type: "milestone" as const,
-        title: "/milestone",
-        description: "Оплата за этап (майлстоун сдачи)",
-        placeholder: "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)",
+        title: "Milestone payout",
+        defaultDesc: "Set milestone payout (e.g. M1 Design 2300)",
         icon: Flag,
       },
       {
         id: "nobill",
         command: "/nobill",
         type: "none" as const,
-        title: "/nobill",
-        description: "Нетарифицируемое время (без оплаты клиенту)",
-        placeholder: "Без оплаты",
+        title: "Non-billable",
+        defaultDesc: "Track focus time without billing",
         icon: ShieldOff,
       },
     ]
 
-    if (!raw) return allOptions
-
-    return allOptions.filter(
-      (opt) =>
-        opt.command.slice(1).startsWith(raw) ||
-        opt.id.startsWith(raw) ||
-        (raw === "rate" && opt.id === "hourly") ||
-        (raw === "free" && opt.id === "nobill")
-    )
-  }, [slashQuery])
+    return baseOptions
+      .filter((opt) => {
+        if (!cmdWord) return true
+        const cmdName = opt.command.slice(1)
+        if (cmdName.startsWith(cmdWord)) return true
+        if (opt.id.startsWith(cmdWord)) return true
+        if (cmdWord === "m" && opt.id === "milestone") return true
+        if (cmdWord === "rate" && opt.id === "hourly") return true
+        if (cmdWord === "fix" && opt.id === "fixed") return true
+        if (cmdWord === "free" && opt.id === "nobill") return true
+        return false
+      })
+      .map((opt) => {
+        if (
+          paramVal &&
+          (opt.id.startsWith(cmdWord) ||
+            (cmdWord === "m" && opt.id === "milestone") ||
+            (cmdWord === "rate" && opt.id === "hourly") ||
+            (cmdWord === "fix" && opt.id === "fixed"))
+        ) {
+          const live = getLiveBillingDetails(opt.type, paramVal)
+          return {
+            id: opt.id,
+            command: opt.command,
+            type: opt.type,
+            title: opt.title,
+            description: live.description,
+            icon: opt.icon,
+            amount: live.amount,
+            memo: live.memo,
+            isPending: false,
+          }
+        }
+        return {
+          id: opt.id,
+          command: opt.command,
+          type: opt.type,
+          title: opt.title,
+          description: opt.defaultDesc,
+          icon: opt.icon,
+          amount: null,
+          memo: undefined,
+          isPending: false,
+        }
+      })
+  }, [slashQuery, segments, activeSegId, activeSeg])
 
   // Last 5 unique recent entries (always capitalized)
   const recentEntries = useMemo(() => {
@@ -635,7 +791,9 @@ export function TokenCommandInput({
       return finalized
     })
 
-    setIsDropdownOpen(false)
+    setMode("slash")
+    setIsDropdownOpen(true)
+    setDropdownIndex(0)
     setSlashQuery(null)
     setActiveBillingPrompt(billingType as "hourly" | "fixed" | "milestone")
   }
@@ -687,12 +845,14 @@ export function TokenCommandInput({
           return cleaned
         })
         setActiveBillingPrompt(null)
+        setIsDropdownOpen(false)
+        setSlashQuery(null)
         return true
       }
     } else if (pendingSeg.billingType === "milestone") {
       const parsed = parseMilestoneWithAmount(trimmed)
-      const amount = parsed.amount || parseFloat(trimmed.replace(/[^0-9.]/g, "")) || 0
-      if (amount > 0) {
+      const amount = parsed.amount
+      if (amount !== null && amount > 0) {
         setSegments((prev) => {
           const nextSegs: TokenSegment[] = []
           for (let i = 0; i < prev.length; i++) {
@@ -712,7 +872,7 @@ export function TokenCommandInput({
             }
           }
 
-          if (parsed.memo && parsed.memo !== trimmed) {
+          if (parsed.memo) {
             nextSegs.unshift({
               id: `seg-ms-memo-${Date.now()}`,
               type: "text",
@@ -730,6 +890,8 @@ export function TokenCommandInput({
           return cleaned
         })
         setActiveBillingPrompt(null)
+        setIsDropdownOpen(false)
+        setSlashQuery(null)
         return true
       }
     }
@@ -762,6 +924,44 @@ export function TokenCommandInput({
   const selectSlashOption = (opt: (typeof parsedSlashOptions)[0]) => {
     if (opt.type === "none") {
       applySlashCommand("none", 0)
+      setIsDropdownOpen(false)
+      setSlashQuery(null)
+      setActiveBillingPrompt(null)
+      return
+    }
+
+    // If typing value after pending-billing badge:
+    const segIdx = segments.findIndex((s) => s.id === activeSegId)
+    const prevSeg = segIdx > 0 ? segments[segIdx - 1] : undefined
+    if (prevSeg && prevSeg.type === "pending-billing") {
+      const committed = commitPendingBillingValue(prevSeg, activeSegId)
+      if (committed) {
+        setIsDropdownOpen(false)
+        setSlashQuery(null)
+        setActiveBillingPrompt(null)
+      }
+      return
+    }
+
+    // If option has parsed amount from query (e.g. /hourly 85 or /m M1 2300)
+    if (opt.amount && opt.amount > 0) {
+      applySlashCommand(opt.type, opt.amount)
+      if (opt.memo) {
+        setSegments((prev) => {
+          const next = prev.map((s) => {
+            if (s.id === activeSegId && s.type === "text") {
+              const slashIdx = s.text.lastIndexOf("/")
+              const before = slashIdx !== -1 ? s.text.slice(0, slashIdx).trimEnd() : ""
+              return { ...s, text: before }
+            }
+            return s
+          })
+          if (opt.memo) {
+            next.unshift({ id: `seg-ms-${Date.now()}`, type: "text", text: opt.memo })
+          }
+          return cleanupSegments(next)
+        })
+      }
       setIsDropdownOpen(false)
       setSlashQuery(null)
       setActiveBillingPrompt(null)
@@ -823,13 +1023,9 @@ export function TokenCommandInput({
     // 1. If currently in value input immediately following pending-billing badge:
     const prevSeg = segIdx > 0 ? segments[segIdx - 1] : undefined
     if (prevSeg && prevSeg.type === "pending-billing") {
-      if (val.endsWith(" ")) {
-        const trimmed = val.trim()
-        if (trimmed) {
-          const committed = commitPendingBillingValue(prevSeg, segId, trimmed)
-          if (committed) return
-        }
-      }
+      setMode("slash")
+      setIsDropdownOpen(true)
+      setDropdownIndex(0)
     }
 
     // 2. If user typed a command followed by space (e.g. "/hourly ", "/fixed ", "/milestone ", "/nobill ")
@@ -1223,23 +1419,7 @@ export function TokenCommandInput({
 
     // Space key handling
     if (e.key === " ") {
-      const currIdx = segments.findIndex((s) => s.id === segId)
-      const prevSeg = currIdx > 0 ? segments[currIdx - 1] : undefined
-
-      // A. If currently typing value for pending-billing badge, Space commits the value!
-      if (prevSeg && prevSeg.type === "pending-billing") {
-        const currSeg = segments[currIdx]
-        const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
-        if (textVal.trim()) {
-          const committed = commitPendingBillingValue(prevSeg, segId, textVal)
-          if (committed) {
-            e.preventDefault()
-            return
-          }
-        }
-      }
-
-      // B. If current text ends with a billing slash command, Space accepts it!
+      // If current text ends with a billing slash command, Space accepts it!
       const currSeg = segments.find((s) => s.id === segId)
       const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
       const cmdMatch = textVal.match(/(?:^|\s)\/(hourly|rate|fixed|fix|milestone|m|nobill|free)$/i)
@@ -1970,7 +2150,7 @@ export function TokenCommandInput({
           {/* Billing Override Badge with hover tooltip showing project default vs override */}
           {billingOverrideInfo && (
             <AppTooltip
-              content={`Настройка проекта: ${billingOverrideInfo.projectDefaultText}. Будет применен оверрайд: ${billingOverrideInfo.overrideText}`}
+              content={`Project default: ${billingOverrideInfo.projectDefaultText}. Applied override: ${billingOverrideInfo.overrideText}`}
               side="top"
             >
               <button
@@ -2053,7 +2233,7 @@ export function TokenCommandInput({
       {activeProjectOrMatch && openMilestones.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
           <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060]">
-            Открытые этапы:
+            Open milestones:
           </span>
           {openMilestones.map((ms) => (
             <button
@@ -2062,9 +2242,9 @@ export function TokenCommandInput({
               onClick={() => selectOpenMilestone(ms)}
               className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-orange-600/25 text-white/90 hover:text-white text-xs font-medium backdrop-blur-xl border border-white/5 hover:border-orange-500/30 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
             >
-              <Flag className="h-2.5 w-2.5 text-orange-400" />
+              <Flag className="h-2.5 w-2.5 text-white" />
               <span>{ms.name}</span>
-              <span className="text-orange-300 font-mono font-semibold">${ms.amount}</span>
+              <span className="text-white/90 font-mono font-semibold">${ms.amount}</span>
             </button>
           ))}
         </div>
@@ -2228,19 +2408,24 @@ export function TokenCommandInput({
                           : "text-[#806060] hover:bg-white/10 hover:text-white"
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-[#806060] shrink-0">
-                          <Icon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white shrink-0">
+                          <Icon className="h-4 w-4 text-white" />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-1.5 text-sm">
-                            <span className="text-[#6E5353]">{opt.command}</span>
-                            <span className="font-semibold text-white">{opt.title}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-white text-sm">{opt.title}</span>
                           </div>
-                          <div className="text-xs text-[#6E5353]">
+                          <div className="text-xs text-white/70 break-words whitespace-normal text-wrap leading-tight mt-0.5">
                             {opt.description}
                           </div>
                         </div>
+                      </div>
+
+                      <div className="shrink-0 ml-2">
+                        <span className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs text-white/60">
+                          {opt.isPending ? "Enter ↵" : opt.command}
+                        </span>
                       </div>
                     </div>
                   )
@@ -2268,23 +2453,23 @@ export function TokenCommandInput({
                   </span>
                 </div>
                 <h3 className="text-base font-bold text-white mt-1">
-                  Оверрайд биллинга проекта
+                  Project Billing Override
                 </h3>
                 <p className="text-xs text-[#806060] mt-0.5">
-                  Новая ставка:{" "}
+                  New rate:{" "}
                   <span className="text-amber-300 font-mono font-semibold">
                     {pendingBillingChange.newBilling.type === "hourly"
                       ? `$${pendingBillingChange.newBilling.amount}/h`
                       : pendingBillingChange.newBilling.type === "none"
-                      ? "Без оплаты"
+                      ? "Non-billable"
                       : `$${pendingBillingChange.newBilling.amount}`}
                   </span>
                   {billingOverrideInfo && (
                     <span className="text-[#6E5353] ml-1">
-                      (настройка проекта: {billingOverrideInfo.projectDefaultText})
+                      (project default: {billingOverrideInfo.projectDefaultText})
                     </span>
                   )}
-                  . Для каких сессий применить?
+                  . Which sessions should this apply to?
                 </p>
               </div>
               <button
@@ -2304,10 +2489,10 @@ export function TokenCommandInput({
                 className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
               >
                 <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
-                  Для текущей сессии
+                  Current session only
                 </div>
                 <div className="text-xs text-[#806060] mt-0.5">
-                  Применить только к этой сессии. Настройки проекта не изменятся.
+                  Apply only to this session. Project defaults remain unchanged.
                 </div>
               </button>
 
@@ -2317,10 +2502,10 @@ export function TokenCommandInput({
                 className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
               >
                 <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
-                  Для текущей и будущих
+                  Current & future sessions
                 </div>
                 <div className="text-xs text-[#806060] mt-0.5">
-                  Обновить ставку проекта для этой и всех последующих сессий.
+                  Update project rate for this and all upcoming sessions.
                 </div>
               </button>
 
@@ -2330,10 +2515,10 @@ export function TokenCommandInput({
                 className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
               >
                 <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
-                  Для всех сессий проекта
+                  All project sessions
                 </div>
                 <div className="text-xs text-[#806060] mt-0.5">
-                  Обновить настройки проекта и пересчитать все прошлые записи в журнале.
+                  Update project rate and recalculate all past log entries.
                 </div>
               </button>
             </div>
@@ -2344,7 +2529,7 @@ export function TokenCommandInput({
                 onClick={() => setPendingBillingChange(null)}
                 className="px-4 py-2 rounded-xl text-xs font-medium text-[#806060] hover:text-white hover:bg-white/5 transition-colors"
               >
-                Отмена
+                Cancel
               </button>
             </div>
           </div>
