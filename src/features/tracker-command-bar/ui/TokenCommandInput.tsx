@@ -14,7 +14,7 @@ import { useTrackerStore } from "@/entities/tracker"
 import type { Project, BillingType } from "@/entities/project"
 import type { TimeSession } from "@/entities/session"
 import { AppTooltip, ProjectBadge, BillingBadge } from "@/shared/ui"
-import { capitalizeMemo, formatAsMilestone, getProjectMilestones, parseMilestoneWithAmount } from "@/shared/lib"
+import { capitalizeMemo, getProjectMilestones, parseMilestoneWithAmount } from "@/shared/lib"
 
 interface TokenCommandInputProps {
   onStart?: () => void
@@ -27,6 +27,8 @@ interface TokenCommandInputProps {
   onSaveActive?: (params: {
     memo: string
     projectId: string
+    milestoneId?: string | null
+    milestoneName?: string | null
     rate?: number | null
     billingType?: BillingType | "none"
     fixedBudget?: number
@@ -210,6 +212,7 @@ export function TokenCommandInput({
   const [atQuery, setAtQuery] = useState<string | null>(null)
   const [slashQuery, setSlashQuery] = useState<string | null>(null)
   const [activeBillingPrompt, setActiveBillingPrompt] = useState<"hourly" | "fixed" | "milestone" | null>(null)
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null)
 
   // Dynamic input refs for each text segment
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
@@ -314,6 +317,15 @@ export function TokenCommandInput({
     if (!activeProjectOrMatch) return []
     return (activeProjectOrMatch.milestones || []).filter((m) => m.status === "open")
   }, [activeProjectOrMatch])
+
+  useEffect(() => {
+    if (activeProjectOrMatch?.milestones && activeProjectOrMatch.milestones.length > 0) {
+      const openMs = activeProjectOrMatch.milestones.find((m) => m.status === "open")
+      setSelectedMilestoneId(openMs ? openMs.id : activeProjectOrMatch.milestones[0].id)
+    } else {
+      setSelectedMilestoneId(null)
+    }
+  }, [activeProjectOrMatch?.id])
 
   // Active custom billing token in segments
   const activeBilling = useMemo(() => {
@@ -476,16 +488,6 @@ export function TokenCommandInput({
     }
     return "What are you working on?"
   }, [activeBillingPrompt, isMilestoneActive, milestoneStats.nextNumber])
-
-  const handleContinueMilestone = (memoText: string) => {
-    setSegments((prev) => {
-      const textSeg = prev.find((s) => s.type === "text")
-      if (textSeg) {
-        return prev.map((s) => (s.id === textSeg.id ? { ...s, text: memoText } : s))
-      }
-      return [{ id: `seg-${Date.now()}`, type: "text", text: memoText }, ...prev]
-    })
-  }
 
   // Filtered projects for autocomplete
   const filteredProjects = useMemo(() => {
@@ -973,32 +975,30 @@ export function TokenCommandInput({
 
   // Select open milestone chip from under input
   const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
-    const proj = activeProjectOrMatch || currentProject || projects[0]
+    setSelectedMilestoneId((prev) => (prev === ms.id ? null : ms.id))
     setSegments((prev) => {
-      const existingText = prev
-        .filter((s) => s.type === "text" && s.text.trim())
-        .map((s) => (s as { text: string }).text)
-        .join(" ")
-        .trim()
+      const hasBilling = prev.some((s) => s.type === "billing")
+      if (hasBilling) return prev
 
-      const newSegs: TokenSegment[] = [
-        { id: `seg-ms-${Date.now()}`, type: "text", text: existingText || ms.name },
-      ]
-      if (proj) {
-        newSegs.push({ id: `proj-${Date.now()}`, type: "project", project: proj })
-      }
-      newSegs.push({
+      const cleaned = prev.filter((s) => s.type !== "pending-billing")
+      const projIdx = cleaned.findIndex((s) => s.type === "project")
+      const newSegs = [...cleaned]
+      const billSeg: TokenSegment = {
         id: `bill-${Date.now()}`,
         type: "billing",
         billing: { type: "milestone", amount: ms.amount },
-      })
-      newSegs.push({ id: `seg-tail-${Date.now()}`, type: "text", text: "" })
-
+      }
+      if (projIdx !== -1) {
+        newSegs.splice(projIdx + 1, 0, billSeg)
+      } else {
+        newSegs.push(billSeg)
+      }
       const res = cleanupSegments(newSegs)
       const lastText = [...res].reverse().find((s) => s.type === "text")
-      const focusId = lastText ? lastText.id : `seg-tail-${Date.now()}`
-      setActiveSegId(focusId)
-      setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
+      if (lastText) {
+        setActiveSegId(lastText.id)
+        setTimeout(() => inputRefs.current[lastText.id]?.focus(), 50)
+      }
       return res
     })
     setActiveBillingPrompt(null)
@@ -1643,26 +1643,15 @@ export function TokenCommandInput({
       }
     }
 
-    let finalMemo = capitalizeMemo(assembledMemo || (proj ? proj.name : "Focused session"))
-
-    // Check if user entered e.g. "M 1 Design phase 1 2300"
-    const parsedWithAmount = parseMilestoneWithAmount(assembledMemo)
-    if (parsedWithAmount.isMilestone && parsedWithAmount.amount !== null) {
-      finalMemo = parsedWithAmount.memo
-      if (!bill) {
-        billingType = "milestone"
-        fixedBudget = parsedWithAmount.amount
-      } else if (bill.type === "milestone" || bill.type === "fixed") {
-        fixedBudget = parsedWithAmount.amount
-      }
-    } else if (isMilestoneActive) {
-      finalMemo = formatAsMilestone(assembledMemo, milestoneStats.nextNumber)
-    }
+    const activeMs = (activeProjectOrMatch || proj)?.milestones?.find((m) => m.id === selectedMilestoneId)
+    const finalMemo = capitalizeMemo(assembledMemo || "Focused development session")
 
     if (isEditingActive && onSaveActive) {
       onSaveActive({
         memo: finalMemo,
         projectId: projId,
+        milestoneId: activeMs?.id,
+        milestoneName: activeMs?.name,
         rate,
         billingType,
         fixedBudget,
@@ -1673,6 +1662,8 @@ export function TokenCommandInput({
 
     startTracking({
       projectId: projId,
+      milestoneId: activeMs?.id,
+      milestoneName: activeMs?.name,
       memo: finalMemo,
       rate,
       billingType,
@@ -1838,22 +1829,6 @@ export function TokenCommandInput({
 
   return (
     <div ref={containerRef} className={`relative w-full max-w-xl mx-auto ${className || ""}`}>
-      {/* MILESTONE SUGGESTION CHIP "Continue" */}
-      {isMilestoneActive && milestoneStats.latestMilestone && (
-        <div className="flex items-center gap-2 mb-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060]">
-            Active milestone:
-          </span>
-          <button
-            type="button"
-            onClick={() => handleContinueMilestone(milestoneStats.latestMilestone!)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-600/20 hover:bg-orange-600/35 text-orange-300 text-xs font-semibold backdrop-blur-xl border border-orange-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Play className="h-2.5 w-2.5 fill-current" />
-            <span>Continue: {milestoneStats.latestMilestone}</span>
-          </button>
-        </div>
-      )}
 
       {/* TWO-ROW BORDERLESS INPUT CONTAINER WITH SOFT DIFFUSED SHADOW */}
       <div
@@ -2232,21 +2207,30 @@ export function TokenCommandInput({
       {/* CHIPS WITH OPEN MILESTONES OFFERED UNDER THE INPUT CONTAINER */}
       {activeProjectOrMatch && openMilestones.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060]">
-            Open milestones:
+          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060] flex items-center gap-1">
+            <Flag className="h-3 w-3 text-orange-400" />
+            Milestone:
           </span>
-          {openMilestones.map((ms) => (
-            <button
-              key={ms.id}
-              type="button"
-              onClick={() => selectOpenMilestone(ms)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-orange-600/25 text-white/90 hover:text-white text-xs font-medium backdrop-blur-xl border border-white/5 hover:border-orange-500/30 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
-            >
-              <Flag className="h-2.5 w-2.5 text-white" />
-              <span>{ms.name}</span>
-              <span className="text-white/90 font-mono font-semibold">${ms.amount}</span>
-            </button>
-          ))}
+          {openMilestones.map((ms) => {
+            const isSelected = selectedMilestoneId === ms.id
+            return (
+              <button
+                key={ms.id}
+                type="button"
+                onClick={() => selectOpenMilestone(ms)}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
+                  isSelected
+                    ? "bg-orange-600/35 text-white border border-orange-500/50 shadow-orange-500/20 font-semibold"
+                    : "bg-white/10 hover:bg-orange-600/25 text-white/90 hover:text-white border border-white/5 hover:border-orange-500/30"
+                }`}
+              >
+                <Flag className={`h-2.5 w-2.5 ${isSelected ? "text-orange-300" : "text-white"}`} />
+                <span>{ms.name}</span>
+                <span className="text-white/90 font-mono font-semibold">${ms.amount}</span>
+                {isSelected && <Check className="h-2.5 w-2.5 text-emerald-400 stroke-[3]" />}
+              </button>
+            )
+          })}
         </div>
       )}
 

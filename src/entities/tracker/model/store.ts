@@ -12,6 +12,8 @@ export interface ActiveTimerState {
   accumulatedSeconds: number
   elapsedSeconds: number
   projectId: string | null
+  milestoneId?: string | null
+  milestoneName?: string | null
   memo: string
   rate: number | null
   billingType: BillingType | "none"
@@ -28,6 +30,8 @@ interface TrackerStore {
   // Timer actions
   startTracking: (params?: {
     projectId?: string
+    milestoneId?: string | null
+    milestoneName?: string | null
     memo?: string
     rate?: number | null
     billingType?: BillingType | "none"
@@ -40,10 +44,13 @@ interface TrackerStore {
   tick: () => void
   updateActiveMemo: (memo: string) => void
   updateActiveProject: (projectId: string) => void
+  updateActiveMilestone: (milestoneId: string | null, milestoneName?: string | null) => void
   updateActiveRate: (rate: number | null) => void
   updateActiveSessionInfo: (params: {
     memo: string
     projectId: string
+    milestoneId?: string | null
+    milestoneName?: string | null
     rate?: number | null
     billingType?: BillingType | "none"
     fixedBudget?: number
@@ -96,6 +103,17 @@ export const useTrackerStore = create<TrackerStore>()(
           ? state.projects.find((p) => p.id === params.projectId)
           : state.projects.find((p) => p.id === state.timer.projectId) || state.projects[0]
 
+        // Determine active milestone
+        let mId = params?.milestoneId
+        let mName = params?.milestoneName
+        if (mId === undefined && selectedProj?.milestones && selectedProj.milestones.length > 0) {
+          const activeMs = selectedProj.milestones.find((m) => m.status === "open") || selectedProj.milestones[0]
+          if (activeMs) {
+            mId = activeMs.id
+            mName = activeMs.name
+          }
+        }
+
         const now = Date.now()
         set({
           timer: {
@@ -104,6 +122,8 @@ export const useTrackerStore = create<TrackerStore>()(
             accumulatedSeconds: 0,
             elapsedSeconds: 0,
             projectId: selectedProj?.id || null,
+            milestoneId: mId || null,
+            milestoneName: mName || null,
             memo: capitalizeMemo(params?.memo?.trim() || state.timer.memo || "Focused session"),
             rate: params?.rate !== undefined ? params.rate : null,
             billingType: params?.billingType ?? selectedProj?.billingType ?? "hourly",
@@ -179,7 +199,9 @@ export const useTrackerStore = create<TrackerStore>()(
         const newSession: TimeSession = {
           id: `sess-${Date.now()}`,
           projectId: timer.projectId || "proj-kerd",
-          memo: capitalizeMemo(timer.memo || "Kerd session"),
+          milestoneId: timer.milestoneId || undefined,
+          milestoneName: timer.milestoneName || undefined,
+          memo: capitalizeMemo(timer.memo || "Focused session"),
           startTime: (timer.startTime || Date.now()) - duration * 1000,
           endTime: Date.now(),
           durationSeconds: duration,
@@ -194,6 +216,8 @@ export const useTrackerStore = create<TrackerStore>()(
           timer: {
             ...defaultTimerState,
             projectId: timer.projectId,
+            milestoneId: timer.milestoneId,
+            milestoneName: timer.milestoneName,
             rate: timer.rate,
             currency: timer.currency,
           },
@@ -233,15 +257,32 @@ export const useTrackerStore = create<TrackerStore>()(
       updateActiveProject: (projectId) => {
         const project = get().projects.find((p) => p.id === projectId)
         if (!project) return
+        const activeMs = project.milestones?.find((m) => m.status === "open") || project.milestones?.[0]
         set((state) => ({
           timer: {
             ...state.timer,
             projectId: project.id,
+            milestoneId: activeMs?.id || null,
+            milestoneName: activeMs?.name || null,
             rate: project.hourlyRate,
             billingType: project.billingType,
             currency: project.currency,
           },
         }))
+      },
+
+      updateActiveMilestone: (milestoneId, milestoneName) => {
+        set((state) => {
+          const project = state.projects.find((p) => p.id === state.timer.projectId)
+          const matchedMs = project?.milestones?.find((m) => m.id === milestoneId)
+          return {
+            timer: {
+              ...state.timer,
+              milestoneId: milestoneId || null,
+              milestoneName: milestoneName || matchedMs?.name || null,
+            },
+          }
+        })
       },
 
       updateActiveRate: (rate) => {
@@ -257,6 +298,8 @@ export const useTrackerStore = create<TrackerStore>()(
             ...state.timer,
             memo: capitalizeMemo(params.memo),
             projectId: params.projectId,
+            milestoneId: params.milestoneId !== undefined ? params.milestoneId : state.timer.milestoneId,
+            milestoneName: params.milestoneName !== undefined ? params.milestoneName : state.timer.milestoneName,
             rate: params.rate !== undefined ? params.rate : state.timer.rate,
             billingType: params.billingType ?? project?.billingType ?? state.timer.billingType,
             fixedBudget: params.fixedBudget !== undefined ? params.fixedBudget : project?.fixedBudget,

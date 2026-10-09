@@ -9,6 +9,7 @@ import {
   X,
   Check,
   Calendar as CalendarIcon,
+  Flag,
 } from "lucide-react"
 import { useTrackerStore } from "@/entities/tracker"
 import type { TimeSession } from "@/entities/session"
@@ -435,6 +436,12 @@ export function JournalView() {
                           <div className="mt-1 font-semibold text-white text-[11px] leading-tight line-clamp-2">
                             {capitalizeMemo(session.memo)}
                           </div>
+                          {session.milestoneName && (
+                            <div className="mt-0.5 text-[9px] text-orange-300 font-mono truncate flex items-center gap-1">
+                              <Flag className="h-2.5 w-2.5 shrink-0 text-orange-400" />
+                              <span className="truncate">{session.milestoneName}</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Bottom value & duration */}

@@ -7,6 +7,8 @@ export interface TimeSession {
   durationSeconds: number
   rateSnapshot: number
   earnedAmount: number
+  milestoneId?: string
+  milestoneName?: string
   billingType: 'hourly' | 'fixed' | 'milestone'
   currency: string
 }

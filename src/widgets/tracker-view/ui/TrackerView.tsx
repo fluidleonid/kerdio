@@ -5,6 +5,7 @@ import {
   Square,
   RotateCcw,
   Sparkles,
+  Flag,
 } from "lucide-react"
 import { useTrackerStore } from "@/entities/tracker"
 import { Chronograph } from "@/features/chronograph"
@@ -169,6 +170,14 @@ export function TrackerView() {
                     project={activeProject}
                     showAtPrefix={true}
                   />
+                )}
+
+                {/* Milestone Tag */}
+                {timer.milestoneName && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-200 border border-orange-500/30">
+                    <Flag className="h-3 w-3 text-orange-400" />
+                    <span>{timer.milestoneName}</span>
+                  </span>
                 )}
 
                 {/* Billing Tag */}
