@@ -138,9 +138,9 @@ export function ProjectSettingsDialog({
   const SelectedIcon = selectedOption.icon
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay animate-in fade-in duration-200">
       {/* Modal Dialog Card: Exact same background, blur and shadow tokens as Card */}
-      <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.32)] animate-in zoom-in-95">
+      <div className="w-full max-w-md glass-card p-6 space-y-4 animate-in zoom-in-95">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-white">
             {project ? "Edit Project" : "New Project"}
@@ -190,7 +190,7 @@ export function ProjectSettingsDialog({
           </div>
 
           {/* Billable toggle card */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border-none backdrop-blur-xl">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl glass-subtle">
             <div>
               <span className="text-xs font-semibold text-white/90 block">Billable</span>
               <span className="text-[11px] text-[#806060] block">
@@ -229,7 +229,7 @@ export function ProjectSettingsDialog({
               <label className="text-xs font-semibold text-white/80 block">
                 Billing settings
               </label>
-              <div className="relative flex items-center h-11 w-full rounded-2xl bg-white/5 px-3 border-none focus-within:bg-white/10 transition-all">
+              <div className="relative flex items-center h-11 w-full rounded-2xl glass-subtle px-3 focus-within:bg-white/10 transition-all">
                 {/* Combobox Trigger (Left section of unified input) */}
                 <button
                   type="button"
@@ -273,7 +273,7 @@ export function ProjectSettingsDialog({
 
                 {/* Combobox Options Dropdown matching optical glass aesthetics */}
                 {isBillingMenuOpen && (
-                  <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl bg-black/55 backdrop-blur-3xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-none space-y-1">
+                  <div className="absolute left-0 right-0 top-full mt-2 z-50 glass-popover p-1.5 space-y-1">
                     {BILLING_OPTIONS.filter((opt) => opt.type !== "none").map((opt) => (
                       <div
                         key={opt.type}

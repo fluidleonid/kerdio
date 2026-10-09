@@ -304,7 +304,7 @@ export function JournalView() {
       </div>
 
       {/* 24-HOUR WEEKLY CALENDAR GRID */}
-      <div className="rounded-3xl border-none bg-black/50 backdrop-blur-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.32)]">
+      <div className="glass-card overflow-hidden">
         {/* Sticky Calendar Days Header */}
         <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-white/10 bg-black/70 backdrop-blur-md sticky top-0 z-20">
           {/* Time Gutter Corner */}
@@ -456,8 +456,8 @@ export function JournalView() {
 
       {/* Edit Session Modal */}
       {selectedSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay animate-in fade-in">
+          <div className="w-full max-w-md glass-card p-6 space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">Edit Session</h3>
               <AppTooltip content="Close" shortcut="Esc">
@@ -519,7 +519,7 @@ export function JournalView() {
                 <select
                   value={editProjectId}
                   onChange={(e) => setEditProjectId(e.target.value)}
-                  className="w-full h-11 rounded-2xl bg-black/50 px-4 py-2 text-sm text-white shadow-[0_10px_25px_rgba(0,0,0,0.25)] backdrop-blur-3xl border-none outline-none focus:bg-black/60 transition-all cursor-pointer"
+                  className="w-full h-11 glass-input px-4 py-2 text-sm text-white outline-none focus:bg-black/60 transition-all cursor-pointer"
                 >
                   {projects.map((p) => (
                     <option key={p.id} value={p.id} className="bg-zinc-900 text-white">
@@ -566,8 +566,8 @@ export function JournalView() {
 
       {/* Manual Add Session Modal */}
       {isManualModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay animate-in fade-in">
+          <div className="w-full max-w-md glass-card p-6 space-y-4 animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">Log Work Session</h3>
               <AppTooltip content="Close" shortcut="Esc">
@@ -643,7 +643,7 @@ export function JournalView() {
                 <select
                   value={newProjectId}
                   onChange={(e) => setNewProjectId(e.target.value)}
-                  className="w-full h-11 rounded-2xl bg-black/50 px-4 py-2 text-sm text-white shadow-[0_10px_25px_rgba(0,0,0,0.25)] backdrop-blur-3xl border-none outline-none focus:bg-black/60 transition-all cursor-pointer"
+                  className="w-full h-11 glass-input px-4 py-2 text-sm text-white outline-none focus:bg-black/60 transition-all cursor-pointer"
                 >
                   {projects.map((p) => (
                     <option key={p.id} value={p.id} className="bg-zinc-900 text-white">

@@ -1875,7 +1875,7 @@ export function TokenCommandInput({
             }
           }
         }}
-        className="relative flex flex-col justify-between rounded-3xl bg-black/50 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.32)] backdrop-blur-3xl transition-all border-none outline-none focus-within:bg-black/60 focus-within:shadow-[0_24px_60px_rgba(0,0,0,0.38)] cursor-text"
+        className="relative flex flex-col justify-between glass-card p-4 transition-all outline-none focus-within:bg-black/60 focus-within:shadow-[0_24px_60px_rgba(0,0,0,0.38)] cursor-text"
       >
         {/* ROW 1: INLINE RICH TOKENS FLOW (моя мемка *бейдж* по работе *бейдж*) */}
         <div
@@ -2252,7 +2252,7 @@ export function TokenCommandInput({
 
       {/* DROPDOWN IN THE EXACT SAME ULTRA-MODERN GLASS STYLE */}
       {isDropdownOpen && (
-        <div className="absolute left-0 right-0 top-full mt-2.5 z-50 overflow-hidden rounded-3xl bg-black/55 p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-3xl border-none outline-none animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute left-0 right-0 top-full mt-2.5 z-50 overflow-hidden glass-popover p-2.5 outline-none animate-in fade-in slide-in-from-top-2 duration-200">
           {/* MODE 1: RECENT ENTRIES (NO ICON, NO COUNTER, ONLY MEMO & @PROJECT) */}
           {mode === "recents" && (
             <div className="space-y-1">
@@ -2438,8 +2438,8 @@ export function TokenCommandInput({
 
       {/* SCOPE CONFIRMATION MODAL FOR BILLING CHANGE */}
       {pendingBillingChange && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center glass-overlay p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md glass-card p-6 space-y-5 animate-in zoom-in-95">
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>

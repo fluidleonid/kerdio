@@ -3,37 +3,6 @@
 
 @layer base {
   :root {
-    --background: 20 50% 8%;
-    --foreground: 30 15% 98%;
-    --card: 20 40% 10%;
-    --card-foreground: 30 15% 98%;
-    --popover: 20 40% 9%;
-    --popover-foreground: 30 15% 98%;
-    --primary: 24 95% 53%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 20 30% 15%;
-    --secondary-foreground: 30 15% 98%;
-    --muted: 20 30% 14%;
-    --muted-foreground: 0 14% 38%;
-    --secondary-text: 0 14% 44%; /* #806060 */
-    --tertiary-text: 0 14% 38%;  /* #6E5353 */
-    --subtle-text: 0 14% 38%;    /* #6E5353 */
-    --accent: 24 60% 22%;
-    --accent-foreground: 30 15% 98%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 24 35% 18%;
-    --input: 24 35% 18%;
-    --ring: 24 95% 53%;
-    --radius: 0.75rem;
-
-    /* Terracotta & Warm Ember Accents */
-    --terracotta-core: #E25822;
-    --terracotta-dark: #7C2D12;
-    --amber-glow: #F59E0B;
-  }
-
-  .dark {
     --background: 16 60% 6%;
     --foreground: 30 15% 98%;
     --card: 16 50% 8%;
@@ -56,6 +25,12 @@
     --border: 20 35% 16%;
     --input: 20 35% 17%;
     --ring: 24 95% 53%;
+    --radius: 1.5rem;
+
+    /* Terracotta & Warm Ember Accents */
+    --terracotta-core: #E25822;
+    --terracotta-dark: #7C2D12;
+    --amber-glow: #F59E0B;
   }
 
   * {
@@ -93,6 +68,56 @@
   }
   .text-subtle-solid {
     color: #6E5353;
+  }
+}
+
+@layer components {
+  /* =========================================================================
+     UNIFIED OPTICAL GLASS & BACKDROP SYSTEM (SINGLE THEME)
+     ========================================================================= */
+
+  /* Overlay backdrop for modals and dialogs */
+  .glass-overlay {
+    background-color: rgba(0, 0, 0, 0.40);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Primary Card & Dialog surface: borderless, deep 48px blur, 50px ambient shadow */
+  .glass-card {
+    background-color: rgba(0, 0, 0, 0.50);
+    backdrop-filter: blur(48px);
+    -webkit-backdrop-filter: blur(48px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
+    border: none;
+    border-radius: 1.5rem;
+  }
+
+  /* Popover, Autocomplete and Dropdown menu surface */
+  .glass-popover {
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(48px);
+    -webkit-backdrop-filter: blur(48px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    border: none;
+    border-radius: 1.5rem;
+  }
+
+  /* Input fields and composite selectors */
+  .glass-input {
+    background-color: rgba(0, 0, 0, 0.40);
+    backdrop-filter: blur(48px);
+    -webkit-backdrop-filter: blur(48px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    border: none;
+    border-radius: 1rem;
+  }
+
+  /* Secondary translucent container / pill row */
+  .glass-subtle {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 1rem;
   }
 }
 

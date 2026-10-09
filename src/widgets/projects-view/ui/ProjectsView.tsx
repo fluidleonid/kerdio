@@ -127,7 +127,7 @@ export function ProjectsView() {
           return (
             <Card
               key={p.id}
-              className="relative overflow-hidden rounded-3xl border-none bg-black/50 backdrop-blur-3xl hover:bg-black/60 transition-all group shadow-[0_20px_50px_rgba(0,0,0,0.32)]"
+              className="relative overflow-hidden hover:bg-black/60 transition-all group"
             >
               {/* Top Accent Strip */}
               <div
