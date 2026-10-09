@@ -1,68 +1,16 @@
 import { useState, useMemo } from "react"
-import { Plus, Trash2, Edit3, X, Check, Clock, Briefcase, Flag, ShieldOff, ChevronDown } from "lucide-react"
+import { Plus, Trash2, Edit3, Check, Flag } from "lucide-react"
 import { useTrackerStore } from "@/entities/tracker"
 import type { Project, BillingType } from "@/entities/project"
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, Input, AppTooltip } from "@/shared/ui"
+import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, AppTooltip } from "@/shared/ui"
 import { slugify, capitalizeMemo } from "@/shared/lib"
-
-const BILLING_OPTIONS = [
-  {
-    type: "hourly" as BillingType,
-    title: "Hourly Rate",
-    description: "Bill per hour with real-time dollar accrual",
-    suffix: "/h",
-    icon: Clock,
-  },
-  {
-    type: "fixed" as BillingType,
-    title: "Fixed Fee",
-    description: "Flat rate for entire task/project, tracks hourly yield",
-    suffix: "$",
-    icon: Briefcase,
-  },
-  {
-    type: "milestone" as BillingType,
-    title: "Milestone",
-    description: "Fixed payout for this specific delivery",
-    suffix: "$",
-    icon: Flag,
-  },
-  {
-    type: "none" as BillingType,
-    title: "Non-billable (Free)",
-    description: "Track focus time only without client billing or money",
-    suffix: "",
-    icon: ShieldOff,
-  },
-]
+import { ProjectSettingsDialog } from "./ProjectSettingsDialog"
 
 export function ProjectsView() {
   const { projects, sessions, addProject, updateProject, deleteProject, toggleMilestoneStatus } = useTrackerStore()
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingProj, setEditingProj] = useState<Project | null>(null)
-
-  // Form states
-  const [name, setName] = useState("")
-  const [color, setColor] = useState("#E25822")
-  const [isBillable, setIsBillable] = useState(true)
-  const [billingType, setBillingType] = useState<BillingType>("hourly")
-  const [hourlyRate, setHourlyRate] = useState("85")
-  const [fixedBudget, setFixedBudget] = useState("2500")
-  const [currency, setCurrency] = useState("$")
-  const [isBillingMenuOpen, setIsBillingMenuOpen] = useState(false)
-
-  // Color options
-  const colorOptions = [
-    "#E25822", // Terracotta
-    "#F97316", // Amber
-    "#10B981", // Emerald
-    "#06B6D4", // Cyan
-    "#6366F1", // Indigo
-    "#EC4899", // Pink
-    "#8B5CF6", // Purple
-    "#EAB308", // Yellow
-  ]
 
   // Calculated metrics per project (sum of unique milestones for milestone projects)
   const projectStats = useMemo(() => {
@@ -111,59 +59,39 @@ export function ProjectsView() {
     return stats
   }, [projects, sessions])
 
-  const openEdit = (p: Project) => {
-    setEditingProj(p)
-    setName(p.name)
-    setColor(p.color)
-    const billable = p.billingType !== "none"
-    setIsBillable(billable)
-    setBillingType(billable ? p.billingType : "hourly")
-    setHourlyRate(String(p.hourlyRate || 85))
-    setFixedBudget(String(p.fixedBudget || 1000))
-    setCurrency(p.currency)
-    setIsBillingMenuOpen(false)
+  const openNew = () => {
+    setEditingProj(null)
     setIsAddOpen(true)
   }
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault()
-    const effectiveBillingType: BillingType = isBillable ? billingType : "none"
-    const rate = isBillable ? (parseFloat(hourlyRate) || 85) : 0
-    const budget = isBillable
-      ? (parseFloat(fixedBudget) || (billingType === "milestone" ? 500 : 2500))
-      : 0
-    const autoSlug = slugify(name)
+  const openEdit = (p: Project) => {
+    setEditingProj(p)
+    setIsAddOpen(true)
+  }
 
+  const handleSaveProject = (data: {
+    name: string
+    color: string
+    billingType: BillingType
+    hourlyRate: number
+    fixedBudget: number
+    currency: string
+  }) => {
+    const autoSlug = slugify(data.name)
     if (editingProj) {
       updateProject(editingProj.id, {
-        name,
+        ...data,
         slug: autoSlug,
-        color,
-        billingType: effectiveBillingType,
-        hourlyRate: rate,
-        fixedBudget: budget,
-        currency,
       })
     } else {
       addProject({
-        name,
+        ...data,
         slug: autoSlug,
-        color,
-        billingType: effectiveBillingType,
-        hourlyRate: rate,
-        fixedBudget: budget,
-        currency,
       })
     }
-
     setIsAddOpen(false)
     setEditingProj(null)
-    setName("")
   }
-
-  const selectedBillingOption =
-    BILLING_OPTIONS.find((b) => b.type === billingType) || BILLING_OPTIONS[0]
-  const SelectedBillingIcon = selectedBillingOption.icon
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8 space-y-8 select-none">
@@ -177,18 +105,8 @@ export function ProjectsView() {
         </div>
 
         <Button
-          onClick={() => {
-            setEditingProj(null)
-            setName("")
-            setColor("#E25822")
-            setIsBillable(true)
-            setBillingType("hourly")
-            setHourlyRate("85")
-            setFixedBudget("2500")
-            setIsBillingMenuOpen(false)
-            setIsAddOpen(true)
-          }}
-          className="gap-1.5 rounded-2xl bg-orange-600 text-white hover:bg-orange-500 shadow-none"
+          onClick={openNew}
+          className="gap-1.5 rounded-2xl bg-orange-600 text-white hover:bg-orange-500 shadow-none cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>New Project</span>
@@ -361,191 +279,16 @@ export function ProjectsView() {
         })}
       </div>
 
-      {/* Add / Edit Project Modal (Card-style glass backdrop & shadow) */}
-      {isAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-black/50 backdrop-blur-3xl border-none p-6 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.35)] animate-in zoom-in-95">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">
-                {editingProj ? "Edit Project" : "New Project"}
-              </h3>
-              <AppTooltip content="Close" shortcut="Esc">
-                <button
-                  type="button"
-                  onClick={() => setIsAddOpen(false)}
-                  className="p-1 rounded-xl text-[#806060] hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </AppTooltip>
-            </div>
-
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-white/80 block mb-1">
-                  Project Name
-                </label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Kerdio Core or Client Brand"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-white/80 block mb-2">
-                  Accent Color
-                </label>
-                <div className="flex items-center gap-2">
-                  {colorOptions.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setColor(c)}
-                      className={`h-7 w-7 rounded-full transition-transform ${
-                        color === c ? "scale-110 ring-2 ring-white" : "hover:scale-105"
-                      }`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Billable toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-black/40 border border-white/5 backdrop-blur-xl">
-                <div>
-                  <span className="text-xs font-semibold text-white/90 block">Billable</span>
-                  <span className="text-[11px] text-[#806060] block">
-                    {isBillable
-                      ? "Track revenue & hourly yield with client rates"
-                      : "Free focus time tracking without client rates"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isBillable}
-                  onClick={() => {
-                    const next = !isBillable
-                    setIsBillable(next)
-                    if (next && billingType === "none") {
-                      setBillingType("hourly")
-                    }
-                    setIsBillingMenuOpen(false)
-                  }}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-                    isBillable ? "bg-orange-600" : "bg-white/10"
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
-                      isBillable ? "translate-x-5" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Billing settings unified composite input (only shown when Billable is ON) */}
-              {isBillable && (
-                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <label className="text-xs font-semibold text-white/80 block">
-                    Billing settings
-                  </label>
-                  <div className="relative flex items-center h-11 w-full rounded-2xl bg-black/50 px-3 shadow-[0_10px_25px_rgba(0,0,0,0.25)] backdrop-blur-3xl border-none focus-within:bg-black/60 transition-all">
-                    {/* Combobox Trigger (Left section of unified input) */}
-                    <button
-                      type="button"
-                      onClick={() => setIsBillingMenuOpen(!isBillingMenuOpen)}
-                      className="flex items-center gap-2 py-1 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
-                    >
-                      <SelectedBillingIcon className="h-4 w-4 text-orange-400 shrink-0" />
-                      <span className="text-sm font-semibold text-white select-none whitespace-nowrap">
-                        {selectedBillingOption.title}
-                      </span>
-                      <ChevronDown
-                        className={`h-3.5 w-3.5 text-[#806060] transition-transform ${
-                          isBillingMenuOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    <div className="h-5 w-px bg-white/10 mx-2 shrink-0" />
-
-                    {/* Adaptive Amount Input (Right section of unified input) */}
-                    <div className="flex items-center flex-1 min-w-0">
-                      <span className="text-sm font-mono font-bold text-white/50 mr-1 select-none">$</span>
-                      <input
-                        type="number"
-                        min="1"
-                        value={billingType === "hourly" ? hourlyRate : fixedBudget}
-                        onChange={(e) => {
-                          if (billingType === "hourly") {
-                            setHourlyRate(e.target.value)
-                          } else {
-                            setFixedBudget(e.target.value)
-                          }
-                        }}
-                        placeholder="0"
-                        className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-[#6E5353] focus:outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                      <span className="text-xs font-mono font-semibold text-[#806060] ml-1 select-none shrink-0">
-                        {billingType === "hourly" ? "/h" : "$"}
-                      </span>
-                    </div>
-
-                    {/* Combobox Options Dropdown */}
-                    {isBillingMenuOpen && (
-                      <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl bg-black/95 backdrop-blur-3xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 space-y-1">
-                        {BILLING_OPTIONS.filter((opt) => opt.type !== "none").map((opt) => (
-                          <div
-                            key={opt.type}
-                            onClick={() => {
-                              setBillingType(opt.type)
-                              setIsBillingMenuOpen(false)
-                            }}
-                            className={`flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors ${
-                              billingType === opt.type
-                                ? "bg-white/15 text-white"
-                                : "hover:bg-white/10 text-white/80"
-                            }`}
-                          >
-                            <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                            <div className="min-w-0">
-                              <div className="text-sm font-semibold text-white">{opt.title}</div>
-                              <div className="text-xs text-[#806060]">{opt.description}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsAddOpen(false)}
-                  className="rounded-full text-[#806060] hover:text-white hover:bg-white/10"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="gap-1.5 rounded-full bg-orange-600 hover:bg-orange-500 text-white"
-                >
-                  <Check className="h-4 w-4" />
-                  {editingProj ? "Save Changes" : "Create Project"}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Add / Edit Project Dialog Component */}
+      <ProjectSettingsDialog
+        isOpen={isAddOpen}
+        onClose={() => {
+          setIsAddOpen(false)
+          setEditingProj(null)
+        }}
+        project={editingProj}
+        onSave={handleSaveProject}
+      />
     </div>
   )
 }
