@@ -226,3 +226,54 @@
 .animate-sunbeam-4 {
   animation: sunbeam-drift-4 3.6s ease-in-out infinite;
 }
+
+/* Battery charging particle inward flow (edge of dial towards center) */
+@keyframes particle-charge-inward {
+  0% {
+    transform: translate(var(--tx-start), var(--ty-start)) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.95;
+    transform: translate(calc(var(--tx-start) * 0.18), calc(var(--ty-start) * 0.18)) scale(1.15);
+  }
+  95% {
+    opacity: 0.5;
+    transform: translate(calc(var(--tx-start) * 0.04), calc(var(--ty-start) * 0.04)) scale(0.6);
+  }
+  100% {
+    transform: translate(0, 0) scale(0.1);
+    opacity: 0;
+  }
+}
+
+.animate-particle-inward {
+  animation: particle-charge-inward var(--p-duration, 2.4s) cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+}
+
+/* Central digit periodic charge glow pulse */
+@keyframes digit-charge-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+  }
+  43% {
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.5));
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.95), 0 0 34px rgba(255, 255, 255, 0.6);
+  }
+  57% {
+    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+  }
+}
+
+.animate-digit-charge-glow {
+  animation: digit-charge-glow 3.6s ease-in-out infinite;
+}

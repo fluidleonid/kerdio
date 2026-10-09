@@ -42,6 +42,34 @@ function timestampToClockAngle(timestamp: number): number {
 const GAP_DEGREES = 14 // Gap in degrees between consecutive intervals
 const MIN_ARC_DEGREES = 1.0 // Below 1 degree (~2 min), minimally forms a circular bead
 
+// 24 battery charging particles streaming inwards from perimeter to center
+const CHARGE_PARTICLES = [
+  { angle: 0, delay: 0.1, duration: 2.2, size: 2.5 },
+  { angle: 15, delay: 1.4, duration: 2.6, size: 2 },
+  { angle: 30, delay: 0.7, duration: 2.1, size: 3 },
+  { angle: 45, delay: 2.0, duration: 2.8, size: 2 },
+  { angle: 60, delay: 0.4, duration: 2.3, size: 2.5 },
+  { angle: 75, delay: 1.8, duration: 2.5, size: 3 },
+  { angle: 90, delay: 0.9, duration: 2.2, size: 2 },
+  { angle: 105, delay: 2.3, duration: 2.7, size: 2.5 },
+  { angle: 120, delay: 0.3, duration: 2.4, size: 2 },
+  { angle: 135, delay: 1.6, duration: 2.1, size: 3 },
+  { angle: 150, delay: 0.8, duration: 2.5, size: 2.5 },
+  { angle: 165, delay: 2.1, duration: 2.3, size: 2 },
+  { angle: 180, delay: 0.5, duration: 2.6, size: 3 },
+  { angle: 195, delay: 1.9, duration: 2.2, size: 2 },
+  { angle: 210, delay: 0.2, duration: 2.4, size: 2.5 },
+  { angle: 225, delay: 1.5, duration: 2.7, size: 3 },
+  { angle: 240, delay: 0.6, duration: 2.1, size: 2 },
+  { angle: 255, delay: 2.2, duration: 2.5, size: 2.5 },
+  { angle: 270, delay: 1.1, duration: 2.3, size: 2 },
+  { angle: 285, delay: 1.7, duration: 2.6, size: 3 },
+  { angle: 300, delay: 0.4, duration: 2.2, size: 2.5 },
+  { angle: 315, delay: 1.3, duration: 2.7, size: 2 },
+  { angle: 330, delay: 0.8, duration: 2.4, size: 3 },
+  { angle: 345, delay: 2.0, duration: 2.5, size: 2 },
+]
+
 export function Chronograph({ className, size = 420 }: ChronographProps) {
   const { timer, projects } = useTrackerStore()
   const [displayMode, setDisplayMode] = useState<"time" | "money">("time")
@@ -294,30 +322,49 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
             onClick={() => setDisplayMode((m) => (m === "time" ? "money" : "time"))}
             className="group relative cursor-pointer flex flex-col items-center justify-center p-4 rounded-3xl transition-transform active:scale-95"
           >
-            {/* АНИМАЦИЯ СОЛНЕЧНЫХ ЗАЙЧИКОВ (ТОЛЬКО В ДЕНЕЖНОМ РЕЖИМЕ) */}
-            {displayMode === "money" && moneyDisplay.hasBilling && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 overflow-visible">
-                {/* Солнечный зайчик 1 */}
-                <div className="absolute w-32 h-10 rounded-full bg-gradient-to-r from-amber-400/0 via-amber-300/45 to-yellow-200/0 blur-md animate-sunbeam-1" />
-                {/* Солнечный зайчик 2 */}
-                <div className="absolute w-20 h-12 rounded-full bg-yellow-300/40 blur-lg animate-sunbeam-2" />
-                {/* Солнечный зайчик 3 */}
-                <div className="absolute w-8 h-8 rounded-full bg-amber-200/55 blur-sm animate-sunbeam-3" />
-                {/* Солнечный зайчик 4 */}
-                <div className="absolute w-12 h-6 rounded-full bg-orange-300/40 blur-sm animate-sunbeam-4" />
-              </div>
-            )}
+            {/* БЕЛЫЕ СОЛНЕЧНЫЕ ЗАЙЧИКИ (СВЕТОВАЯ КАУСТИКА С ПРОЗРАЧНОСТЬЮ) */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 overflow-visible">
+              <div className="absolute w-36 h-12 rounded-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 blur-md animate-sunbeam-1" />
+              <div className="absolute w-24 h-14 rounded-full bg-white/15 blur-xl animate-sunbeam-2" />
+              <div className="absolute w-12 h-12 rounded-full bg-white/30 blur-sm animate-sunbeam-3" />
+              <div className="absolute w-16 h-8 rounded-full bg-white/20 blur-md animate-sunbeam-4" />
+            </div>
 
-            {/* РЕЖИМ 1: ТЕКУЩЕЕ ВРЕМЯ */}
+            {/* ИМИТАЦИЯ ЗАРЯДА БАТАРЕИ: ЧАСТИЦЫ СТЕКАЮТ ОТ КРАЕВ КРУГА К ЦЕНТРУ */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 overflow-visible">
+              {CHARGE_PARTICLES.map((p, idx) => {
+                const rad = (p.angle * Math.PI) / 180
+                const tx = Math.cos(rad) * 165
+                const ty = Math.sin(rad) * 165
+                return (
+                  <div
+                    key={idx}
+                    style={
+                      {
+                        "--tx-start": `${tx.toFixed(1)}px`,
+                        "--ty-start": `${ty.toFixed(1)}px`,
+                        "--p-duration": `${p.duration}s`,
+                        animationDelay: `${p.delay}s`,
+                        width: `${p.size}px`,
+                        height: `${p.size}px`,
+                      } as React.CSSProperties
+                    }
+                    className="absolute rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.95)] animate-particle-inward"
+                  />
+                )
+              })}
+            </div>
+
+            {/* РЕЖИМ 1: ТЕКУЩЕЕ ВРЕМЯ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */}
             {displayMode === "time" ? (
-              <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none group-hover:text-amber-100 transition-colors">
+              <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-100 transition-colors">
                 {formattedTime}
               </div>
             ) : (
-              /* РЕЖИМ 2: ДЕНЬГИ */
+              /* РЕЖИМ 2: ДЕНЬГИ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */
               moneyDisplay.hasBilling ? (
                 <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none group-hover:text-amber-200 transition-colors">
+                  <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-200 transition-colors">
                     {moneyDisplay.amountText}
                   </div>
                   {moneyDisplay.effectiveRateText ? (
@@ -334,7 +381,7 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
               ) : (
                 /* ЕСЛИ БИЛЛИНГ НЕ ВВЕДЕН: СООБЩЕНИЕ О ВВОДЕ СТАВКИ */
                 <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[28px] text-amber-300 leading-tight">
+                  <div className="font-['Oxanium',sans-serif] font-bold text-[28px] text-amber-300 leading-tight animate-digit-charge-glow">
                     {moneyDisplay.amountText}
                   </div>
                   <div className="text-xs font-semibold text-[#806060] mt-1">
