@@ -1,16 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * # Color System & Tokens
+ * # 3-Tier Design Token Architecture (Base → Alias → Component)
  *
- * Atmospheric warm amber and burnt orange palette combining analogue
- * chronograph physics with ultra-modern glassmorphism.
- *
- * ### Architectural Tiers
- * - **Atmospheric Glow**: Terracotta (\`#E25822\`) and Amber (\`#F59E0B\`) radial bloom.
- * - **Dark obsidian Canvas**: Ultra-deep substrate (\`#140501\`, \`#0d0d0f\`).
- * - **Project Accents**: 8 distinct chromatic tokens for multi-client organization.
- * - **Semantic Typography**: 100% white primary, warm muted secondary (\`#806060\`), tertiary (\`#6E5353\`).
+ * Strict separation of concerns across 3 semantic tiers:
+ * 1. **Tier 1: Base (Primitives)**: Raw color scales (Terracotta, Amber, Obsidian, Warm Gray, Status). Objective values with no semantic context.
+ * 2. **Tier 2: Alias (Semantic)**: Contextual system roles (Actions, Surfaces, Text, Statuses, Borders) referencing Base tokens.
+ * 3. **Tier 3: Component**: Component-scoped contracts (Button, Card, Dialog, Input, Chronograph, Milestone) referencing Alias tokens.
  */
 const meta: Meta = {
   title: 'Design System/Colors & Gradients',
@@ -20,14 +16,13 @@ const meta: Meta = {
     docs: {
       description: {
         component: `
-### Color Tokens & Semantic Palettes
+### Methodology: 3-Tier Token Architecture (Base → Alias → Component)
 
-Designed to evoke luxury horological instruments and high-contrast digital displays.
-
-#### Design Tokens
-- **Brand Core**: \`#E25822\` (Terracotta Core), \`#F59E0B\` (Amber Glow), \`#7C2D12\` (Terracotta Deep).
-- **Substrate**: \`#140501\` (Dark Obsidian Base).
-- **Typography Scale**: High-contrast white \`#FFFFFF\`, Warm Muted \`#806060\`, Tertiary Placeholder \`#6E5353\`.
+| Tier | Purpose | Token Examples | Referencing Rule |
+| :--- | :--- | :--- | :--- |
+| **Tier 1: Base (Primitives)** | Raw chromatic scales & physical units | \`--base-color-terracotta-500\`, \`--base-color-amber-500\` | Values only (hex, rgb, px) |
+| **Tier 2: Alias (Semantic)** | Contextual roles & system intent | \`--semantic-action-primary\`, \`--semantic-surface-card\` | References **Tier 1 Base** |
+| **Tier 3: Component** | Scoped UI contracts | \`--component-btn-primary-bg\`, \`--component-card-bg\` | References **Tier 2 Alias** |
         `,
       },
     },
@@ -38,103 +33,299 @@ export default meta
 
 export const Palette: StoryObj = {
   render: () => (
-    <div className="max-w-4xl mx-auto p-8 space-y-10 text-white font-sans">
+    <div className="max-w-5xl mx-auto p-8 space-y-12 text-white font-sans">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white mb-2">Kerdio Color Tokens</h1>
-        <p className="text-sm text-[#806060]">
-          Atmospheric warm amber and burnt orange palette combining analogue chronograph physics with ultra-modern glassmorphism.
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-xs font-semibold text-orange-400 uppercase tracking-widest mb-3">
+          Architecture: Base → Alias → Component
+        </div>
+        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Kerdio 3-Tier Color Token System</h1>
+        <p className="text-sm text-[#806060] max-w-2xl leading-relaxed">
+          Low-level primitives like Terracotta and Amber are strictly abstracted through semantic aliases, ensuring that UI components only consume contextual intent rather than raw chromatic values.
         </p>
       </div>
 
-      {/* Brand & Ambient Glow */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-semibold tracking-wider uppercase text-orange-400">Brand & Core Accents</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
-            <div className="h-16 rounded-xl bg-[#E25822] shadow-lg shadow-orange-950/50" />
-            <div>
-              <div className="font-semibold text-sm">Terracotta Core</div>
-              <div className="text-xs font-mono text-[#806060]">#E25822 • rgb(226, 88, 34)</div>
-              <div className="text-[11px] text-white/50 mt-1">Primary buttons, active indicators</div>
-            </div>
+      {/* TIER 1: BASE PRIMITIVES */}
+      <section className="space-y-5">
+        <div className="border-b border-white/10 pb-3 flex items-baseline justify-between">
+          <div>
+            <h2 className="text-base font-bold tracking-wide text-orange-400 uppercase">Tier 1: Base Tokens (Primitives)</h2>
+            <p className="text-xs text-[#806060] mt-0.5">Raw color scales and units. No semantic intent assigned at this level.</p>
           </div>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-[#806060]">Raw Values</span>
+        </div>
 
-          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
-            <div className="h-16 rounded-xl bg-[#F59E0B] shadow-lg shadow-amber-950/50" />
-            <div>
-              <div className="font-semibold text-sm">Amber Glow</div>
-              <div className="text-xs font-mono text-[#806060]">#F59E0B • rgb(245, 158, 11)</div>
-              <div className="text-[11px] text-white/50 mt-1">Clock markers, highlight tags</div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
-            <div className="h-16 rounded-xl bg-[#7C2D12]" />
-            <div>
-              <div className="font-semibold text-sm">Terracotta Deep</div>
-              <div className="text-xs font-mono text-[#806060]">#7C2D12 • rgb(124, 45, 18)</div>
-              <div className="text-[11px] text-white/50 mt-1">Radial dial midtone</div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
-            <div className="h-16 rounded-xl bg-[#140501] border border-white/10" />
-            <div>
-              <div className="font-semibold text-sm">Dark Obsidian</div>
-              <div className="text-xs font-mono text-[#806060]">#140501 • rgb(20, 5, 1)</div>
-              <div className="text-[11px] text-white/50 mt-1">Deep background base</div>
-            </div>
+        {/* Terracotta Scale */}
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-white/70 uppercase tracking-wider">Terracotta Scale (Brand Core)</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {[
+              { token: '--base-color-terracotta-400', hex: '#FB923C', label: '400 / Highlight' },
+              { token: '--base-color-terracotta-500', hex: '#E25822', label: '500 / Core Brand' },
+              { token: '--base-color-terracotta-600', hex: '#CA4B10', label: '600 / Inner Dial' },
+              { token: '--base-color-terracotta-700', hex: '#9A3412', label: '700 / Midtone' },
+              { token: '--base-color-terracotta-800', hex: '#7C2D12', label: '800 / Shadow' },
+              { token: '--base-color-terracotta-950', hex: '#200802', label: '950 / Rim' },
+            ].map((c) => (
+              <div key={c.token} className="rounded-2xl p-3 bg-black/40 border border-white/5 space-y-2">
+                <div className="h-12 rounded-xl" style={{ backgroundColor: c.hex }} />
+                <div>
+                  <div className="font-mono text-[11px] font-semibold text-white truncate">{c.token}</div>
+                  <div className="text-[10px] font-mono text-[#806060]">{c.hex}</div>
+                  <div className="text-[10px] text-white/40 mt-0.5">{c.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Project Accent Palette */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-semibold tracking-wider uppercase text-orange-400">Project Accent Palette</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {[
-            { name: 'Terracotta', hex: '#E25822', role: 'Default project' },
-            { name: 'Amber', hex: '#F97316', role: 'Operations & tasks' },
-            { name: 'Emerald', hex: '#10B981', role: 'Growth & revenue' },
-            { name: 'Cyan', hex: '#06B6D4', role: 'Engineering' },
-            { name: 'Indigo', hex: '#6366F1', role: 'Product & apps' },
-            { name: 'Pink', hex: '#EC4899', role: 'Design & creative' },
-            { name: 'Purple', hex: '#8B5CF6', role: 'Research & AI' },
-            { name: 'Yellow', hex: '#EAB308', role: 'Client delivery' },
-          ].map((item) => (
-            <div key={item.hex} className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
-              <div className="h-12 rounded-xl" style={{ backgroundColor: item.hex }} />
-              <div>
-                <div className="font-semibold text-sm">{item.name}</div>
-                <div className="text-xs font-mono text-[#806060]">{item.hex}</div>
-                <div className="text-[11px] text-white/50 mt-1">{item.role}</div>
+        {/* Amber Scale */}
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-white/70 uppercase tracking-wider">Amber Scale (Accent & Glow)</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { token: '--base-color-amber-300', hex: '#FCD34D', label: '300 / High Glow' },
+              { token: '--base-color-amber-400', hex: '#FBBF24', label: '400 / Marker Accent' },
+              { token: '--base-color-amber-500', hex: '#F59E0B', label: '500 / Amber Glow' },
+              { token: '--base-color-amber-700', hex: '#B45309', label: '700 / Deep Amber' },
+            ].map((c) => (
+              <div key={c.token} className="rounded-2xl p-3 bg-black/40 border border-white/5 space-y-2">
+                <div className="h-12 rounded-xl" style={{ backgroundColor: c.hex }} />
+                <div>
+                  <div className="font-mono text-[11px] font-semibold text-white truncate">{c.token}</div>
+                  <div className="text-[10px] font-mono text-[#806060]">{c.hex}</div>
+                  <div className="text-[10px] text-white/40 mt-0.5">{c.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Obsidian & Warm Gray */}
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-white/70 uppercase tracking-wider">Substrate & Neutral Scale</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { token: '--base-color-obsidian-950', hex: '#140501', label: 'Dark Obsidian Base' },
+              { token: '--base-color-white', hex: '#FFFFFF', label: 'Neutral 100% White' },
+              { token: '--base-color-warm-gray-400', hex: '#806060', label: 'Warm Gray 400 (Secondary)' },
+              { token: '--base-color-warm-gray-500', hex: '#6E5353', label: 'Warm Gray 500 (Tertiary)' },
+            ].map((c) => (
+              <div key={c.token} className="rounded-2xl p-3 bg-black/40 border border-white/5 space-y-2">
+                <div className="h-12 rounded-xl border border-white/10" style={{ backgroundColor: c.hex }} />
+                <div>
+                  <div className="font-mono text-[11px] font-semibold text-white truncate">{c.token}</div>
+                  <div className="text-[10px] font-mono text-[#806060]">{c.hex}</div>
+                  <div className="text-[10px] text-white/40 mt-0.5">{c.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TIER 2: ALIAS TOKENS (SEMANTIC) */}
+      <section className="space-y-5">
+        <div className="border-b border-white/10 pb-3 flex items-baseline justify-between">
+          <div>
+            <h2 className="text-base font-bold tracking-wide text-orange-400 uppercase">Tier 2: Alias Tokens (Semantic)</h2>
+            <p className="text-xs text-[#806060] mt-0.5">Semantic intent mapping Base primitives into system roles.</p>
+          </div>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-400">Maps to Tier 1</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Action Aliases */}
+          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-3">
+            <div className="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Interactive Actions</span>
+              <span className="text-xs text-orange-400 font-mono">--semantic-action-*</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#E25822]" />
+                  <span className="font-mono text-white/90">--semantic-action-primary</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-terracotta-500)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#CA4B10]" />
+                  <span className="font-mono text-white/90">--semantic-action-primary-hover</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-terracotta-600)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#F59E0B]" />
+                  <span className="font-mono text-white/90">--semantic-action-accent</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-amber-500)</span>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Text & Typography Tiers */}
-      <div className="space-y-4">
-        <h2 className="text-sm font-semibold tracking-wider uppercase text-orange-400">Typography Colors</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-2">
-            <div className="text-lg font-bold text-white">White Primary (100%)</div>
-            <div className="text-xs font-mono text-white/60">#FFFFFF • text-white</div>
-            <p className="text-xs text-white/80">Headers, active timer digits, active token values.</p>
+          {/* Surface Aliases */}
+          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-3">
+            <div className="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Glass & Background Surfaces</span>
+              <span className="text-xs text-orange-400 font-mono">--semantic-surface-*</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-black/50 border border-white/20" />
+                  <span className="font-mono text-white/90">--semantic-surface-card</span>
+                </div>
+                <span className="font-mono text-[#806060]">rgba(0, 0, 0, 0.50)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-black/55 border border-white/20" />
+                  <span className="font-mono text-white/90">--semantic-surface-popover</span>
+                </div>
+                <span className="font-mono text-[#806060]">rgba(0, 0, 0, 0.55)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-black/40 border border-white/20" />
+                  <span className="font-mono text-white/90">--semantic-surface-overlay</span>
+                </div>
+                <span className="font-mono text-[#806060]">rgba(0, 0, 0, 0.40)</span>
+              </div>
+            </div>
           </div>
-          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-2">
-            <div className="text-lg font-bold text-[#806060]">Secondary Muted</div>
-            <div className="text-xs font-mono text-[#806060]">#806060 • text-[#806060]</div>
-            <p className="text-xs text-[#806060]">Descriptions, ghost button icons, shortcuts.</p>
+
+          {/* Typography Aliases */}
+          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-3">
+            <div className="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Semantic Typography</span>
+              <span className="text-xs text-orange-400 font-mono">--semantic-text-*</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-white" />
+                  <span className="font-mono text-white/90">--semantic-text-primary</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-white)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#806060]" />
+                  <span className="font-mono text-white/90">--semantic-text-secondary</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-warm-gray-400)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#6E5353]" />
+                  <span className="font-mono text-white/90">--semantic-text-tertiary</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-warm-gray-500)</span>
+              </div>
+            </div>
           </div>
-          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-2">
-            <div className="text-lg font-bold text-[#6E5353]">Tertiary Subtle</div>
-            <div className="text-xs font-mono text-[#6E5353]">#6E5353 • text-[#6E5353]</div>
-            <p className="text-xs text-[#6E5353]">Placeholders, borders, timestamps.</p>
+
+          {/* Status Aliases */}
+          <div className="rounded-2xl p-5 bg-black/40 border border-white/5 space-y-3">
+            <div className="text-sm font-semibold text-white flex items-center justify-between">
+              <span>Status & Milestones</span>
+              <span className="text-xs text-orange-400 font-mono">--semantic-status-*</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#34D399]" />
+                  <span className="font-mono text-white/90">--semantic-status-delivered</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-emerald-400)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#E25822]" />
+                  <span className="font-mono text-white/90">--semantic-status-open</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-terracotta-500)</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#F59E0B]" />
+                  <span className="font-mono text-white/90">--semantic-status-warning</span>
+                </div>
+                <span className="font-mono text-[#806060]">var(--base-color-amber-500)</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* TIER 3: COMPONENT TOKENS */}
+      <section className="space-y-5">
+        <div className="border-b border-white/10 pb-3 flex items-baseline justify-between">
+          <div>
+            <h2 className="text-base font-bold tracking-wide text-orange-400 uppercase">Tier 3: Component Tokens</h2>
+            <p className="text-xs text-[#806060] mt-0.5">Scoped component contracts consumed directly in UI components.</p>
+          </div>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">Maps to Tier 2</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Button Component</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">--component-btn-primary-bg: <span className="text-orange-400">--semantic-action-primary</span></div>
+              <div className="text-white/80">--component-btn-primary-fg: <span className="text-orange-400">--semantic-text-inverse</span></div>
+              <div className="text-white/80">--component-btn-ghost-fg: <span className="text-orange-400">--semantic-text-secondary</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Card & Dialog</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">--component-card-bg: <span className="text-orange-400">--semantic-surface-card</span></div>
+              <div className="text-white/80">--component-dialog-overlay-bg: <span className="text-orange-400">--semantic-surface-overlay</span></div>
+              <div className="text-white/80">--component-popover-bg: <span className="text-orange-400">--semantic-surface-popover</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Input & Tokens</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">--component-input-bg: <span className="text-orange-400">--semantic-surface-input</span></div>
+              <div className="text-white/80">--component-input-placeholder: <span className="text-orange-400">--semantic-text-tertiary</span></div>
+              <div className="text-white/80">--component-input-border-focus: <span className="text-orange-400">--semantic-border-focus</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Chronograph Physics</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">--component-chronograph-dial-bg: <span className="text-orange-400">--semantic-surface-card</span></div>
+              <div className="text-white/80">--component-chronograph-particle-fg: <span className="text-orange-400">--base-color-white</span></div>
+              <div className="text-white/80">--component-chronograph-accent: <span className="text-orange-400">--semantic-action-accent</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Milestone Status Badges</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">--component-milestone-open-fg: <span className="text-orange-400">--semantic-status-open</span></div>
+              <div className="text-white/80">--component-milestone-delivered-fg: <span className="text-emerald-400">--semantic-status-delivered</span></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl p-4 bg-black/40 border border-white/5 space-y-3">
+            <div className="font-semibold text-sm text-white">Tailwind @theme Inline</div>
+            <div className="space-y-1.5 font-mono text-[11px] text-[#806060]">
+              <div className="text-white/80">bg-primary → <span className="text-orange-400">--semantic-action-primary</span></div>
+              <div className="text-white/80">text-secondary-text → <span className="text-orange-400">--semantic-text-secondary</span></div>
+              <div className="text-white/80">bg-card → <span className="text-orange-400">--semantic-surface-card</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   ),
 }

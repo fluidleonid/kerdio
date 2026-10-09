@@ -3,6 +3,177 @@
 
 @layer base {
   :root {
+    /* =========================================================================
+       TIER 1: BASE TOKENS (PRIMITIVES)
+       Low-level, raw values. Named strictly by hue, lightness or scale.
+       Terracotta, Amber, Obsidian, Warm Gray, and system primitives.
+       NEVER assign semantic meaning or component intent at this level.
+       ========================================================================= */
+
+    /* Terracotta Scale (Brand Core Primitives) */
+    --base-color-terracotta-50: #FFF7ED;
+    --base-color-terracotta-100: #FFEDD5;
+    --base-color-terracotta-200: #FED7AA;
+    --base-color-terracotta-300: #FDBA74;
+    --base-color-terracotta-400: #FB923C;
+    --base-color-terracotta-500: #E25822; /* Core brand terracotta */
+    --base-color-terracotta-600: #CA4B10; /* Dial background inner step */
+    --base-color-terracotta-700: #9A3412; /* Dial background midtone */
+    --base-color-terracotta-800: #7C2D12; /* Deep terracotta shadow */
+    --base-color-terracotta-900: #571D05; /* Deep ambient shade */
+    --base-color-terracotta-950: #200802; /* Canvas boundary rim */
+
+    /* Amber Scale (Accent & Glow Primitives) */
+    --base-color-amber-100: #FEF3C7;
+    --base-color-amber-200: #FDE68A;
+    --base-color-amber-300: #FCD34D;
+    --base-color-amber-400: #FBBF24;
+    --base-color-amber-500: #F59E0B; /* Amber glow / accent */
+    --base-color-amber-600: #D97706;
+    --base-color-amber-700: #B45309;
+
+    /* Obsidian / Dark Substrate Primitives */
+    --base-color-obsidian-900: #1A0A05;
+    --base-color-obsidian-950: #140501; /* Deepest dark substrate */
+    --base-color-black: #000000;
+
+    /* Warm Gray / Neutral Primitives */
+    --base-color-white: #FFFFFF;
+    --base-color-warm-gray-100: #F5EBEB;
+    --base-color-warm-gray-200: #D6C7C7;
+    --base-color-warm-gray-300: #A89090;
+    --base-color-warm-gray-400: #806060; /* Warm muted secondary */
+    --base-color-warm-gray-500: #6E5353; /* Warm subtle tertiary */
+    --base-color-warm-gray-600: #4A3535;
+
+    /* Chromatic Status Primitives */
+    --base-color-emerald-400: #34D399;
+    --base-color-emerald-500: #10B981;
+    --base-color-rose-400: #FB7185;
+    --base-color-rose-500: #F43F5E;
+
+    /* Opacity Primitives */
+    --base-opacity-subtle: 0.05;
+    --base-opacity-muted: 0.10;
+    --base-opacity-focus: 0.20;
+    --base-opacity-surface-input: 0.40;
+    --base-opacity-surface-overlay: 0.40;
+    --base-opacity-surface-card: 0.50;
+    --base-opacity-surface-popover: 0.55;
+
+    /* Blur & Radius Primitives */
+    --base-blur-overlay: 8px;
+    --base-blur-glass: 48px;
+    --base-radius: 1.5rem;
+
+
+    /* =========================================================================
+       TIER 2: ALIAS TOKENS (SEMANTIC)
+       Intent & contextual roles. Map Base primitives to system-wide semantics.
+       Surfaces, actions, text, statuses, borders.
+       ========================================================================= */
+
+    /* Action / Interactive Aliases */
+    --semantic-action-primary: var(--base-color-terracotta-500);
+    --semantic-action-primary-hover: var(--base-color-terracotta-600);
+    --semantic-action-primary-active: var(--base-color-terracotta-700);
+    --semantic-action-primary-subtle: rgba(226, 88, 34, 0.15);
+    --semantic-action-primary-border: rgba(226, 88, 34, 0.35);
+
+    --semantic-action-accent: var(--base-color-amber-500);
+    --semantic-action-accent-hover: var(--base-color-amber-400);
+
+    --semantic-action-destructive: var(--base-color-rose-500);
+    --semantic-action-destructive-hover: var(--base-color-rose-400);
+
+    /* Surface Aliases */
+    --semantic-surface-card: rgba(0, 0, 0, var(--base-opacity-surface-card));
+    --semantic-surface-popover: rgba(0, 0, 0, var(--base-opacity-surface-popover));
+    --semantic-surface-overlay: rgba(0, 0, 0, var(--base-opacity-surface-overlay));
+    --semantic-surface-input: rgba(0, 0, 0, var(--base-opacity-surface-input));
+    --semantic-surface-subtle: rgba(255, 255, 255, var(--base-opacity-subtle));
+    --semantic-surface-hover: rgba(255, 255, 255, var(--base-opacity-muted));
+
+    /* Text & Typography Aliases */
+    --semantic-text-primary: var(--base-color-white);
+    --semantic-text-secondary: var(--base-color-warm-gray-400);
+    --semantic-text-tertiary: var(--base-color-warm-gray-500);
+    --semantic-text-accent: var(--base-color-amber-400);
+    --semantic-text-brand: var(--base-color-terracotta-500);
+    --semantic-text-inverse: var(--base-color-white);
+
+    /* Status & Feedback Aliases */
+    --semantic-status-delivered: var(--base-color-emerald-400);
+    --semantic-status-delivered-bg: rgba(16, 185, 129, 0.15);
+    --semantic-status-delivered-border: rgba(16, 185, 129, 0.35);
+
+    --semantic-status-open: var(--base-color-terracotta-500);
+    --semantic-status-open-bg: rgba(226, 88, 34, 0.15);
+    --semantic-status-open-border: rgba(226, 88, 34, 0.35);
+
+    --semantic-status-warning: var(--base-color-amber-500);
+    --semantic-status-danger: var(--base-color-rose-500);
+
+    /* Border & Outline Aliases */
+    --semantic-border-subtle: rgba(255, 255, 255, 0.08);
+    --semantic-border-default: rgba(255, 255, 255, 0.14);
+    --semantic-border-focus: var(--semantic-action-primary);
+    --semantic-border-accent: var(--semantic-action-accent);
+
+
+    /* =========================================================================
+       TIER 3: COMPONENT TOKENS
+       Scoped specifically to individual component contracts.
+       Every component token MUST reference a Tier 2 Alias token.
+       ========================================================================= */
+
+    /* Button Component */
+    --component-btn-primary-bg: var(--semantic-action-primary);
+    --component-btn-primary-bg-hover: var(--semantic-action-primary-hover);
+    --component-btn-primary-fg: var(--semantic-text-inverse);
+    --component-btn-ghost-fg: var(--semantic-text-secondary);
+    --component-btn-ghost-fg-hover: var(--semantic-text-primary);
+    --component-btn-ghost-hover-bg: var(--semantic-surface-hover);
+
+    /* Card Component */
+    --component-card-bg: var(--semantic-surface-card);
+    --component-card-blur: var(--base-blur-glass);
+    --component-card-fg: var(--semantic-text-primary);
+    --component-card-fg-muted: var(--semantic-text-secondary);
+
+    /* Dialog & Modal Component */
+    --component-dialog-overlay-bg: var(--semantic-surface-overlay);
+    --component-dialog-overlay-blur: var(--base-blur-overlay);
+    --component-dialog-bg: var(--semantic-surface-card);
+    --component-dialog-blur: var(--base-blur-glass);
+
+    /* Popover & Autocomplete Component */
+    --component-popover-bg: var(--semantic-surface-popover);
+    --component-popover-blur: var(--base-blur-glass);
+
+    /* Input & Command Bar Component */
+    --component-input-bg: var(--semantic-surface-input);
+    --component-input-fg: var(--semantic-text-primary);
+    --component-input-placeholder: var(--semantic-text-tertiary);
+    --component-input-border-focus: var(--semantic-border-focus);
+
+    /* Chronograph Dial & Particles */
+    --component-chronograph-dial-bg: var(--semantic-surface-card);
+    --component-chronograph-digit-fg: var(--semantic-text-primary);
+    --component-chronograph-particle-fg: var(--base-color-white);
+    --component-chronograph-accent: var(--semantic-action-accent);
+    --component-chronograph-glow: var(--semantic-action-accent);
+
+    /* Milestone Badge Component */
+    --component-milestone-open-bg: var(--semantic-status-open-bg);
+    --component-milestone-open-border: var(--semantic-status-open-border);
+    --component-milestone-open-fg: var(--semantic-status-open);
+    --component-milestone-delivered-bg: var(--semantic-status-delivered-bg);
+    --component-milestone-delivered-border: var(--semantic-status-delivered-border);
+    --component-milestone-delivered-fg: var(--semantic-status-delivered);
+
+
+    /* Legacy / Shorthand Compatibility Bindings */
     --background: 16 60% 6%;
     --foreground: 30 15% 98%;
     --card: 16 50% 8%;
@@ -15,9 +186,9 @@
     --secondary-foreground: 30 15% 98%;
     --muted: 16 35% 13%;
     --muted-foreground: 0 14% 38%;
-    --secondary-text: 0 14% 44%; /* #806060 */
-    --tertiary-text: 0 14% 38%;  /* #6E5353 */
-    --subtle-text: 0 14% 38%;    /* #6E5353 */
+    --secondary-text: var(--semantic-text-secondary);
+    --tertiary-text: var(--semantic-text-tertiary);
+    --subtle-text: var(--semantic-text-tertiary);
     --accent: 20 45% 18%;
     --accent-foreground: 30 15% 98%;
     --destructive: 0 62.8% 45%;
@@ -25,23 +196,29 @@
     --border: 20 35% 16%;
     --input: 20 35% 17%;
     --ring: 24 95% 53%;
-    --radius: 1.5rem;
+    --radius: var(--base-radius);
 
-    /* Terracotta & Warm Ember Accents */
-    --terracotta-core: #E25822;
-    --terracotta-dark: #7C2D12;
-    --amber-glow: #F59E0B;
+    --terracotta-core: var(--base-color-terracotta-500);
+    --terracotta-dark: var(--base-color-terracotta-800);
+    --amber-glow: var(--base-color-amber-500);
   }
 
   * {
     border-color: hsl(var(--border));
   }
 
-  /* IMMERSIVE WARM AMBER / BURNT ORANGE GRADIENT BACKGROUND MATCHING REFERENCE */
+  /* IMMERSIVE WARM AMBER / BURNT ORANGE GRADIENT BACKGROUND REFERENCING BASE TOKENS */
   body {
-    background: radial-gradient(circle at 50% 32%, #ca4b10 0%, #9a3412 28%, #571d05 58%, #200802 85%, #140501 100%);
+    background: radial-gradient(
+      circle at 50% 32%,
+      var(--base-color-terracotta-600) 0%,
+      var(--base-color-terracotta-700) 28%,
+      var(--base-color-terracotta-900) 58%,
+      var(--base-color-terracotta-950) 85%,
+      var(--base-color-obsidian-950) 100%
+    );
     background-attachment: fixed;
-    color: hsl(var(--foreground));
+    color: var(--semantic-text-primary);
     font-family: 'Oxanium', sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
@@ -59,55 +236,55 @@
     font-style: normal;
   }
 
-  /* Solid palette */
+  /* Solid palette utilities */
   .text-secondary-solid {
-    color: #806060;
+    color: var(--semantic-text-secondary);
   }
   .text-tertiary-solid {
-    color: #6E5353;
+    color: var(--semantic-text-tertiary);
   }
   .text-subtle-solid {
-    color: #6E5353;
+    color: var(--semantic-text-tertiary);
   }
 }
 
 @layer components {
   /* =========================================================================
-     UNIFIED OPTICAL GLASS & BACKDROP SYSTEM (SINGLE THEME)
+     UNIFIED OPTICAL GLASS & BACKDROP SYSTEM (TIER 3 COMPONENT IMPLEMENTATIONS)
      ========================================================================= */
 
   /* Overlay backdrop for modals and dialogs */
   .glass-overlay {
-    background-color: rgba(0, 0, 0, 0.40);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: var(--component-dialog-overlay-bg);
+    backdrop-filter: blur(var(--component-dialog-overlay-blur));
+    -webkit-backdrop-filter: blur(var(--component-dialog-overlay-blur));
   }
 
   /* Primary Card & Dialog surface: borderless, deep 48px blur, 50px ambient shadow */
   .glass-card {
-    background-color: rgba(0, 0, 0, 0.50);
-    backdrop-filter: blur(48px);
-    -webkit-backdrop-filter: blur(48px);
+    background-color: var(--component-card-bg);
+    backdrop-filter: blur(var(--component-card-blur));
+    -webkit-backdrop-filter: blur(var(--component-card-blur));
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32);
     border: none;
-    border-radius: 1.5rem;
+    border-radius: var(--base-radius);
   }
 
   /* Popover, Autocomplete and Dropdown menu surface */
   .glass-popover {
-    background-color: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(48px);
-    -webkit-backdrop-filter: blur(48px);
+    background-color: var(--component-popover-bg);
+    backdrop-filter: blur(var(--component-popover-blur));
+    -webkit-backdrop-filter: blur(var(--component-popover-blur));
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     border: none;
-    border-radius: 1.5rem;
+    border-radius: var(--base-radius);
   }
 
   /* Input fields and composite selectors */
   .glass-input {
-    background-color: rgba(0, 0, 0, 0.40);
-    backdrop-filter: blur(48px);
-    -webkit-backdrop-filter: blur(48px);
+    background-color: var(--component-input-bg);
+    backdrop-filter: blur(var(--base-blur-glass));
+    -webkit-backdrop-filter: blur(var(--base-blur-glass));
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
     border: none;
     border-radius: 1rem;
@@ -115,7 +292,7 @@
 
   /* Secondary translucent container / pill row */
   .glass-subtle {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--semantic-surface-subtle);
     border: none;
     border-radius: 1rem;
   }
@@ -123,31 +300,35 @@
 
 @theme inline {
   --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-foreground: var(--semantic-text-primary);
+  --color-card: var(--semantic-surface-card);
+  --color-card-foreground: var(--semantic-text-primary);
+  --color-popover: var(--semantic-surface-popover);
+  --color-popover-foreground: var(--semantic-text-primary);
+  --color-primary: var(--semantic-action-primary);
+  --color-primary-hover: var(--semantic-action-primary-hover);
+  --color-primary-foreground: var(--semantic-text-inverse);
   --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-foreground: var(--semantic-text-primary);
   --color-muted: hsl(var(--muted));
-  --color-muted-foreground: #6E5353;
-  --color-secondary-text: #806060;
-  --color-tertiary-text: #6E5353;
-  --color-subtle-text: #6E5353;
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-muted-foreground: var(--semantic-text-tertiary);
+  --color-secondary-text: var(--semantic-text-secondary);
+  --color-tertiary-text: var(--semantic-text-tertiary);
+  --color-subtle-text: var(--semantic-text-tertiary);
+  --color-accent: var(--semantic-action-accent);
+  --color-accent-hover: var(--semantic-action-accent-hover);
+  --color-accent-foreground: var(--semantic-text-primary);
+  --color-destructive: var(--semantic-action-destructive);
+  --color-destructive-foreground: var(--semantic-text-inverse);
+  --color-border: var(--semantic-border-subtle);
+  --color-input: var(--semantic-surface-input);
+  --color-ring: var(--semantic-border-focus);
+  --color-status-delivered: var(--semantic-status-delivered);
+  --color-status-open: var(--semantic-status-open);
+  --radius-sm: calc(var(--base-radius) - 4px);
+  --radius-md: calc(var(--base-radius) - 2px);
+  --radius-lg: var(--base-radius);
+  --radius-xl: calc(var(--base-radius) + 4px);
   --font-sans: 'Oxanium', sans-serif;
   --font-oxanium: 'Oxanium', sans-serif;
   --font-mono: 'Oxanium', sans-serif;
