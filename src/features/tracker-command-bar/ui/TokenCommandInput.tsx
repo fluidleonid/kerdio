@@ -44,6 +44,12 @@ export type TokenSegment =
   | { id: string; type: "text"; text: string }
   | { id: string; type: "project"; project: Project }
   | { id: string; type: "billing"; billing: BillingConfig }
+  | {
+      id: string
+      type: "pending-billing"
+      billingType: "hourly" | "fixed" | "milestone"
+      commandText: string
+    }
 
 /**
  * Ensures strict interleaved structure:
@@ -226,8 +232,19 @@ export function TokenCommandInput({
 
   // Assembled memo from all text segments (always capitalized on first word)
   const assembledMemo = useMemo(() => {
+    const pendingSeg = segments.find((s) => s.type === "pending-billing")
+    const pendingIdx = pendingSeg ? segments.findIndex((s) => s.id === pendingSeg.id) : -1
+
     const raw = segments
-      .filter((s) => s.type === "text")
+      .filter((s, idx) => {
+        if (s.type !== "text") return false
+        // Exclude the value segment immediately following pending-billing if it is a pure number or rate
+        if (pendingIdx !== -1 && idx === pendingIdx + 1) {
+          const isPureNum = /^\s*[$]?\d+(?:\.\d+)?(?:\/h)?\s*$/i.test((s as { text: string }).text)
+          if (isPureNum) return false
+        }
+        return true
+      })
       .map((s) => (s as { text: string }).text)
       .join(" ")
       .replace(/\s+/g, " ")
@@ -240,6 +257,10 @@ export function TokenCommandInput({
 
   // Whether milestone billing is currently active (via badge or selected project)
   const isMilestoneActive = useMemo(() => {
+    const pendingSeg = segments.find((s) => s.type === "pending-billing")
+    if (pendingSeg && pendingSeg.type === "pending-billing") {
+      return pendingSeg.billingType === "milestone"
+    }
     const billSeg = segments.find((s) => s.type === "billing")
     if (billSeg && billSeg.type === "billing") {
       return billSeg.billing.type === "milestone"
@@ -464,6 +485,314 @@ export function TokenCommandInput({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [isEditingActive, onClose, canStart, onSaveActive])
 
+  // Apply slash command: user enters command and value, confirms on enter
+  const applySlashCommand = (
+    type: BillingType | "none",
+    amount: number | null
+  ) => {
+    const finalAmount = amount !== null ? amount : (currentProject?.hourlyRate || 85)
+    const newBilling: BillingConfig = { type, amount: finalAmount }
+
+    const apply = () => {
+      setSegments((prev) => {
+        let targetIndex = prev.findIndex((s) => s.id === activeSegId)
+        if (targetIndex === -1) {
+          targetIndex = prev.length - 1
+        }
+
+        const currSeg = prev[targetIndex]
+        const currText = currSeg && currSeg.type === "text" ? currSeg.text : ""
+        const slashIdx = currText.lastIndexOf("/")
+        const textBefore = slashIdx !== -1 ? currText.slice(0, slashIdx).trimEnd() : currText
+
+        // Remove any previously added billing or pending-billing tokens
+        const cleaned = prev.filter((s) => s.type !== "billing" && s.type !== "pending-billing")
+        let newTargetIndex = cleaned.findIndex((s) => s.id === currSeg?.id)
+        if (newTargetIndex === -1) {
+          newTargetIndex = cleaned.length
+        }
+
+        const newSegs: TokenSegment[] = []
+        for (let i = 0; i < newTargetIndex; i++) {
+          newSegs.push(cleaned[i])
+        }
+
+        if (textBefore) {
+          newSegs.push({ id: currSeg?.id || `seg-${Date.now()}`, type: "text", text: textBefore })
+        }
+
+        // Insert billing badge inline
+        newSegs.push({
+          id: `bill-${Date.now()}`,
+          type: "billing",
+          billing: newBilling,
+        })
+
+        const nextTextId = `seg-${Date.now() + 2}`
+        newSegs.push({ id: nextTextId, type: "text", text: "" })
+
+        for (let i = newTargetIndex + 1; i < cleaned.length; i++) {
+          newSegs.push(cleaned[i])
+        }
+
+        const finalized = cleanupSegments(newSegs)
+        const lastText = [...finalized].reverse().find((s) => s.type === "text")
+        const focusId = lastText ? lastText.id : nextTextId
+
+        setActiveSegId(focusId)
+        setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
+        return finalized
+      })
+    }
+
+    apply()
+    setIsDropdownOpen(false)
+    setSlashQuery(null)
+    setActiveBillingPrompt(null)
+  }
+
+  // Accept billing command on space or dropdown selection: converts /command into pending badge and focuses value input
+  const acceptBillingCommand = (cmd: string, targetSegId: string, fullText: string) => {
+    const cleanCmd = cmd.toLowerCase()
+    let billingType: BillingType | "none" = "hourly"
+    let commandText = "/hourly"
+
+    if (cleanCmd === "hourly" || cleanCmd === "rate") {
+      billingType = "hourly"
+      commandText = "/hourly"
+    } else if (cleanCmd === "fixed" || cleanCmd === "fix") {
+      billingType = "fixed"
+      commandText = "/fixed"
+    } else if (cleanCmd === "milestone" || cleanCmd === "m") {
+      billingType = "milestone"
+      commandText = "/milestone"
+    } else if (cleanCmd === "nobill" || cleanCmd === "free") {
+      applySlashCommand("none", 0)
+      return
+    }
+
+    setSegments((prev) => {
+      let targetIdx = prev.findIndex((s) => s.id === targetSegId)
+      if (targetIdx === -1) {
+        targetIdx = prev.length - 1
+      }
+
+      const currSeg = prev[targetIdx]
+      const currText = currSeg && currSeg.type === "text" ? currSeg.text : fullText
+      const slashIdx = currText.lastIndexOf("/")
+      const textBefore = slashIdx !== -1 ? currText.slice(0, slashIdx).trimEnd() : ""
+
+      // Remove any existing billing or pending-billing badges
+      const cleaned = prev.filter((s) => s.type !== "billing" && s.type !== "pending-billing")
+      let newTargetIdx = cleaned.findIndex((s) => s.id === currSeg?.id)
+      if (newTargetIdx === -1) {
+        newTargetIdx = cleaned.length
+      }
+
+      const newSegs: TokenSegment[] = []
+      for (let i = 0; i < newTargetIdx; i++) {
+        newSegs.push(cleaned[i])
+      }
+
+      if (textBefore) {
+        newSegs.push({ id: currSeg?.id || `seg-${Date.now()}`, type: "text", text: textBefore })
+      }
+
+      const pendingId = `pending-bill-${Date.now()}`
+      const valId = `seg-val-${Date.now()}`
+
+      newSegs.push({
+        id: pendingId,
+        type: "pending-billing",
+        billingType: billingType as "hourly" | "fixed" | "milestone",
+        commandText,
+      })
+
+      newSegs.push({
+        id: valId,
+        type: "text",
+        text: "",
+      })
+
+      for (let i = newTargetIdx + 1; i < cleaned.length; i++) {
+        newSegs.push(cleaned[i])
+      }
+
+      const finalized = cleanupSegments(newSegs)
+      setActiveSegId(valId)
+      setTimeout(() => inputRefs.current[valId]?.focus(), 30)
+      return finalized
+    })
+
+    setIsDropdownOpen(false)
+    setSlashQuery(null)
+    setActiveBillingPrompt(billingType as "hourly" | "fixed" | "milestone")
+  }
+
+  // Commit value typed after pending billing command into a formal BillingBadge!
+  const commitPendingBillingValue = (
+    pendingSeg: { id: string; billingType: "hourly" | "fixed" | "milestone" },
+    valueSegId: string,
+    rawVal?: string
+  ) => {
+    const currVal =
+      rawVal !== undefined
+        ? rawVal
+        : (segments.find((s) => s.id === valueSegId) as { text: string } | undefined)?.text || ""
+    const trimmed = currVal.trim()
+
+    if (pendingSeg.billingType === "hourly" || pendingSeg.billingType === "fixed") {
+      const num = parseFloat(trimmed.replace(/[^0-9.]/g, ""))
+      if (!isNaN(num) && num > 0) {
+        setSegments((prev) => {
+          const pendingIdx = prev.findIndex((s) => s.id === pendingSeg.id)
+          if (pendingIdx === -1) return prev
+
+          const nextSegs: TokenSegment[] = []
+          for (let i = 0; i < prev.length; i++) {
+            if (prev[i].id === pendingSeg.id) {
+              nextSegs.push({
+                id: `bill-${Date.now()}`,
+                type: "billing",
+                billing: { type: pendingSeg.billingType, amount: num },
+              })
+              if (prev[i + 1]?.id === valueSegId) {
+                i++
+              }
+            } else if (prev[i].id === valueSegId) {
+              // skip
+            } else {
+              nextSegs.push(prev[i])
+            }
+          }
+
+          const nextTextId = `seg-after-${Date.now()}`
+          nextSegs.push({ id: nextTextId, type: "text", text: "" })
+          const cleaned = cleanupSegments(nextSegs)
+          const lastText = [...cleaned].reverse().find((s) => s.type === "text")
+          const focusId = lastText ? lastText.id : nextTextId
+          setActiveSegId(focusId)
+          setTimeout(() => inputRefs.current[focusId]?.focus(), 30)
+          return cleaned
+        })
+        setActiveBillingPrompt(null)
+        return true
+      }
+    } else if (pendingSeg.billingType === "milestone") {
+      const parsed = parseMilestoneWithAmount(trimmed)
+      const amount = parsed.amount || parseFloat(trimmed.replace(/[^0-9.]/g, "")) || 0
+      if (amount > 0) {
+        setSegments((prev) => {
+          const nextSegs: TokenSegment[] = []
+          for (let i = 0; i < prev.length; i++) {
+            if (prev[i].id === pendingSeg.id) {
+              nextSegs.push({
+                id: `bill-${Date.now()}`,
+                type: "billing",
+                billing: { type: "milestone", amount },
+              })
+              if (prev[i + 1]?.id === valueSegId) {
+                i++
+              }
+            } else if (prev[i].id === valueSegId) {
+              // skip
+            } else {
+              nextSegs.push(prev[i])
+            }
+          }
+
+          if (parsed.memo && parsed.memo !== trimmed) {
+            nextSegs.unshift({
+              id: `seg-ms-memo-${Date.now()}`,
+              type: "text",
+              text: parsed.memo,
+            })
+          }
+
+          const nextTextId = `seg-after-${Date.now()}`
+          nextSegs.push({ id: nextTextId, type: "text", text: "" })
+          const cleaned = cleanupSegments(nextSegs)
+          const lastText = [...cleaned].reverse().find((s) => s.type === "text")
+          const focusId = lastText ? lastText.id : nextTextId
+          setActiveSegId(focusId)
+          setTimeout(() => inputRefs.current[focusId]?.focus(), 30)
+          return cleaned
+        })
+        setActiveBillingPrompt(null)
+        return true
+      }
+    }
+    return false
+  }
+
+  // Remove pending billing token
+  const removePendingBillingToken = (tokenId: string) => {
+    setSegments((prev) => {
+      const idx = prev.findIndex((s) => s.id === tokenId)
+      if (idx === -1) return prev
+
+      const rawList = prev.filter((s, i) => {
+        if (s.id === tokenId) return false
+        if (i === idx + 1 && s.type === "text" && !s.text) return false
+        return true
+      })
+      const cleaned = cleanupSegments(rawList)
+      const lastText = [...cleaned].reverse().find((s) => s.type === "text")
+      if (lastText) {
+        setActiveSegId(lastText.id)
+        setTimeout(() => inputRefs.current[lastText.id]?.focus(), 20)
+      }
+      return cleaned
+    })
+    setActiveBillingPrompt(null)
+  }
+
+  // Select slash option from dropdown
+  const selectSlashOption = (opt: (typeof parsedSlashOptions)[0]) => {
+    if (opt.type === "none") {
+      applySlashCommand("none", 0)
+      setIsDropdownOpen(false)
+      setSlashQuery(null)
+      setActiveBillingPrompt(null)
+      return
+    }
+
+    acceptBillingCommand(opt.type, activeSegId, "")
+  }
+
+  // Select open milestone chip from under input
+  const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
+    const proj = activeProjectOrMatch || currentProject || projects[0]
+    setSegments((prev) => {
+      const existingText = prev
+        .filter((s) => s.type === "text" && s.text.trim())
+        .map((s) => (s as { text: string }).text)
+        .join(" ")
+        .trim()
+
+      const newSegs: TokenSegment[] = [
+        { id: `seg-ms-${Date.now()}`, type: "text", text: existingText || ms.name },
+      ]
+      if (proj) {
+        newSegs.push({ id: `proj-${Date.now()}`, type: "project", project: proj })
+      }
+      newSegs.push({
+        id: `bill-${Date.now()}`,
+        type: "billing",
+        billing: { type: "milestone", amount: ms.amount },
+      })
+      newSegs.push({ id: `seg-tail-${Date.now()}`, type: "text", text: "" })
+
+      const res = cleanupSegments(newSegs)
+      const lastText = [...res].reverse().find((s) => s.type === "text")
+      const focusId = lastText ? lastText.id : `seg-tail-${Date.now()}`
+      setActiveSegId(focusId)
+      setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
+      return res
+    })
+    setActiveBillingPrompt(null)
+  }
+
   // Handle typing inside any text segment
   const handleTextChange = (segId: string, val: string) => {
     // If typing the very first letter of the overall memo, auto-capitalize it
@@ -480,13 +809,57 @@ export function TokenCommandInput({
       nextVal = val.toUpperCase()
     }
 
-    // 1. Calculate next segments with the updated text
+    // 1. If currently in value input immediately following pending-billing badge:
+    const prevSeg = segIdx > 0 ? segments[segIdx - 1] : undefined
+    if (prevSeg && prevSeg.type === "pending-billing") {
+      if (val.endsWith(" ")) {
+        const trimmed = val.trim()
+        if (trimmed) {
+          const committed = commitPendingBillingValue(prevSeg, segId, trimmed)
+          if (committed) return
+        }
+      }
+    }
+
+    // 2. If user typed a command followed by space (e.g. "/hourly ", "/fixed ", "/milestone ", "/nobill ")
+    const spaceCmdMatch = val.match(/(?:^|\s)\/(hourly|rate|fixed|fix|milestone|m|nobill|free)\s+$/i)
+    if (spaceCmdMatch) {
+      acceptBillingCommand(spaceCmdMatch[1], segId, val)
+      return
+    }
+
+    // 3. If user typed full command with value (e.g. "/hourly 85", "/fixed 2500")
+    const fullHourlyMatch = val.match(/(?:^|\s)\/(hourly|rate)\s+(\d+(?:\.\d+)?)\s*$/i)
+    if (fullHourlyMatch) {
+      const amount = parseFloat(fullHourlyMatch[2])
+      applySlashCommand("hourly", amount)
+      const prefix = val.slice(0, fullHourlyMatch.index || 0).trimEnd()
+      setSegments((prev) =>
+        prev.map((s) => (s.id === segId && s.type === "text" ? { ...s, text: prefix } : s))
+      )
+      return
+    }
+
+    const fullFixedMatch = val.match(/(?:^|\s)\/(fixed|fix)\s+(\d+(?:\.\d+)?)\s*$/i)
+    if (fullFixedMatch) {
+      const amount = parseFloat(fullFixedMatch[2])
+      applySlashCommand("fixed", amount)
+      const prefix = val.slice(0, fullFixedMatch.index || 0).trimEnd()
+      setSegments((prev) =>
+        prev.map((s) => (s.id === segId && s.type === "text" ? { ...s, text: prefix } : s))
+      )
+      return
+    }
+
+    // 4. Calculate next segments with the updated text
     const nextSegments = segments.map((s) =>
       s.id === segId && s.type === "text" ? { ...s, text: nextVal } : s
     )
 
-    // 2. Check if everything is completely empty (no badges and all text empty)
-    const hasBadges = nextSegments.some((s) => s.type === "project" || s.type === "billing")
+    // 5. Check if everything is completely empty (no badges and all text empty)
+    const hasBadges = nextSegments.some(
+      (s) => s.type === "project" || s.type === "billing" || s.type === "pending-billing"
+    )
     const totalText = nextSegments
       .map((s) => (s.type === "text" ? s.text : ""))
       .join("")
@@ -499,6 +872,7 @@ export function TokenCommandInput({
       setActiveSegId(freshId)
       setAtQuery(null)
       setSlashQuery(null)
+      setActiveBillingPrompt(null)
       if (recentEntries.length > 0) {
         setMode("recents")
         setIsDropdownOpen(true)
@@ -614,127 +988,7 @@ export function TokenCommandInput({
     setAtQuery(null)
   }
 
-  // Apply slash command: user enters command and value, confirms on enter
-  const applySlashCommand = (
-    type: BillingType | "none",
-    amount: number | null
-  ) => {
-    const finalAmount = amount !== null ? amount : (currentProject?.hourlyRate || 85)
-    const newBilling: BillingConfig = { type, amount: finalAmount }
 
-    const apply = () => {
-      setSegments((prev) => {
-        const targetIndex = prev.findIndex((s) => s.id === activeSegId)
-        if (targetIndex === -1) return prev
-
-        const currSeg = prev[targetIndex]
-        const currText = currSeg.type === "text" ? currSeg.text : ""
-        const slashIdx = currText.lastIndexOf("/")
-        const textBefore = slashIdx !== -1 ? currText.slice(0, slashIdx).trimEnd() : currText
-
-        // Remove any previously added billing token to avoid duplicates
-        const cleaned = prev.filter((s) => s.type !== "billing")
-        const newTargetIndex = cleaned.findIndex((s) => s.id === activeSegId)
-
-        const newSegs: TokenSegment[] = []
-        for (let i = 0; i < newTargetIndex; i++) {
-          newSegs.push(cleaned[i])
-        }
-
-        if (textBefore) {
-          newSegs.push({ id: currSeg.id, type: "text", text: textBefore })
-        }
-
-        // Insert billing badge inline
-        newSegs.push({
-          id: `bill-${Date.now()}`,
-          type: "billing",
-          billing: newBilling,
-        })
-
-        const nextTextId = `seg-${Date.now() + 2}`
-        newSegs.push({ id: nextTextId, type: "text", text: "" })
-
-        for (let i = newTargetIndex + 1; i < cleaned.length; i++) {
-          newSegs.push(cleaned[i])
-        }
-
-        const finalized = cleanupSegments(newSegs)
-        const lastText = [...finalized].reverse().find((s) => s.type === "text")
-        const focusId = lastText ? lastText.id : nextTextId
-
-        setActiveSegId(focusId)
-        setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
-        return finalized
-      })
-    }
-
-    apply()
-    setIsDropdownOpen(false)
-    setSlashQuery(null)
-    setActiveBillingPrompt(null)
-  }
-
-  // Select slash option from dropdown: activates input prompt with required placeholder without showing typed number in command
-  const selectSlashOption = (opt: (typeof parsedSlashOptions)[0]) => {
-    if (opt.type === "none") {
-      applySlashCommand("none", 0)
-      setIsDropdownOpen(false)
-      setSlashQuery(null)
-      setActiveBillingPrompt(null)
-      return
-    }
-
-    // Strip slash prefix from active text segment
-    setSegments((prev) => {
-      return prev.map((s) => {
-        if (s.id === activeSegId && s.type === "text") {
-          const slashIdx = s.text.lastIndexOf("/")
-          const cleanText = slashIdx !== -1 ? s.text.slice(0, slashIdx).trimEnd() : s.text
-          return { ...s, text: cleanText }
-        }
-        return s
-      })
-    })
-
-    setActiveBillingPrompt(opt.type)
-    setIsDropdownOpen(false)
-    setSlashQuery(null)
-
-    setTimeout(() => {
-      const el = inputRefs.current[activeSegId]
-      if (el) {
-        el.focus()
-      }
-    }, 20)
-  }
-
-  // Select open milestone chip from under input
-  const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
-    const proj = activeProjectOrMatch || currentProject || projects[0]
-    setSegments(() => {
-      const newSegs: TokenSegment[] = [
-        { id: `seg-ms-${Date.now()}`, type: "text", text: ms.name },
-      ]
-      if (proj) {
-        newSegs.push({ id: `proj-${Date.now()}`, type: "project", project: proj })
-      }
-      newSegs.push({
-        id: `bill-${Date.now()}`,
-        type: "billing",
-        billing: { type: "milestone", amount: ms.amount },
-      })
-      newSegs.push({ id: `seg-tail-${Date.now()}`, type: "text", text: "" })
-
-      const cleaned = cleanupSegments(newSegs)
-      const lastText = [...cleaned].reverse().find((s) => s.type === "text")
-      const focusId = lastText ? lastText.id : `seg-tail-${Date.now()}`
-      setActiveSegId(focusId)
-      setTimeout(() => inputRefs.current[focusId]?.focus(), 50)
-      return cleaned
-    })
-    setActiveBillingPrompt(null)
-  }
 
   // Pick recent entry: text assembled, project and billing badges placed immediately
   const selectRecentEntry = (entry: TimeSession) => {
@@ -956,12 +1210,48 @@ export function TokenCommandInput({
       }
     }
 
+    // Space key handling
+    if (e.key === " ") {
+      const currIdx = segments.findIndex((s) => s.id === segId)
+      const prevSeg = currIdx > 0 ? segments[currIdx - 1] : undefined
+
+      // A. If currently typing value for pending-billing badge, Space commits the value!
+      if (prevSeg && prevSeg.type === "pending-billing") {
+        const currSeg = segments[currIdx]
+        const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
+        if (textVal.trim()) {
+          const committed = commitPendingBillingValue(prevSeg, segId, textVal)
+          if (committed) {
+            e.preventDefault()
+            return
+          }
+        }
+      }
+
+      // B. If current text ends with a billing slash command, Space accepts it!
+      const currSeg = segments.find((s) => s.id === segId)
+      const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
+      const cmdMatch = textVal.match(/(?:^|\s)\/(hourly|rate|fixed|fix|milestone|m|nobill|free)$/i)
+      if (cmdMatch) {
+        e.preventDefault()
+        acceptBillingCommand(cmdMatch[1], segId, textVal)
+        return
+      }
+    }
+
     // Backspace on empty text segment removes previous badge!
     if (e.key === "Backspace") {
       const currSeg = segments.find((s) => s.id === segId)
       if (currSeg && currSeg.type === "text" && currSeg.text === "") {
         const idx = segments.findIndex((s) => s.id === segId)
         if (idx > 0) {
+          const prevSeg = segments[idx - 1]
+          if (prevSeg && prevSeg.type === "pending-billing") {
+            e.preventDefault()
+            removePendingBillingToken(prevSeg.id)
+            return
+          }
+
           e.preventDefault()
           setSegments((prev) => {
             const pIdx = prev.findIndex((s) => s.id === segId)
@@ -979,7 +1269,9 @@ export function TokenCommandInput({
             const cleaned = cleanupSegments(rawList)
 
             // Check if now completely empty (no badges and no text)
-            const hasBadges = cleaned.some((s) => s.type === "project" || s.type === "billing")
+            const hasBadges = cleaned.some(
+              (s) => s.type === "project" || s.type === "billing" || s.type === "pending-billing"
+            )
             const totalText = cleaned
               .map((s) => (s.type === "text" ? s.text : ""))
               .join("")
@@ -990,6 +1282,7 @@ export function TokenCommandInput({
               setActiveSegId(freshId)
               setAtQuery(null)
               setSlashQuery(null)
+              setActiveBillingPrompt(null)
               if (recentEntries.length > 0) {
                 setMode("recents")
                 setIsDropdownOpen(true)
@@ -1024,12 +1317,35 @@ export function TokenCommandInput({
 
     // Enter when dropdown is closed
     if (e.key === "Enter" && !isDropdownOpen) {
+      const currIdx = segments.findIndex((s) => s.id === segId)
+      const prevSeg = currIdx > 0 ? segments[currIdx - 1] : undefined
+
+      // A. If currently in value input after pending-billing, Enter commits value!
+      if (prevSeg && prevSeg.type === "pending-billing") {
+        const currSeg = segments[currIdx]
+        const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
+        if (textVal.trim()) {
+          const committed = commitPendingBillingValue(prevSeg, segId, textVal)
+          if (committed) {
+            e.preventDefault()
+            return
+          }
+        }
+      }
+
+      // B. If user typed slash command directly and pressed Enter
+      const currSeg = segments.find((s) => s.id === segId)
+      const textVal = currSeg && currSeg.type === "text" ? currSeg.text : ""
+      const cmdMatch = textVal.match(/(?:^|\s)\/(hourly|rate|fixed|fix|milestone|m|nobill|free)$/i)
+      if (cmdMatch) {
+        e.preventDefault()
+        acceptBillingCommand(cmdMatch[1], segId, textVal)
+        return
+      }
+
       // 1. If in activeBillingPrompt mode, tokenize the value!
       if (activeBillingPrompt) {
         e.preventDefault()
-        const currSeg = segments.find((s) => s.id === segId)
-        const textVal = currSeg && currSeg.type === "text" ? currSeg.text.trim() : ""
-
         if (activeBillingPrompt === "hourly") {
           const num = parseFloat(textVal)
           if (!isNaN(num) && num > 0) {
@@ -1065,8 +1381,6 @@ export function TokenCommandInput({
       }
 
       // 2. Check if user typed e.g. "M 1 Design phase 1 2300" in normal text without prior /milestone
-      const currSeg = segments.find((s) => s.id === segId)
-      const textVal = currSeg && currSeg.type === "text" ? currSeg.text.trim() : ""
       const milestoneParsed = parseMilestoneWithAmount(textVal)
       if (
         milestoneParsed.isMilestone &&
@@ -1096,9 +1410,10 @@ export function TokenCommandInput({
     const proj = projSeg && projSeg.type === "project" ? projSeg.project : null
     const projId = proj?.id || projects[0]?.id || "proj-kerd"
 
-    // 3. Billing from billing badge
+    // 3. Billing from billing badge or pending-billing
     const billSeg = segments.find((s) => s.type === "billing")
     const bill = billSeg && billSeg.type === "billing" ? billSeg.billing : null
+    const pendingSeg = segments.find((s) => s.type === "pending-billing")
 
     let rate: number | null = null
     let billingType: BillingType | "none" = proj?.billingType || "hourly"
@@ -1116,6 +1431,24 @@ export function TokenCommandInput({
         rate = null
         billingType = "none"
         fixedBudget = 0
+      }
+    } else if (pendingSeg && pendingSeg.type === "pending-billing") {
+      const pIdx = segments.findIndex((s) => s.id === pendingSeg.id)
+      const valSeg = segments[pIdx + 1]
+      const valText = valSeg && valSeg.type === "text" ? valSeg.text.trim() : ""
+      if (pendingSeg.billingType === "hourly") {
+        const num = parseFloat(valText.replace(/[^0-9.]/g, ""))
+        rate = !isNaN(num) && num > 0 ? num : (proj?.hourlyRate || 85)
+        billingType = "hourly"
+      } else if (pendingSeg.billingType === "fixed") {
+        const num = parseFloat(valText.replace(/[^0-9.]/g, ""))
+        fixedBudget = !isNaN(num) && num > 0 ? num : (proj?.fixedBudget || 2500)
+        billingType = "fixed"
+      } else if (pendingSeg.billingType === "milestone") {
+        const parsed = parseMilestoneWithAmount(valText)
+        const num = parsed.amount || parseFloat(valText.replace(/[^0-9.]/g, ""))
+        fixedBudget = !isNaN(num) && num > 0 ? num : (proj?.fixedBudget || 500)
+        billingType = "milestone"
       }
     }
 
@@ -1381,6 +1714,32 @@ export function TokenCommandInput({
               )
             }
 
+            // 2B. PENDING BILLING BADGE (ACCEPTED COMMAND AWAITING VALUE)
+            if (seg.type === "pending-billing") {
+              return (
+                <span
+                  key={seg.id}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex shrink-0 select-none animate-in fade-in zoom-in-95 duration-150"
+                >
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 border border-orange-500/35 px-2.5 py-1 text-xs font-semibold text-orange-200 shadow-sm backdrop-blur-md">
+                    {seg.billingType === "hourly" && <Clock className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
+                    {seg.billingType === "fixed" && <Briefcase className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
+                    {seg.billingType === "milestone" && <Flag className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
+                    <span className="font-mono">{seg.commandText}</span>
+                    <button
+                      type="button"
+                      onClick={() => removePendingBillingToken(seg.id)}
+                      className="ml-0.5 -mr-1 p-0.5 rounded-full text-orange-400/80 hover:text-white hover:bg-orange-500/30 transition-colors cursor-pointer"
+                      title="Отменить команду"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                </span>
+              )
+            }
+
             // 3. TEXT INPUT SEGMENT (Auto-sizing: input is absolute over hidden span to eliminate 20ch default HTML width)
             if (seg.type === "text") {
               const isAllTextEmpty = segments
@@ -1398,6 +1757,21 @@ export function TokenCommandInput({
                 Boolean(nextSeg && nextSeg.type !== "text")
 
               const isTrailingText = idx === segments.length - 1
+              const pendingBillingSeg =
+                prevSeg && prevSeg.type === "pending-billing" ? prevSeg : null
+              const isPendingBillingTarget = Boolean(pendingBillingSeg)
+
+              const specificPlaceholder = pendingBillingSeg
+                ? (pendingBillingSeg.billingType === "hourly"
+                    ? "Введите рейт (например, 85)"
+                    : pendingBillingSeg.billingType === "fixed"
+                    ? "Введите стоимость проекта (например, 2500)"
+                    : "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)")
+                : activePlaceholder
+
+              const showPlaceholder = isPendingBillingTarget
+                ? !seg.text
+                : (isTrailingText && isAllTextEmpty)
 
               // 3A. EMPTY TEXT SEGMENT BETWEEN TWO BADGES
               if (isBetweenBadges && !seg.text) {
@@ -1462,9 +1836,6 @@ export function TokenCommandInput({
               }
 
               // 3C. MAIN / TRAILING / TYPING TEXT SEGMENT
-              // Show placeholder if this is the trailing text segment and all text is currently empty
-              const showPlaceholder = isTrailingText && isAllTextEmpty
-
               return (
                 <span
                   key={seg.id}
@@ -1474,12 +1845,13 @@ export function TokenCommandInput({
                     inputRefs.current[seg.id]?.focus()
                   }}
                   className={`relative inline-flex items-center shrink-0 ${
-                    isTrailingText ? "flex-1 min-w-[120px]" : ""
+                    isTrailingText || isPendingBillingTarget ? "flex-1 min-w-[140px]" : ""
                   }`}
                   style={{
-                    minWidth: isTrailingText
-                      ? undefined
-                      : (seg.text ? undefined : "12px"),
+                    minWidth:
+                      isTrailingText || isPendingBillingTarget
+                        ? undefined
+                        : (seg.text ? undefined : "12px"),
                   }}
                 >
                   <span
@@ -1489,7 +1861,7 @@ export function TokenCommandInput({
                       minWidth: showPlaceholder ? undefined : (seg.text ? undefined : "12px"),
                     }}
                   >
-                    {seg.text || (showPlaceholder ? activePlaceholder : "")}
+                    {seg.text || (showPlaceholder ? specificPlaceholder : "")}
                   </span>
                   <input
                     ref={(el) => {
@@ -1525,7 +1897,10 @@ export function TokenCommandInput({
                         .join("")
                         .trim()
                       const currentHasBadges = segments.some(
-                        (s) => s.type === "project" || s.type === "billing"
+                        (s) =>
+                          s.type === "project" ||
+                          s.type === "billing" ||
+                          s.type === "pending-billing"
                       )
                       if (!totalLen && !currentHasBadges && !val && recentEntries.length > 0) {
                         setMode("recents")
@@ -1535,7 +1910,7 @@ export function TokenCommandInput({
                     }}
                     onKeyDown={(e) => handleKeyDown(seg.id, e)}
                     onClick={(e) => e.stopPropagation()}
-                    placeholder={showPlaceholder ? activePlaceholder : ""}
+                    placeholder={showPlaceholder ? specificPlaceholder : ""}
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
