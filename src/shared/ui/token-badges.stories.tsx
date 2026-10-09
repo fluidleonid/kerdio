@@ -1,37 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ProjectBadge, BillingBadge, Badge } from '@/shared/ui'
-import { Sparkles, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { ProjectBadge, BillingBadge } from './token-badges'
 
 /**
- * # Token Badges & UI Badges
+ * # Token Badges
  *
- * Micro-components representing contextual tokens, projects, billing states,
- * and system indicators across the Kerdio workspace.
+ * Micro-components representing contextual tokens, projects, and billing models
+ * across the Kerdio workspace, command palette, and time tracker.
  *
- * ### Design System & Visual Anatomy
- * - **Project Badge**: Encapsulates project identity with a colored status dot or loading spinner, clean typography, and optional dismiss action.
- * - **Billing Badge**: Communicates financial terms (hourly yield, fixed contract, milestone) with semantic Lucide icons.
- * - **System Badge**: Generic lightweight badge with variants (\`default\`, \`secondary\`, \`destructive\`, \`outline\`, \`ghost\`, \`link\`).
- *
- * ### Guidelines & States
- * - High visual hierarchy with subtle background translucency (\`bg-white/10\`).
- * - Supports **Hover**, **Active**, **Disabled**, and **Loading** states across all variations.
+ * ### Design System Anatomy
+ * - **Project Badge**: Encapsulates client identity with a colored status bead or loading spinner, clean typography, and optional dismiss action.
+ * - **Billing Badge**: Communicates financial terms (hourly yield, fixed contract, milestone) with semantic Lucide icons (`Clock`, `Briefcase`, `Flag`, `ShieldOff`).
+ * - **Micro-Interactions**: Subtle glass translucency (`bg-white/10`), smooth hover brightening, and tactile active depressions.
  */
 const meta: Meta = {
-  title: 'Components/Token Badges',
+  title: 'Shared/Tokens/Token Badges',
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
       description: {
         component: `
-### Token Badges & Primitives
+### Token Badges
 
-Engineered in the style of Linear and Vercel design systems. Badges provide compact, readable metadata chips inside input bars, task tables, and metric cards.
+Engineered in the style of Linear and Raycast design systems. Badges provide compact, readable metadata chips inside input bars, task tables, and metric cards.
 
 #### Key Features
 1. **Semantic Color Bezel**: Custom color beads matching client brand hex codes.
-2. **Contextual Icons**: Auto-rendered Lucide icons (\`Clock\`, \`Briefcase\`, \`Flag\`, \`ShieldOff\`) matching billing classification.
+2. **Contextual Icons**: Auto-rendered Lucide icons matching billing classification.
 3. **Interactive & Dismissible**: Smooth hover transitions, tactile active scale, and keyboard-accessible tooltip removal.
 4. **States Matrix**: Fully covers Default, Hover, Active, Disabled, and Loading with animated micro-spinners.
         `,
@@ -248,85 +243,6 @@ export const BillingBadgesStates: StoryObj = {
           billingType="hourly"
           amount={85}
         />
-      </div>
-    </div>
-  ),
-}
-
-/**
- * **Generic UI Badges Gallery**:
- * Comprehensive display of generic Badges across all variants (\`default\`, \`secondary\`,
- * \`destructive\`, \`outline\`, \`ghost\`, \`link\`), with and without icons,
- * loading spinners, and disabled states.
- */
-export const GenericBadgeVariants: StoryObj = {
-  render: () => (
-    <div className="max-w-3xl p-6 bg-black/40 rounded-3xl backdrop-blur-2xl border border-white/5 space-y-8">
-      <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-orange-400 mb-1">
-          UI Primitives / System Badges
-        </h3>
-        <p className="text-xs text-[#806060]">
-          Compact status markers in Vercel / Linear design system conventions
-        </p>
-      </div>
-
-      {/* Row 1: All Variants with Icon */}
-      <div className="space-y-3">
-        <h4 className="text-xs font-semibold text-white/80">With Icon</h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default">
-            <Sparkles className="size-3" /> Default
-          </Badge>
-          <Badge variant="secondary">
-            <CheckCircle2 className="size-3" /> Secondary
-          </Badge>
-          <Badge variant="outline">
-            <ShieldCheck className="size-3" /> Outline
-          </Badge>
-          <Badge variant="destructive">
-            <AlertTriangle className="size-3" /> Destructive
-          </Badge>
-          <Badge variant="ghost">
-            <Sparkles className="size-3" /> Ghost
-          </Badge>
-        </div>
-      </div>
-
-      {/* Row 2: Without Icon */}
-      <div className="space-y-3">
-        <h4 className="text-xs font-semibold text-white/80">Without Icon</h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="destructive">Destructive</Badge>
-          <Badge variant="ghost">Ghost</Badge>
-          <Badge variant="link">Link</Badge>
-        </div>
-      </div>
-
-      {/* Row 3: Loading States */}
-      <div className="space-y-3">
-        <h4 className="text-xs font-semibold text-white/80">Loading State (Micro-spinner)</h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default" loading={true}>Saving...</Badge>
-          <Badge variant="secondary" loading={true}>Syncing</Badge>
-          <Badge variant="outline" loading={true}>Validating</Badge>
-          <Badge variant="destructive" loading={true}>Deleting...</Badge>
-        </div>
-      </div>
-
-      {/* Row 4: Disabled States */}
-      <div className="space-y-3">
-        <h4 className="text-xs font-semibold text-white/80">Disabled State</h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default" disabled={true}>
-            <Sparkles className="size-3" /> Disabled Default
-          </Badge>
-          <Badge variant="secondary" disabled={true}>Disabled Secondary</Badge>
-          <Badge variant="outline" disabled={true}>Disabled Outline</Badge>
-        </div>
       </div>
     </div>
   ),

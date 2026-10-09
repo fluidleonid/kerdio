@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { within, userEvent, expect } from '@storybook/test'
-import { Chronograph } from '@/features/chronograph'
+import { Chronograph } from './Chronograph'
 import { useTrackerStore } from '@/entities/tracker'
 import { useEffect } from 'react'
 
@@ -12,7 +12,7 @@ import { useEffect } from 'react'
  *
  * ### Design System & Visual Anatomy
  * - **12-Hour Bezel**: Upright numeral markers (12, 1, 2, ..., 11) with 48 radial tick marks.
- * - **Track Segments**: 34px-wide rounded arc strokes mapped to the clock face ($1\text{ hour} = 30^\circ$, $1\text{ min} = 0.5^\circ$).
+ * - **Track Segments**: 34px-wide rounded arc strokes mapped to the clock face ($1\\text{ hour} = 30^\\circ$, $1\\text{ min} = 0.5^\\circ$).
  * - **Digital Centerpiece**: High-contrast tabular numerals (`tabular-nums`) with real-time currency accrual.
  * - **Interactive Display**: Click the central counter to toggle between elapsed time and total earnings.
  * - **Multi-Slot Geometry**: Supports multiple distinct intervals with 14° gap spacing (`GAP_DEGREES`) and minimal pause beads.
@@ -22,7 +22,7 @@ import { useEffect } from 'react'
  * - Default diameter is **420px**; scales cleanly between 280px and 600px.
  */
 const meta: Meta<typeof Chronograph> = {
-  title: 'Components/Analogue Chronograph',
+  title: 'Features/Chronograph',
   component: Chronograph,
   tags: ['autodocs'],
   parameters: {

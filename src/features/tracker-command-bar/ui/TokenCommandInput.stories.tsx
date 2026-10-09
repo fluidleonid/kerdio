@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { within, userEvent, expect } from '@storybook/test'
-import { TokenCommandInput } from '@/features/tracker-command-bar'
+import { TokenCommandInput } from './TokenCommandInput'
 
 /**
  * # TokenCommandInput
@@ -11,20 +11,20 @@ import { TokenCommandInput } from '@/features/tracker-command-bar'
  *
  * ### Design System Anatomy
  * - **Glass Container**: 50% opacity tinted glass with 50px diffused ambient shadow (`backdrop-blur-3xl`).
- * - **Interleaved Tokens**: Natural-language stream mixing auto-sizing text inputs, \`ProjectBadge\`, and \`BillingBadge\`.
- * - **Quick Action Controls**: Direct icon triggers for \`@\` (project picker), \`/\` (billing mode), and dynamic submit/save.
+ * - **Interleaved Tokens**: Natural-language stream mixing auto-sizing text inputs, `ProjectBadge`, and `BillingBadge`.
+ * - **Quick Action Controls**: Direct icon triggers for `@` (project picker), `/` (billing mode), and dynamic submit/save.
  * - **Floating Dropdown Popover**: Keyboard-navigable autocomplete popover matching identical optical glass tiers.
  *
  * ### Interaction Rules & Shortcuts
- * - \`@\`: Triggers fuzzy-search project selector.
- * - \`/\`: Triggers billing configuration menu (Hourly, Fixed Fee, Milestone, Non-billable).
- * - \`Backspace\`: Deletes preceding badge token when cursor is at the boundary.
- * - \`ArrowLeft\` / \`ArrowRight\`: Seamlessly steps across badge tokens without breaking context.
- * - \`Enter\`: Starts session or selects highlighted autocomplete item.
- * - \`Escape\`: Closes autocomplete popover or cancels active session editing.
+ * - `@`: Triggers fuzzy-search project selector.
+ * - `/`: Triggers billing configuration menu (Hourly, Fixed Fee, Milestone, Non-billable).
+ * - `Backspace`: Deletes preceding badge token when cursor is at the boundary.
+ * - `ArrowLeft` / `ArrowRight`: Seamlessly steps across badge tokens without breaking context.
+ * - `Enter`: Starts session or selects highlighted autocomplete item.
+ * - `Escape`: Closes autocomplete popover or cancels active session editing.
  */
 const meta: Meta<typeof TokenCommandInput> = {
-  title: 'Components/Command Input Bar',
+  title: 'Features/Tracker Command Bar',
   component: TokenCommandInput,
   tags: ['autodocs'],
   parameters: {
@@ -142,7 +142,7 @@ export const EmptyFocused: Story = {
 
 /**
  * **With Recognized Project**:
- * Demonstrates parsed \`@Kerdio Core\` badge token interleaved with active task description.
+ * Demonstrates parsed `@Kerdio Core` badge token interleaved with active task description.
  */
 export const WithRecognizedProject: Story = {
   render: (args) => (
@@ -160,7 +160,7 @@ export const WithRecognizedProject: Story = {
 
 /**
  * **With Hourly Rate & Project**:
- * Shows both recognized project token and parsed \`$95/h\` billing rate badge.
+ * Shows both recognized project token and parsed `$95/h` billing rate badge.
  */
 export const WithHourlyRate: Story = {
   render: (args) => (
@@ -239,7 +239,7 @@ export const EditingActiveSession: Story = {
 /**
  * **Interactive: Typing & Project Autocomplete Selection**
  *
- * Simulates user typing a task description, typing \`@\` to trigger the project
+ * Simulates user typing a task description, typing `@` to trigger the project
  * suggestion dropdown, and selecting an item via keyboard or click.
  * Live execution verifiable on the **Interactions** tab.
  */
