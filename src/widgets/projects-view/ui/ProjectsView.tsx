@@ -45,6 +45,7 @@ export function ProjectsView() {
   // Form states
   const [name, setName] = useState("")
   const [color, setColor] = useState("#E25822")
+  const [isBillable, setIsBillable] = useState(true)
   const [billingType, setBillingType] = useState<BillingType>("hourly")
   const [hourlyRate, setHourlyRate] = useState("85")
   const [fixedBudget, setFixedBudget] = useState("2500")
@@ -114,7 +115,9 @@ export function ProjectsView() {
     setEditingProj(p)
     setName(p.name)
     setColor(p.color)
-    setBillingType(p.billingType)
+    const billable = p.billingType !== "none"
+    setIsBillable(billable)
+    setBillingType(billable ? p.billingType : "hourly")
     setHourlyRate(String(p.hourlyRate || 85))
     setFixedBudget(String(p.fixedBudget || 1000))
     setCurrency(p.currency)
@@ -124,8 +127,11 @@ export function ProjectsView() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
-    const rate = parseFloat(hourlyRate) || 85
-    const budget = parseFloat(fixedBudget) || (billingType === "milestone" ? 500 : 2500)
+    const effectiveBillingType: BillingType = isBillable ? billingType : "none"
+    const rate = isBillable ? (parseFloat(hourlyRate) || 85) : 0
+    const budget = isBillable
+      ? (parseFloat(fixedBudget) || (billingType === "milestone" ? 500 : 2500))
+      : 0
     const autoSlug = slugify(name)
 
     if (editingProj) {
@@ -133,7 +139,7 @@ export function ProjectsView() {
         name,
         slug: autoSlug,
         color,
-        billingType,
+        billingType: effectiveBillingType,
         hourlyRate: rate,
         fixedBudget: budget,
         currency,
@@ -143,7 +149,7 @@ export function ProjectsView() {
         name,
         slug: autoSlug,
         color,
-        billingType,
+        billingType: effectiveBillingType,
         hourlyRate: rate,
         fixedBudget: budget,
         currency,
@@ -175,6 +181,7 @@ export function ProjectsView() {
             setEditingProj(null)
             setName("")
             setColor("#E25822")
+            setIsBillable(true)
             setBillingType("hourly")
             setHourlyRate("85")
             setFixedBudget("2500")
@@ -228,7 +235,9 @@ export function ProjectsView() {
                       ? "Hourly"
                       : p.billingType === "fixed"
                       ? "Fixed"
-                      : "Milestone"}
+                      : p.billingType === "milestone"
+                      ? "Milestone"
+                      : "Non-billable"}
                   </Badge>
                 </div>
 
@@ -240,7 +249,9 @@ export function ProjectsView() {
                     ? `Rate: ${p.currency}${p.hourlyRate}/h`
                     : p.billingType === "milestone"
                     ? `Milestone: ${p.currency}${p.fixedBudget || 500} per milestone`
-                    : `Budget: ${p.currency}${p.fixedBudget || 0} total`}
+                    : p.billingType === "fixed"
+                    ? `Budget: ${p.currency}${p.fixedBudget || 0} total`
+                    : "Non-billable (Free focus)"}
                 </CardDescription>
               </CardHeader>
 
@@ -401,33 +412,67 @@ export function ProjectsView() {
                 </div>
               </div>
 
-              {/* Billing settings unified composite input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/80 block">
-                  Billing settings
-                </label>
-                <div className="relative flex items-center h-11 w-full rounded-2xl bg-black/50 px-3 shadow-[0_10px_25px_rgba(0,0,0,0.25)] backdrop-blur-3xl border-none focus-within:bg-black/60 transition-all">
-                  {/* Combobox Trigger (Left section of unified input) */}
-                  <button
-                    type="button"
-                    onClick={() => setIsBillingMenuOpen(!isBillingMenuOpen)}
-                    className="flex items-center gap-2 py-1 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
-                  >
-                    <SelectedBillingIcon className="h-4 w-4 text-orange-400 shrink-0" />
-                    <span className="text-sm font-semibold text-white select-none whitespace-nowrap">
-                      {selectedBillingOption.title}
-                    </span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-[#806060] transition-transform ${
-                        isBillingMenuOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+              {/* Billable toggle */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-black/40 border border-white/5 backdrop-blur-xl">
+                <div>
+                  <span className="text-xs font-semibold text-white/90 block">Billable</span>
+                  <span className="text-[11px] text-[#806060] block">
+                    {isBillable
+                      ? "Track revenue & hourly yield with client rates"
+                      : "Free focus time tracking without client rates"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isBillable}
+                  onClick={() => {
+                    const next = !isBillable
+                    setIsBillable(next)
+                    if (next && billingType === "none") {
+                      setBillingType("hourly")
+                    }
+                    setIsBillingMenuOpen(false)
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isBillable ? "bg-orange-600" : "bg-white/10"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
+                      isBillable ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
 
-                  <div className="h-5 w-px bg-white/10 mx-2 shrink-0" />
+              {/* Billing settings unified composite input (only shown when Billable is ON) */}
+              {isBillable && (
+                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <label className="text-xs font-semibold text-white/80 block">
+                    Billing settings
+                  </label>
+                  <div className="relative flex items-center h-11 w-full rounded-2xl bg-black/50 px-3 shadow-[0_10px_25px_rgba(0,0,0,0.25)] backdrop-blur-3xl border-none focus-within:bg-black/60 transition-all">
+                    {/* Combobox Trigger (Left section of unified input) */}
+                    <button
+                      type="button"
+                      onClick={() => setIsBillingMenuOpen(!isBillingMenuOpen)}
+                      className="flex items-center gap-2 py-1 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
+                    >
+                      <SelectedBillingIcon className="h-4 w-4 text-orange-400 shrink-0" />
+                      <span className="text-sm font-semibold text-white select-none whitespace-nowrap">
+                        {selectedBillingOption.title}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-[#806060] transition-transform ${
+                          isBillingMenuOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
 
-                  {/* Adaptive Amount Input (Right section of unified input) */}
-                  {billingType !== "none" ? (
+                    <div className="h-5 w-px bg-white/10 mx-2 shrink-0" />
+
+                    {/* Adaptive Amount Input (Right section of unified input) */}
                     <div className="flex items-center flex-1 min-w-0">
                       <span className="text-sm font-mono font-bold text-white/50 mr-1 select-none">$</span>
                       <input
@@ -448,37 +493,35 @@ export function ProjectsView() {
                         {billingType === "hourly" ? "/h" : "$"}
                       </span>
                     </div>
-                  ) : (
-                    <span className="text-xs text-[#806060] select-none">No billing</span>
-                  )}
 
-                  {/* Combobox Options Dropdown */}
-                  {isBillingMenuOpen && (
-                    <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl bg-black/95 backdrop-blur-3xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 space-y-1">
-                      {BILLING_OPTIONS.map((opt) => (
-                        <div
-                          key={opt.type}
-                          onClick={() => {
-                            setBillingType(opt.type)
-                            setIsBillingMenuOpen(false)
-                          }}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors ${
-                            billingType === opt.type
-                              ? "bg-white/15 text-white"
-                              : "hover:bg-white/10 text-white/80"
-                          }`}
-                        >
-                          <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
-                          <div className="min-w-0">
-                            <div className="text-sm font-semibold text-white">{opt.title}</div>
-                            <div className="text-xs text-[#806060]">{opt.description}</div>
+                    {/* Combobox Options Dropdown */}
+                    {isBillingMenuOpen && (
+                      <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl bg-black/95 backdrop-blur-3xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 space-y-1">
+                        {BILLING_OPTIONS.filter((opt) => opt.type !== "none").map((opt) => (
+                          <div
+                            key={opt.type}
+                            onClick={() => {
+                              setBillingType(opt.type)
+                              setIsBillingMenuOpen(false)
+                            }}
+                            className={`flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors ${
+                              billingType === opt.type
+                                ? "bg-white/15 text-white"
+                                : "hover:bg-white/10 text-white/80"
+                            }`}
+                          >
+                            <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-sm font-semibold text-white">{opt.title}</div>
+                              <div className="text-xs text-[#806060]">{opt.description}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <Button

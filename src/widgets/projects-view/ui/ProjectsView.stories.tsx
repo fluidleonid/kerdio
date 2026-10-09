@@ -45,3 +45,45 @@ export const Default: Story = {
     </div>
   ),
 }
+
+/**
+ * **Interactive: New Project Modal with Billable Toggle**:
+ * Automatically clicks "New Project" to open the creation modal,
+ * demonstrating the "Billable" toggle and the conditional billing selector.
+ */
+export const InteractiveNewProjectModal: Story = {
+  render: () => (
+    <div className="min-h-screen w-full bg-[#140501] py-6">
+      <ProjectsView />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const { within, userEvent, expect } = await import('@storybook/test')
+    const canvas = within(canvasElement)
+
+    // Click "New Project" button to reveal modal
+    const newProjectBtn = await canvas.findByRole('button', { name: /New Project/i })
+    await userEvent.click(newProjectBtn)
+
+    // Check Billable toggle is displayed
+    const billableToggle = await canvas.findByRole('switch')
+    await expect(billableToggle).toBeInTheDocument()
+    await expect(billableToggle).toHaveAttribute('aria-checked', 'true')
+
+    // Check billing input is visible
+    const billingInput = await canvas.findByPlaceholderText('0')
+    await expect(billingInput).toBeInTheDocument()
+
+    // Toggle Billable OFF
+    await userEvent.click(billableToggle)
+    await expect(billableToggle).toHaveAttribute('aria-checked', 'false')
+
+    // Billing input should now be removed from DOM
+    await expect(canvas.queryByPlaceholderText('0')).not.toBeInTheDocument()
+
+    // Toggle Billable back ON
+    await userEvent.click(billableToggle)
+    await expect(billableToggle).toHaveAttribute('aria-checked', 'true')
+    await expect(await canvas.findByPlaceholderText('0')).toBeInTheDocument()
+  },
+}
