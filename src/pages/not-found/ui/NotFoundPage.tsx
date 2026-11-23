@@ -12,7 +12,7 @@ export function NotFoundPage() {
       <h1 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
         Page Not Found
       </h1>
-      <p className="mt-2 text-sm text-[#FAF0EC] max-w-sm">
+      <p className="mt-2 text-sm text-[#F2F2F2] max-w-sm">
         The requested screen does not exist or has been moved.
       </p>
       <div className="mt-6">

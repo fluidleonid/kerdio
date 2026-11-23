@@ -199,7 +199,7 @@ export function TrackerView() {
           aria-live="polite"
           className="fixed top-6 z-50 animate-in fade-in slide-in-from-top-4 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black/75 shadow-2xl shadow-black/80 text-sm font-medium text-white backdrop-blur-3xl border-none max-w-[90vw]"
         >
-          <Sparkles className="h-4 w-4 text-[#E8D5CE] shrink-0" aria-hidden="true" />
+          <Sparkles className="h-4 w-4 text-[#DCDCDC] shrink-0" aria-hidden="true" />
           <span className="truncate">{saveToast}</span>
         </div>
       )}
@@ -255,7 +255,7 @@ export function TrackerView() {
 
                 {timer.milestoneName && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white">
-                    <Flag className="h-3.5 w-3.5 text-[#E8D5CE]" aria-hidden="true" />
+                    <Flag className="h-3.5 w-3.5 text-[#DCDCDC]" aria-hidden="true" />
                     <span>{timer.milestoneName}</span>
                   </span>
                 )}

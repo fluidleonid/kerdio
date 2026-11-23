@@ -272,7 +272,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
             <h2 id="today-log-title" className="text-lg font-bold tracking-tight text-white">
               Today&apos;s Log
             </h2>
-            <p className="text-xs font-mono text-[#E8D5CE] mt-0.5 tabular-nums">
+            <p className="text-xs font-mono text-[#DCDCDC] mt-0.5 tabular-nums">
               {todayLabel}
               {todaySessions.length > 0 && (
                 <>
@@ -288,7 +288,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
             type="button"
             aria-label="Close today's log"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -311,7 +311,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                       {group.projectName}
                     </h3>
                   </div>
-                  <span className="text-xs font-mono text-[#E8D5CE] tabular-nums shrink-0">
+                  <span className="text-xs font-mono text-[#DCDCDC] tabular-nums shrink-0">
                     {formatDuration(group.totalSeconds)}
                     {group.totalValue > 0
                       ? ` · ${group.currency}${group.totalValue.toFixed(0)}`
@@ -343,7 +343,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                             {capitalizeMemo(session.memo)}
                           </div>
                           {session.milestoneName && (
-                            <div className="text-xs text-[#CBB2AA] mt-0.5 truncate">
+                            <div className="text-xs text-[#B8B8B8] mt-0.5 truncate">
                               {session.milestoneName}
                             </div>
                           )}
@@ -352,7 +352,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                         {/* Right: Start–End time, Entry duration, Amount + subtle delete */}
                         <div className="flex items-start gap-2 shrink-0">
                           <div className="text-right font-mono tabular-nums">
-                            <div className="text-[11px] text-[#CBB2AA] leading-tight">
+                            <div className="text-[11px] text-[#B8B8B8] leading-tight">
                               {format24h(session.startTime)}–{format24h(endTime)}
                             </div>
                             <div className="text-xs text-white mt-0.5 leading-tight">
@@ -365,7 +365,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                             type="button"
                             aria-label={`Delete session ${capitalizeMemo(session.memo)}`}
                             onClick={() => deleteSession(session.id)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-[#CBB2AA] hover:text-white hover:bg-white/10 transition-colors cursor-pointer sm:opacity-50 sm:group-hover:opacity-100 focus-visible:opacity-100"
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-[#B8B8B8] hover:text-white hover:bg-white/10 transition-colors cursor-pointer sm:opacity-50 sm:group-hover:opacity-100 focus-visible:opacity-100"
                           >
                             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
@@ -381,7 +381,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                     {group.milestones.map((ms) => (
                       <div
                         key={ms.key}
-                        className="flex items-center justify-between gap-2 text-[11px] font-mono text-[#CBB2AA] tabular-nums"
+                        className="flex items-center justify-between gap-2 text-[11px] font-mono text-[#B8B8B8] tabular-nums"
                       >
                         <span className="truncate">{ms.name}</span>
                         <span className="shrink-0">
@@ -397,7 +397,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
           ) : (
             <div className="rounded-2xl bg-white/[0.04] py-12 px-4 text-center space-y-1.5">
               <p className="text-sm font-medium text-white">No sessions logged today</p>
-              <p className="text-xs text-[#CBB2AA] max-w-xs mx-auto">
+              <p className="text-xs text-[#B8B8B8] max-w-xs mx-auto">
                 Start a timer from the command bar to record your first block.
               </p>
             </div>

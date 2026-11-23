@@ -41,10 +41,10 @@
 
     /* Warm Gray / Neutral Primitives (WCAG AA/AAA calibrated for dark terracotta glass) */
     --base-color-white: #FFFFFF;
-    --base-color-warm-gray-100: #FAF0EC; /* High-contrast canvas secondary */
-    --base-color-warm-gray-200: #E8D5CE; /* Secondary text on glass (8.09:1) */
-    --base-color-warm-gray-300: #CBB2AA; /* Tertiary & placeholder text on glass (5.72:1) */
-    --base-color-warm-gray-400: #A88E86; /* Subtle decorative / icon-only accent */
+    --base-color-warm-gray-100: #F2F2F2; /* High-contrast canvas secondary */
+    --base-color-warm-gray-200: #DCDCDC; /* Secondary text on glass (8.09:1) */
+    --base-color-warm-gray-300: #B8B8B8; /* Tertiary & placeholder text on glass (5.72:1) */
+    --base-color-warm-gray-400: #9A9A9A; /* Subtle decorative / icon-only accent */
     --base-color-warm-gray-500: #6E5353; /* Non-text divider / muted border */
     --base-color-warm-gray-600: #4A3535;
 

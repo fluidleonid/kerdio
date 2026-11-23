@@ -140,7 +140,7 @@ export function ReportsView() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             Reports & Value
           </h1>
-          <p className="text-sm text-[#FAF0EC]">
+          <p className="text-sm text-[#F2F2F2]">
             Effective hourly yield, billable hours analytics, and data export.
           </p>
         </div>
@@ -167,7 +167,7 @@ export function ReportsView() {
                 className={`px-3.5 h-8 rounded-xl transition-colors cursor-pointer ${
                   period === opt.key
                     ? "bg-white/20 text-white"
-                    : "text-[#E8D5CE] hover:text-white hover:bg-white/10"
+                    : "text-[#DCDCDC] hover:text-white hover:bg-white/10"
                 }`}
               >
                 {opt.label}
@@ -204,7 +204,7 @@ export function ReportsView() {
       <section aria-label="Key metrics" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="py-5 gap-3">
           <CardHeader className="pb-0 px-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2 text-[#E8D5CE]">
+            <div className="flex items-center justify-between gap-2 text-[#DCDCDC]">
               <span className="text-xs font-medium">Billable Hours</span>
               <Clock className="h-4 w-4 text-orange-300 shrink-0" aria-hidden="true" />
             </div>
@@ -212,14 +212,14 @@ export function ReportsView() {
               {metrics.totalHours} h
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#CBB2AA] font-mono">
+          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#B8B8B8] font-mono">
             {metrics.sessionCount} sessions
           </CardContent>
         </Card>
 
         <Card className="py-5 gap-3">
           <CardHeader className="pb-0 px-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2 text-[#E8D5CE]">
+            <div className="flex items-center justify-between gap-2 text-[#DCDCDC]">
               <span className="text-xs font-medium">Total Value</span>
               <DollarSign className="h-4 w-4 text-emerald-300 shrink-0" aria-hidden="true" />
             </div>
@@ -227,14 +227,14 @@ export function ReportsView() {
               ${metrics.totalEarned}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#CBB2AA] font-mono">
+          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#B8B8B8] font-mono">
             Accrued revenue
           </CardContent>
         </Card>
 
         <Card className="py-5 gap-3">
           <CardHeader className="pb-0 px-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2 text-[#E8D5CE]">
+            <div className="flex items-center justify-between gap-2 text-[#DCDCDC]">
               <span className="text-xs font-medium">Effective Rate</span>
               <TrendingUp className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
             </div>
@@ -242,14 +242,14 @@ export function ReportsView() {
               ${metrics.effectiveRate}/h
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#CBB2AA] font-mono">
+          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#B8B8B8] font-mono">
             Avg return / hr
           </CardContent>
         </Card>
 
         <Card className="py-5 gap-3">
           <CardHeader className="pb-0 px-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2 text-[#E8D5CE]">
+            <div className="flex items-center justify-between gap-2 text-[#DCDCDC]">
               <span className="text-xs font-medium">Active Clients</span>
               <PieChart className="h-4 w-4 text-indigo-300 shrink-0" aria-hidden="true" />
             </div>
@@ -257,7 +257,7 @@ export function ReportsView() {
               {projectBreakdown.length}
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#CBB2AA] font-mono">
+          <CardContent className="pt-0 px-4 sm:px-6 text-xs text-[#B8B8B8] font-mono">
             In period
           </CardContent>
         </Card>
@@ -269,7 +269,7 @@ export function ReportsView() {
           <CardTitle className="text-lg font-bold text-white">
             <h2>Client Distribution</h2>
           </CardTitle>
-          <CardDescription className="text-sm text-[#E8D5CE]">
+          <CardDescription className="text-sm text-[#DCDCDC]">
             Share of tracked time and monetary value by project
           </CardDescription>
         </CardHeader>
@@ -286,16 +286,16 @@ export function ReportsView() {
                         style={{ backgroundColor: item.color }}
                       />
                       <span className="font-semibold text-white truncate">{item.name}</span>
-                      <span className="text-xs text-[#CBB2AA] shrink-0">
+                      <span className="text-xs text-[#B8B8B8] shrink-0">
                         ({item.count} {item.count === 1 ? "session" : "sessions"})
                       </span>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-4 font-mono text-xs sm:text-sm pl-5 sm:pl-0">
-                      <span className="text-[#E8D5CE] tabular-nums">{item.hours} h</span>
+                      <span className="text-[#DCDCDC] tabular-nums">{item.hours} h</span>
                       <span className="font-bold text-emerald-300 tabular-nums">
                         +${item.earned}
                       </span>
-                      <span className="text-[#FAF0EC] font-semibold tabular-nums min-w-[3rem] text-right">
+                      <span className="text-[#F2F2F2] font-semibold tabular-nums min-w-[3rem] text-right">
                         {item.percentage}%
                       </span>
                     </div>
@@ -323,7 +323,7 @@ export function ReportsView() {
             </ul>
           ) : (
             <div className="py-8 text-center">
-              <p className="text-sm text-[#E8D5CE]">
+              <p className="text-sm text-[#DCDCDC]">
                 No sessions tracked during this period yet.
               </p>
             </div>

@@ -2173,7 +2173,7 @@ export function TokenCommandInput({
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
-                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#CBB2AA] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
+                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#B8B8B8] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
                   />
                 </span>
               )
@@ -2198,7 +2198,7 @@ export function TokenCommandInput({
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse shrink-0" />
                 <span>Override</span>
-                <span className="font-mono text-[11px] text-[#E8D5CE] font-bold">
+                <span className="font-mono text-[11px] text-[#DCDCDC] font-bold">
                   {billingOverrideInfo.overrideText}
                 </span>
               </button>
@@ -2214,7 +2214,7 @@ export function TokenCommandInput({
                 e.preventDefault()
               }}
               onClick={openProjectPicker}
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
             >
               <AtSign className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -2229,7 +2229,7 @@ export function TokenCommandInput({
                 e.preventDefault()
               }}
               onClick={openSlashMenu}
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
             >
               <Slash className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -2256,7 +2256,7 @@ export function TokenCommandInput({
                 className={`flex h-10 sm:h-9 px-4 items-center justify-center rounded-full transition-all border-none ${
                   canStart
                     ? "bg-[#C2410C] text-white hover:bg-[#D44B12] hover:scale-105 active:scale-95 cursor-pointer shadow-none"
-                    : "bg-white/15 text-[#CBB2AA] cursor-not-allowed shadow-none pointer-events-none"
+                    : "bg-white/15 text-[#B8B8B8] cursor-not-allowed shadow-none pointer-events-none"
                 }`}
               >
                 {isEditingActive ? (
@@ -2273,7 +2273,7 @@ export function TokenCommandInput({
       {/* MINIMALIST VERTICAL RECENT TRACKS (HOURLY + MILESTONES) UNDER THE INPUT */}
       {activeProjectOrMatch && !isDropdownOpen && recentProjectTracks.length > 0 && (
         <div className="mt-3 px-1 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="px-3 text-[11px] font-medium text-[#E8D5CE]">
+          <div className="px-3 text-[11px] font-medium text-[#DCDCDC]">
             Recent
           </div>
           <ul className="space-y-0.5">
@@ -2292,14 +2292,14 @@ export function TokenCommandInput({
                     className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs font-medium text-left transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-white/15 text-white"
-                        : "bg-transparent text-[#FAF0EC] hover:bg-white/15 hover:text-white"
+                        : "bg-transparent text-[#F2F2F2] hover:bg-white/15 hover:text-white"
                     }`}
                   >
                     <span className="flex items-center gap-2 min-w-0">
                       {item.kind === "hourly" ? (
-                        <Clock className="h-3.5 w-3.5 text-[#E8D5CE] shrink-0" aria-hidden="true" />
+                        <Clock className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" aria-hidden="true" />
                       ) : (
-                        <Flag className="h-3.5 w-3.5 text-[#E8D5CE] shrink-0" aria-hidden="true" />
+                        <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" aria-hidden="true" />
                       )}
                       <span className="truncate">{item.label}</span>
                       {isSelected && (
@@ -2307,7 +2307,7 @@ export function TokenCommandInput({
                       )}
                     </span>
                     {item.amount > 0 && (
-                      <span className="font-mono text-[#E8D5CE] tabular-nums shrink-0">
+                      <span className="font-mono text-[#DCDCDC] tabular-nums shrink-0">
                         {item.kind === "hourly" ? `${item.amount}/h` : `${item.amount}`}
                       </span>
                     )}
@@ -2325,7 +2325,7 @@ export function TokenCommandInput({
           {/* MODE 1: RECENT ENTRIES (NO ICON, NO COUNTER, ONLY MEMO & @PROJECT) */}
           {mode === "recents" && (
             <div className="space-y-1">
-              <div className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
+              <div className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#B8B8B8]">
                 Recent entries
               </div>
 
@@ -2380,7 +2380,7 @@ export function TokenCommandInput({
                     className={`w-full flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                       isSelected
                         ? "bg-white/15 text-white"
-                        : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
+                        : "text-[#DCDCDC] hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -2397,8 +2397,8 @@ export function TokenCommandInput({
 
                     <div className="flex items-center gap-2 shrink-0">
                       {isMilestoneEntry ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-xs font-mono text-[#E8D5CE]">
-                          <Flag className="h-3 w-3 text-[#CBB2AA] shrink-0" aria-hidden="true" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-xs font-mono text-[#DCDCDC]">
+                          <Flag className="h-3 w-3 text-[#B8B8B8] shrink-0" aria-hidden="true" />
                           <span className="max-w-[110px] truncate">{milestoneLabel}</span>
                           {milestoneAmount > 0 && (
                             <span className="tabular-nums">· ${milestoneAmount}</span>
@@ -2406,12 +2406,12 @@ export function TokenCommandInput({
                         </span>
                       ) : (
                         billingTag && (
-                          <span className="font-mono text-sm text-[#E8D5CE] font-semibold">
+                          <span className="font-mono text-sm text-[#DCDCDC] font-semibold">
                             {billingTag}
                           </span>
                         )
                       )}
-                      <span className="text-sm text-[#CBB2AA]">
+                      <span className="text-sm text-[#B8B8B8]">
                         @{project?.name || "project"}
                       </span>
                     </div>
@@ -2424,7 +2424,7 @@ export function TokenCommandInput({
           {/* MODE 2: PROJECTS AUTOCOMPLETE LIST ON @ */}
           {mode === "projects" && (
             <div className="space-y-1">
-              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
+              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#B8B8B8]">
                 <span>Projects ({filteredProjects.length})</span>
                 <span>Select ↵</span>
               </div>
@@ -2440,7 +2440,7 @@ export function TokenCommandInput({
                       className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                         isSelected
                           ? "bg-white/15 text-white"
-                          : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
+                          : "text-[#DCDCDC] hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -2454,14 +2454,14 @@ export function TokenCommandInput({
                       </div>
 
                       {p.billingType === "milestone" ? (
-                        <span className="inline-flex items-center gap-1 text-[#E8D5CE] font-mono text-xs tabular-nums">
-                          <Flag className="h-3 w-3 text-[#CBB2AA]" aria-hidden="true" />
+                        <span className="inline-flex items-center gap-1 text-[#DCDCDC] font-mono text-xs tabular-nums">
+                          <Flag className="h-3 w-3 text-[#B8B8B8]" aria-hidden="true" />
                           <span>Milestone</span>
                         </span>
                       ) : (
                         p.billingType === "hourly" &&
                         p.hourlyRate && (
-                          <span className="text-[#E8D5CE] font-mono text-sm tabular-nums font-semibold">
+                          <span className="text-[#DCDCDC] font-mono text-sm tabular-nums font-semibold">
                             ${p.hourlyRate}/h
                           </span>
                         )
@@ -2487,7 +2487,7 @@ export function TokenCommandInput({
                         Create project <strong className="text-white font-semibold">"{atQuery.trim()}"</strong>
                       </span>
                     </div>
-                    <span className="rounded bg-white/15 px-1.5 py-0.5 font-mono text-xs text-[#E8D5CE]">
+                    <span className="rounded bg-white/15 px-1.5 py-0.5 font-mono text-xs text-[#DCDCDC]">
                       Enter ↵
                     </span>
                   </button>
@@ -2499,7 +2499,7 @@ export function TokenCommandInput({
           {/* MODE 3: DYNAMIC SLASH COMMANDS (NO PRESETS, USER ENTERS COMMAND & VALUE) */}
           {mode === "slash" && (
             <div className="space-y-1">
-              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
+              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#B8B8B8]">
                 <span>Billing Command (/)</span>
                 <span>Apply ↵</span>
               </div>
@@ -2517,7 +2517,7 @@ export function TokenCommandInput({
                       className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                         isSelected
                           ? "bg-white/15 text-white"
-                          : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
+                          : "text-[#DCDCDC] hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
@@ -2528,14 +2528,14 @@ export function TokenCommandInput({
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-white text-sm">{opt.title}</span>
                           </div>
-                          <div className="text-xs text-[#E8D5CE] break-words whitespace-normal text-wrap leading-tight mt-0.5">
+                          <div className="text-xs text-[#DCDCDC] break-words whitespace-normal text-wrap leading-tight mt-0.5">
                             {opt.description}
                           </div>
                         </div>
                       </div>
 
                       <div className="shrink-0 ml-2">
-                        <span className="rounded bg-white/15 px-2 py-0.5 font-mono text-xs text-[#FAF0EC]">
+                        <span className="rounded bg-white/15 px-2 py-0.5 font-mono text-xs text-[#F2F2F2]">
                           {opt.isPending ? "Enter ↵" : opt.command}
                         </span>
                       </div>
@@ -2565,14 +2565,14 @@ export function TokenCommandInput({
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: pendingBillingChange.project.color }}
                   />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#E8D5CE]">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#DCDCDC]">
                     {pendingBillingChange.project.name}
                   </span>
                 </div>
                 <h3 id="billing-override-title" className="text-base font-bold text-white mt-1">
                   Project Billing Override
                 </h3>
-                <p className="text-xs text-[#E8D5CE] mt-0.5">
+                <p className="text-xs text-[#DCDCDC] mt-0.5">
                   New rate:{" "}
                   <span className="text-amber-300 font-mono font-semibold">
                     {pendingBillingChange.newBilling.type === "hourly"
@@ -2582,7 +2582,7 @@ export function TokenCommandInput({
                       : `$${pendingBillingChange.newBilling.amount}`}
                   </span>
                   {billingOverrideInfo && (
-                    <span className="text-[#CBB2AA] ml-1">
+                    <span className="text-[#B8B8B8] ml-1">
                       (project default: {billingOverrideInfo.projectDefaultText})
                     </span>
                   )}
@@ -2593,7 +2593,7 @@ export function TokenCommandInput({
                 type="button"
                 aria-label="Close dialog"
                 onClick={() => setPendingBillingChange(null)}
-                className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
@@ -2609,7 +2609,7 @@ export function TokenCommandInput({
                 <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   Current session only
                 </div>
-                <div className="text-xs text-[#E8D5CE] mt-0.5">
+                <div className="text-xs text-[#DCDCDC] mt-0.5">
                   Apply only to this session. Project defaults remain unchanged.
                 </div>
               </button>
@@ -2622,7 +2622,7 @@ export function TokenCommandInput({
                 <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   Current & future sessions
                 </div>
-                <div className="text-xs text-[#E8D5CE] mt-0.5">
+                <div className="text-xs text-[#DCDCDC] mt-0.5">
                   Update project rate for this and all upcoming sessions.
                 </div>
               </button>
@@ -2635,7 +2635,7 @@ export function TokenCommandInput({
                 <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   All project sessions
                 </div>
-                <div className="text-xs text-[#E8D5CE] mt-0.5">
+                <div className="text-xs text-[#DCDCDC] mt-0.5">
                   Update project rate and recalculate all past log entries.
                 </div>
               </button>
@@ -2645,7 +2645,7 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={() => setPendingBillingChange(null)}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 Cancel
               </button>

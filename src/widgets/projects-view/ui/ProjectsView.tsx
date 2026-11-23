@@ -127,7 +127,7 @@ export function ProjectsView() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             Projects & Billing
           </h1>
-          <p className="text-sm text-[#FAF0EC]">
+          <p className="text-sm text-[#F2F2F2]">
             Client project registry with billing models, hourly rates, and accrued revenue.
           </p>
         </div>
@@ -179,7 +179,7 @@ export function ProjectsView() {
 
                   <Badge
                     variant="secondary"
-                    className="text-[11px] uppercase font-semibold border-none bg-white/10 text-[#FAF0EC] shrink-0"
+                    className="text-[11px] uppercase font-semibold border-none bg-white/10 text-[#F2F2F2] shrink-0"
                   >
                     {p.billingType === "hourly"
                       ? "Hourly"
@@ -194,7 +194,7 @@ export function ProjectsView() {
                 <CardTitle className="text-lg font-bold text-white mt-3 group-hover:text-amber-100 transition-colors">
                   <h2>{p.name}</h2>
                 </CardTitle>
-                <CardDescription className="text-xs font-mono text-[#E8D5CE]">
+                <CardDescription className="text-xs font-mono text-[#DCDCDC]">
                   {p.billingType === "hourly"
                     ? `Rate: ${p.currency}${p.hourlyRate}/h`
                     : p.billingType === "milestone"
@@ -210,16 +210,16 @@ export function ProjectsView() {
                   {/* Metrics */}
                   <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10">
                     <div>
-                      <span className="text-xs text-[#CBB2AA] block">Tracked</span>
+                      <span className="text-xs text-[#B8B8B8] block">Tracked</span>
                       <span className="font-mono font-bold text-white text-sm tabular-nums mt-0.5 block">
                         {hours} h{" "}
-                        <span className="font-normal text-[#E8D5CE] text-xs">
+                        <span className="font-normal text-[#DCDCDC] text-xs">
                           ({stats.count})
                         </span>
                       </span>
                     </div>
                     <div>
-                      <span className="text-xs text-[#CBB2AA] block">
+                      <span className="text-xs text-[#B8B8B8] block">
                         {p.billingType === "milestone" ? "Milestones Total" : "Accrued"}
                       </span>
                       <span className="font-mono font-bold text-emerald-300 text-sm tabular-nums mt-0.5 block">
@@ -275,12 +275,12 @@ export function ProjectsView() {
                               placeholder="e.g. M 3 Backend API"
                               value={newMsName}
                               onChange={(e) => setNewMsName(e.target.value)}
-                              className="flex-1 h-9 rounded-xl bg-black/50 px-3 text-xs text-white placeholder:text-[#CBB2AA] outline-none"
+                              className="flex-1 h-9 rounded-xl bg-black/50 px-3 text-xs text-white placeholder:text-[#B8B8B8] outline-none"
                             />
                             <div className="relative w-full sm:w-28">
                               <span
                                 aria-hidden="true"
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#E8D5CE]"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#DCDCDC]"
                               >
                                 $
                               </span>
@@ -290,7 +290,7 @@ export function ProjectsView() {
                                 placeholder="Amount"
                                 value={newMsAmount}
                                 onChange={(e) => setNewMsAmount(e.target.value)}
-                                className="w-full h-9 rounded-xl bg-black/50 pl-7 pr-2.5 text-xs text-white placeholder:text-[#CBB2AA] outline-none font-mono"
+                                className="w-full h-9 rounded-xl bg-black/50 pl-7 pr-2.5 text-xs text-white placeholder:text-[#B8B8B8] outline-none font-mono"
                               />
                             </div>
                           </div>
@@ -298,7 +298,7 @@ export function ProjectsView() {
                             <button
                               type="button"
                               onClick={() => setAddingMilestoneForProjId(null)}
-                              className="px-3 py-1.5 rounded-xl text-xs text-[#E8D5CE] hover:text-white hover:bg-white/10 cursor-pointer"
+                              className="px-3 py-1.5 rounded-xl text-xs text-[#DCDCDC] hover:text-white hover:bg-white/10 cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -362,7 +362,7 @@ export function ProjectsView() {
                                 >
                                   <ChevronDown
                                     aria-hidden="true"
-                                    className={`h-3.5 w-3.5 text-[#E8D5CE] shrink-0 transition-transform ${
+                                    className={`h-3.5 w-3.5 text-[#DCDCDC] shrink-0 transition-transform ${
                                       isExpanded ? "rotate-0" : "-rotate-90"
                                     }`}
                                   />
@@ -376,7 +376,7 @@ export function ProjectsView() {
                                         {m.name}
                                       </span>
                                     </div>
-                                    <div className="text-[11px] text-[#E8D5CE] font-mono">
+                                    <div className="text-[11px] text-[#DCDCDC] font-mono">
                                       ${m.amount} • {milestoneSessions.length}{" "}
                                       {milestoneSessions.length === 1 ? "memo" : "memos"} ({msHours}h)
                                     </div>
@@ -405,26 +405,26 @@ export function ProjectsView() {
                               {/* Collected Memos Under This Milestone */}
                               {isExpanded && (
                                 <div className="mt-2.5 pt-2 border-t border-white/10 space-y-1.5">
-                                  <div className="text-[11px] font-semibold text-[#CBB2AA] flex items-center justify-between">
+                                  <div className="text-[11px] font-semibold text-[#B8B8B8] flex items-center justify-between">
                                     <span>Collected Memos ({milestoneSessions.length})</span>
-                                    <span className="font-mono text-[#E8D5CE]">{msHours}h total</span>
+                                    <span className="font-mono text-[#DCDCDC]">{msHours}h total</span>
                                   </div>
                                   {milestoneSessions.length > 0 ? (
                                     <ul className="space-y-1 max-h-24 overflow-y-auto pr-1">
                                       {milestoneSessions.map((s) => (
                                         <li
                                           key={s.id}
-                                          className="flex items-center justify-between py-1 px-2 rounded-lg bg-black/30 text-xs text-[#FAF0EC]"
+                                          className="flex items-center justify-between py-1 px-2 rounded-lg bg-black/30 text-xs text-[#F2F2F2]"
                                         >
                                           <span className="truncate pr-2">{s.memo}</span>
-                                          <span className="font-mono text-[11px] text-[#E8D5CE] shrink-0">
+                                          <span className="font-mono text-[11px] text-[#DCDCDC] shrink-0">
                                             {(s.durationSeconds / 3600).toFixed(1)}h
                                           </span>
                                         </li>
                                       ))}
                                     </ul>
                                   ) : (
-                                    <p className="text-xs text-[#CBB2AA] italic py-0.5">
+                                    <p className="text-xs text-[#B8B8B8] italic py-0.5">
                                       No memos tracked under this milestone yet.
                                     </p>
                                   )}
@@ -445,7 +445,7 @@ export function ProjectsView() {
                     size="sm"
                     aria-label={`Edit ${p.name}`}
                     onClick={() => openEdit(p)}
-                    className="h-9 gap-1.5 text-xs text-[#E8D5CE] hover:text-white hover:bg-white/10 rounded-xl px-3 cursor-pointer"
+                    className="h-9 gap-1.5 text-xs text-[#DCDCDC] hover:text-white hover:bg-white/10 rounded-xl px-3 cursor-pointer"
                   >
                     <Edit3 className="h-3.5 w-3.5" aria-hidden="true" />
                     Edit
@@ -458,7 +458,7 @@ export function ProjectsView() {
                         size="sm"
                         aria-label={`Delete ${p.name}`}
                         onClick={() => deleteProject(p.id)}
-                        className="h-9 w-9 p-0 text-[#E8D5CE] hover:text-rose-300 hover:bg-white/10 rounded-xl cursor-pointer"
+                        className="h-9 w-9 p-0 text-[#DCDCDC] hover:text-rose-300 hover:bg-white/10 rounded-xl cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </Button>

@@ -154,7 +154,7 @@ export function ProjectSettingsDialog({
               type="button"
               aria-label="Close project settings dialog"
               onClick={onClose}
-              className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -165,7 +165,7 @@ export function ProjectSettingsDialog({
           <div>
             <label
               htmlFor="project-name-input"
-              className="text-xs font-semibold text-[#FAF0EC] block mb-1.5"
+              className="text-xs font-semibold text-[#F2F2F2] block mb-1.5"
             >
               Project Name
             </label>
@@ -180,7 +180,7 @@ export function ProjectSettingsDialog({
           </div>
 
           <fieldset>
-            <legend className="text-xs font-semibold text-[#FAF0EC] block mb-2">
+            <legend className="text-xs font-semibold text-[#F2F2F2] block mb-2">
               Accent Color
             </legend>
             <div className="flex flex-wrap items-center gap-2.5">
@@ -208,7 +208,7 @@ export function ProjectSettingsDialog({
               <span id="billable-label" className="text-xs font-semibold text-white block">
                 Billable
               </span>
-              <span className="text-xs text-[#E8D5CE] block mt-0.5">
+              <span className="text-xs text-[#DCDCDC] block mt-0.5">
                 {isBillable
                   ? "Track revenue & hourly yield with client rates"
                   : "Free focus time tracking without client rates"}
@@ -244,7 +244,7 @@ export function ProjectSettingsDialog({
             <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
               <label
                 htmlFor="project-billing-amount"
-                className="text-xs font-semibold text-[#FAF0EC] block"
+                className="text-xs font-semibold text-[#F2F2F2] block"
               >
                 Billing settings
               </label>
@@ -262,7 +262,7 @@ export function ProjectSettingsDialog({
                   </span>
                   <ChevronDown
                     aria-hidden="true"
-                    className={`h-3.5 w-3.5 text-[#E8D5CE] transition-transform ${
+                    className={`h-3.5 w-3.5 text-[#DCDCDC] transition-transform ${
                       isBillingMenuOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -272,7 +272,7 @@ export function ProjectSettingsDialog({
 
                 {/* Adaptive Amount Input */}
                 <div className="flex items-center flex-1 min-w-0">
-                  <span className="text-sm font-mono font-bold text-[#E8D5CE] mr-1 select-none">
+                  <span className="text-sm font-mono font-bold text-[#DCDCDC] mr-1 select-none">
                     $
                   </span>
                   <input
@@ -288,9 +288,9 @@ export function ProjectSettingsDialog({
                       }
                     }}
                     placeholder="0"
-                    className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-[#CBB2AA] focus:outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-[#B8B8B8] focus:outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <span className="text-xs font-mono font-semibold text-[#E8D5CE] ml-1 select-none shrink-0">
+                  <span className="text-xs font-mono font-semibold text-[#DCDCDC] ml-1 select-none shrink-0">
                     {billingType === "hourly" ? "/h" : "$"}
                   </span>
                 </div>
@@ -309,13 +309,13 @@ export function ProjectSettingsDialog({
                         className={`w-full flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors text-left ${
                           billingType === opt.type
                             ? "bg-white/15 text-white"
-                            : "hover:bg-white/10 text-[#FAF0EC]"
+                            : "hover:bg-white/10 text-[#F2F2F2]"
                         }`}
                       >
                         <opt.icon className="h-4 w-4 text-amber-300 mt-0.5 shrink-0" aria-hidden="true" />
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-white">{opt.title}</div>
-                          <div className="text-xs text-[#E8D5CE]">{opt.description}</div>
+                          <div className="text-xs text-[#DCDCDC]">{opt.description}</div>
                         </div>
                       </button>
                     ))}
@@ -331,7 +331,7 @@ export function ProjectSettingsDialog({
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-10 rounded-full px-4 text-[#E8D5CE] hover:text-white hover:bg-white/10 cursor-pointer"
+              className="h-10 rounded-full px-4 text-[#DCDCDC] hover:text-white hover:bg-white/10 cursor-pointer"
             >
               Cancel
             </Button>

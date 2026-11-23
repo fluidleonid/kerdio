@@ -237,11 +237,11 @@ export function JournalView() {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Journal
             </h1>
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-black/45 text-[#FAF0EC] backdrop-blur-xl">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-black/45 text-[#F2F2F2] backdrop-blur-xl">
               24h Timeline
             </span>
           </div>
-          <p className="text-sm text-[#FAF0EC]">
+          <p className="text-sm text-[#F2F2F2]">
             Weekly timeline of tracked work sessions, hours, and accrued value.
           </p>
         </div>
@@ -254,7 +254,7 @@ export function JournalView() {
                 type="button"
                 aria-label="Previous week"
                 onClick={prevWeek}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#E8D5CE] hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#DCDCDC] hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -271,7 +271,7 @@ export function JournalView() {
                 type="button"
                 aria-label="Next week"
                 onClick={nextWeek}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#E8D5CE] hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#DCDCDC] hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -297,7 +297,7 @@ export function JournalView() {
       <section aria-label="Weekly summary" className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="glass-card flex items-center justify-between p-4 sm:p-5">
           <div>
-            <span className="text-xs font-medium text-[#E8D5CE] block">
+            <span className="text-xs font-medium text-[#DCDCDC] block">
               Week Hours
             </span>
             <span className="text-2xl font-bold font-mono text-white tabular-nums mt-0.5 block">
@@ -311,7 +311,7 @@ export function JournalView() {
 
         <div className="glass-card flex items-center justify-between p-4 sm:p-5">
           <div>
-            <span className="text-xs font-medium text-[#E8D5CE] block">
+            <span className="text-xs font-medium text-[#DCDCDC] block">
               Week Billing
             </span>
             <span className="text-2xl font-bold font-mono text-emerald-300 tabular-nums mt-0.5 block">
@@ -325,7 +325,7 @@ export function JournalView() {
 
         <div className="glass-card flex items-center justify-between p-4 sm:p-5">
           <div>
-            <span className="text-xs font-medium text-[#E8D5CE] block">
+            <span className="text-xs font-medium text-[#DCDCDC] block">
               Sessions Logged
             </span>
             <span className="text-2xl font-bold font-mono text-white tabular-nums mt-0.5 block">
@@ -366,7 +366,7 @@ export function JournalView() {
                       ? "bg-[#C2410C] text-white font-bold ring-1 ring-white/30"
                       : isToday
                       ? "bg-white/15 text-white font-semibold"
-                      : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
+                      : "text-[#DCDCDC] hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <span className="text-[11px] uppercase leading-none opacity-90">
@@ -401,7 +401,7 @@ export function JournalView() {
                 day: "numeric",
               })}
             </h2>
-            <span className="text-xs font-mono text-[#E8D5CE]">
+            <span className="text-xs font-mono text-[#DCDCDC]">
               {selectedDaySessions.length}{" "}
               {selectedDaySessions.length === 1 ? "session" : "sessions"}
             </span>
@@ -428,14 +428,14 @@ export function JournalView() {
                       />
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E8D5CE] truncate">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#DCDCDC] truncate">
                             <span
                               className="h-2 w-2 rounded-full shrink-0"
                               style={{ backgroundColor: project?.color || "#F97316" }}
                             />
                             <span className="truncate">@{project?.name || "Project"}</span>
                           </span>
-                          <span className="text-xs font-mono text-[#E8D5CE] tabular-nums shrink-0">
+                          <span className="text-xs font-mono text-[#DCDCDC] tabular-nums shrink-0">
                             {format24h(session.startTime)} – {format24h(endTime)}
                           </span>
                         </div>
@@ -452,7 +452,7 @@ export function JournalView() {
                         )}
 
                         <div className="flex items-center justify-between pt-1.5 border-t border-white/10 text-xs font-mono">
-                          <span className="text-[#CBB2AA]">{durationMin} min</span>
+                          <span className="text-[#B8B8B8]">{durationMin} min</span>
                           <span className="font-bold text-emerald-300">
                             +${session.earnedAmount.toFixed(2)}
                           </span>
@@ -465,7 +465,7 @@ export function JournalView() {
             </ul>
           ) : (
             <div className="py-8 text-center space-y-3">
-              <p className="text-sm text-[#E8D5CE]">No sessions logged for this day.</p>
+              <p className="text-sm text-[#DCDCDC]">No sessions logged for this day.</p>
               <Button
                 size="sm"
                 variant="outline"
@@ -485,7 +485,7 @@ export function JournalView() {
         {/* Sticky Calendar Days Header */}
         <div className="grid grid-cols-[64px_repeat(7,1fr)] border-b border-white/10 bg-black/70 backdrop-blur-md sticky top-0 z-20">
           {/* Time Gutter Corner */}
-          <div className="p-3 text-xs font-semibold text-[#CBB2AA] uppercase text-center border-r border-white/10 flex items-center justify-center">
+          <div className="p-3 text-xs font-semibold text-[#B8B8B8] uppercase text-center border-r border-white/10 flex items-center justify-center">
             24h
           </div>
 
@@ -502,7 +502,7 @@ export function JournalView() {
                   isToday ? "bg-orange-500/15" : ""
                 }`}
               >
-                <div className="text-xs font-mono uppercase tracking-wider text-[#E8D5CE]">
+                <div className="text-xs font-mono uppercase tracking-wider text-[#DCDCDC]">
                   {dayName}
                 </div>
                 <div
@@ -535,7 +535,7 @@ export function JournalView() {
                 <div
                   key={h}
                   style={{ height: `${HOUR_HEIGHT}px` }}
-                  className="relative border-b border-white/5 pr-2.5 pt-1 text-right text-[11px] font-mono text-[#CBB2AA]"
+                  className="relative border-b border-white/5 pr-2.5 pt-1 text-right text-[11px] font-mono text-[#B8B8B8]"
                 >
                   <span>{h}</span>
                 </div>
@@ -601,10 +601,10 @@ export function JournalView() {
                       >
                         <div className="min-w-0 w-full">
                           <div className="flex items-center justify-between gap-1 text-[11px] font-mono leading-none">
-                            <span className="font-semibold text-[#FAF0EC] truncate">
+                            <span className="font-semibold text-[#F2F2F2] truncate">
                               @{project?.name || "Project"}
                             </span>
-                            <span className="text-[#E8D5CE] tabular-nums shrink-0">
+                            <span className="text-[#DCDCDC] tabular-nums shrink-0">
                               {format24h(session.startTime)}
                             </span>
                           </div>
@@ -621,7 +621,7 @@ export function JournalView() {
                         </div>
 
                         <div className="flex items-center justify-between w-full text-[11px] font-mono mt-1 pt-1 border-t border-white/10">
-                          <span className="text-[#CBB2AA]">{durationMin}m</span>
+                          <span className="text-[#B8B8B8]">{durationMin}m</span>
                           <span className="font-bold text-emerald-300">
                             +${session.earnedAmount.toFixed(2)}
                           </span>
@@ -654,7 +654,7 @@ export function JournalView() {
                   type="button"
                   aria-label="Close edit session dialog"
                   onClick={() => setSelectedSession(null)}
-                  className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
@@ -663,7 +663,7 @@ export function JournalView() {
 
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
-                <label htmlFor="edit-memo" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                <label htmlFor="edit-memo" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                   Task Note / Memo
                 </label>
                 <Input
@@ -677,7 +677,7 @@ export function JournalView() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="edit-minutes" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                  <label htmlFor="edit-minutes" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                     Duration (minutes)
                   </label>
                   <Input
@@ -691,7 +691,7 @@ export function JournalView() {
                 </div>
 
                 <div>
-                  <label htmlFor="edit-rate" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                  <label htmlFor="edit-rate" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                     Rate ($/h)
                   </label>
                   <Input
@@ -706,7 +706,7 @@ export function JournalView() {
               </div>
 
               <div>
-                <label htmlFor="edit-project" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                <label htmlFor="edit-project" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                   Project
                 </label>
                 <select
@@ -744,7 +744,7 @@ export function JournalView() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedSession(null)}
-                    className="h-10 rounded-full px-4 text-[#E8D5CE] hover:text-white hover:bg-white/10 cursor-pointer"
+                    className="h-10 rounded-full px-4 text-[#DCDCDC] hover:text-white hover:bg-white/10 cursor-pointer"
                   >
                     Cancel
                   </Button>
@@ -781,7 +781,7 @@ export function JournalView() {
                   type="button"
                   aria-label="Close log work session dialog"
                   onClick={() => setIsManualModalOpen(false)}
-                  className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-[#DCDCDC] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
@@ -790,7 +790,7 @@ export function JournalView() {
 
             <form onSubmit={handleCreateManual} className="space-y-4">
               <div>
-                <label htmlFor="new-memo" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                <label htmlFor="new-memo" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                   Session Memo
                 </label>
                 <Input
@@ -804,7 +804,7 @@ export function JournalView() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label htmlFor="new-start-hour" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                  <label htmlFor="new-start-hour" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                     Start (24h)
                   </label>
                   <Input
@@ -819,7 +819,7 @@ export function JournalView() {
                 </div>
 
                 <div>
-                  <label htmlFor="new-minutes" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                  <label htmlFor="new-minutes" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                     Duration (min)
                   </label>
                   <Input
@@ -833,7 +833,7 @@ export function JournalView() {
                 </div>
 
                 <div>
-                  <label htmlFor="new-rate" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                  <label htmlFor="new-rate" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                     Rate ($/h)
                   </label>
                   <Input
@@ -848,7 +848,7 @@ export function JournalView() {
               </div>
 
               <div>
-                <label htmlFor="new-project" className="text-xs font-semibold text-[#FAF0EC] block mb-1.5">
+                <label htmlFor="new-project" className="text-xs font-semibold text-[#F2F2F2] block mb-1.5">
                   Project
                 </label>
                 <select
@@ -871,7 +871,7 @@ export function JournalView() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsManualModalOpen(false)}
-                  className="h-10 rounded-full px-4 text-[#E8D5CE] hover:text-white hover:bg-white/10 cursor-pointer"
+                  className="h-10 rounded-full px-4 text-[#DCDCDC] hover:text-white hover:bg-white/10 cursor-pointer"
                 >
                   Cancel
                 </Button>

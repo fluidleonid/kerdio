@@ -58,7 +58,7 @@ function AppTooltip({
         <div className="flex items-center gap-1.5 whitespace-nowrap">
           <span>{content}</span>
           {shortcut && (
-            <kbd className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] text-[#FAF0EC] border-none">
+            <kbd className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] text-[#F2F2F2] border-none">
               {shortcut}
             </kbd>
           )}

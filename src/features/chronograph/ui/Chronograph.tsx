@@ -380,11 +380,11 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
                   </div>
                   {moneyDisplay.effectiveRateText ? (
                     <div className="text-xs font-semibold font-mono text-amber-200 mt-1 flex items-center justify-center gap-1">
-                      <span className="text-[#FAF0EC]">Effective rate:</span>
+                      <span className="text-[#F2F2F2]">Effective rate:</span>
                       <span className="text-white font-bold">{moneyDisplay.effectiveRateText}</span>
                     </div>
                   ) : (
-                    <div className="text-xs font-semibold text-[#FAF0EC] mt-1">
+                    <div className="text-xs font-semibold text-[#F2F2F2] mt-1">
                       {moneyDisplay.hint}
                     </div>
                   )}
@@ -395,7 +395,7 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
                   <div className="font-['Oxanium',sans-serif] font-bold text-[24px] sm:text-[28px] text-amber-200 leading-tight animate-digit-charge-glow">
                     {moneyDisplay.amountText}
                   </div>
-                  <div className="text-xs font-semibold text-[#FAF0EC] mt-1">
+                  <div className="text-xs font-semibold text-[#F2F2F2] mt-1">
                     {moneyDisplay.hint}
                   </div>
                 </div>

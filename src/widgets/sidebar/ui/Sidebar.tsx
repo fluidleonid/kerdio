@@ -112,7 +112,7 @@ export function Sidebar() {
                 className={`relative flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all md:h-11 md:w-11 md:min-h-[44px] md:flex-row md:p-0 ${
                   isActive
                     ? "bg-white/20 text-white font-semibold md:scale-105 ring-1 ring-white/25"
-                    : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
+                    : "text-[#DCDCDC] hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {/* Non-color shape indicator for active route (WCAG 1.4.1) */}
