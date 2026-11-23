@@ -5,18 +5,20 @@ import { ROUTES } from "@/shared/config"
 
 export function NotFoundPage() {
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4 my-auto select-none">
-      <span className="font-mono text-7xl font-extrabold text-orange-500/30">404</span>
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4 my-auto">
+      <span aria-hidden="true" className="font-mono text-7xl font-extrabold text-white/25">
+        404
+      </span>
       <h1 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
         Page Not Found
       </h1>
-      <p className="mt-2 text-sm text-[#806060] max-w-sm">
+      <p className="mt-2 text-sm text-[#FAF0EC] max-w-sm">
         The requested screen does not exist or has been moved.
       </p>
       <div className="mt-6">
         <Link to={ROUTES.TRACKER}>
-          <Button className="gap-2 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl">
-            <ArrowLeft className="h-4 w-4" />
+          <Button className="gap-2 bg-[#C2410C] hover:bg-[#D44B12] text-white rounded-2xl h-10 px-5 cursor-pointer">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back to Tracker
           </Button>
         </Link>

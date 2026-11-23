@@ -240,12 +240,17 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
   }, [timer.billingType, timer.rate, timer.fixedBudget, timer.elapsedSeconds, activeProject?.currency, timer.currency])
 
   return (
-    <div className={`relative flex items-center justify-center select-none ${className || ""}`}>
+    <div
+      className={`relative flex items-center justify-center select-none ${className || ""}`}
+      style={{
+        width: `min(82vw, ${size}px)`,
+        height: `min(82vw, ${size}px)`,
+      }}
+    >
       <svg
         viewBox="0 0 440 440"
-        width={size}
-        height={size}
-        className="overflow-visible relative z-10"
+        aria-hidden="true"
+        className="overflow-visible relative z-10 w-full h-full"
       >
         {/* 1. ПОСТОЯННАЯ ПОЛОСКА: 4% ОПАСИТИ БЕЛАЯ (ФОНОВЫЙ КРУГ) */}
         <circle
@@ -318,9 +323,15 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
           content={displayMode === "time" ? "Switch to earnings" : "Switch to time"}
           side="top"
         >
-          <div
+          <button
+            type="button"
+            aria-label={
+              displayMode === "time"
+                ? `Elapsed time ${formattedTime}. Switch to earnings`
+                : `Current earnings ${moneyDisplay.amountText}. Switch to elapsed time`
+            }
             onClick={() => setDisplayMode((m) => (m === "time" ? "money" : "time"))}
-            className="group relative cursor-pointer flex flex-col items-center justify-center p-4 rounded-3xl transition-transform active:scale-95"
+            className="group relative cursor-pointer flex flex-col items-center justify-center p-4 rounded-3xl transition-transform active:scale-95 bg-transparent border-none"
           >
             {/* БЕЛЫЕ СОЛНЕЧНЫЕ ЗАЙЧИКИ (СВЕТОВАЯ КАУСТИКА С ПРОЗРАЧНОСТЬЮ) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 overflow-visible">
@@ -357,23 +368,23 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
 
             {/* РЕЖИМ 1: ТЕКУЩЕЕ ВРЕМЯ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */}
             {displayMode === "time" ? (
-              <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-100 transition-colors">
+              <div className="font-['Oxanium',sans-serif] font-bold text-[36px] sm:text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-100 transition-colors">
                 {formattedTime}
               </div>
             ) : (
               /* РЕЖИМ 2: ДЕНЬГИ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */
               moneyDisplay.hasBilling ? (
                 <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-200 transition-colors">
+                  <div className="font-['Oxanium',sans-serif] font-bold text-[36px] sm:text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-200 transition-colors">
                     {moneyDisplay.amountText}
                   </div>
                   {moneyDisplay.effectiveRateText ? (
-                    <div className="text-xs font-semibold font-mono text-amber-300/90 mt-1 flex items-center justify-center gap-1">
-                      <span className="text-[#806060]">Полезный рейт:</span>
+                    <div className="text-xs font-semibold font-mono text-amber-200 mt-1 flex items-center justify-center gap-1">
+                      <span className="text-[#FAF0EC]">Effective rate:</span>
                       <span className="text-white font-bold">{moneyDisplay.effectiveRateText}</span>
                     </div>
                   ) : (
-                    <div className="text-xs font-semibold text-[#806060] mt-1">
+                    <div className="text-xs font-semibold text-[#FAF0EC] mt-1">
                       {moneyDisplay.hint}
                     </div>
                   )}
@@ -381,16 +392,16 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
               ) : (
                 /* ЕСЛИ БИЛЛИНГ НЕ ВВЕДЕН: СООБЩЕНИЕ О ВВОДЕ СТАВКИ */
                 <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[28px] text-amber-300 leading-tight animate-digit-charge-glow">
+                  <div className="font-['Oxanium',sans-serif] font-bold text-[24px] sm:text-[28px] text-amber-200 leading-tight animate-digit-charge-glow">
                     {moneyDisplay.amountText}
                   </div>
-                  <div className="text-xs font-semibold text-[#806060] mt-1">
+                  <div className="text-xs font-semibold text-[#FAF0EC] mt-1">
                     {moneyDisplay.hint}
                   </div>
                 </div>
               )
             )}
-          </div>
+          </button>
         </AppTooltip>
       </div>
     </div>

@@ -85,9 +85,14 @@ export function Sidebar() {
   }, [navigate])
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 z-50 flex w-16 flex-col items-center justify-center py-6 select-none bg-transparent border-none">
-      {/* Navigation Icons Stack - No background, no borders, no logo, no theme switcher */}
-      <nav className="flex flex-col items-center gap-3">
+    <aside
+      className="fixed top-auto bottom-0 left-0 right-0 z-50 select-none border-t border-white/15 bg-black/85 backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] md:left-0 md:right-auto md:top-0 md:bottom-0 md:flex md:w-16 md:flex-col md:items-center md:justify-center md:border-none md:bg-transparent md:px-0 md:py-6 md:backdrop-blur-none"
+    >
+      {/* Single semantic navigation landmark: Bottom Tab Bar on mobile (<768px), Icon Rail on desktop (>=768px) */}
+      <nav
+        aria-label="Primary"
+        className="mx-auto grid max-w-md grid-cols-4 items-center gap-1 md:mx-0 md:flex md:max-w-none md:flex-col md:items-center md:gap-3"
+      >
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.path
@@ -102,13 +107,25 @@ export function Sidebar() {
             >
               <Link
                 to={item.path}
-                className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all ${
+                aria-current={isActive ? "page" : undefined}
+                aria-label={item.label}
+                className={`relative flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all md:h-11 md:w-11 md:min-h-[44px] md:flex-row md:p-0 ${
                   isActive
-                    ? "bg-white/20 text-white scale-105"
-                    : "text-[#806060] hover:bg-white/10 hover:text-white"
+                    ? "bg-white/20 text-white font-semibold md:scale-105 ring-1 ring-white/25"
+                    : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                {/* Non-color shape indicator for active route (WCAG 1.4.1) */}
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-2 h-0.5 w-8 rounded-full bg-white md:top-1/2 md:-left-2 md:h-5 md:w-1 md:-translate-y-1/2"
+                  />
+                )}
+                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span className="text-[11px] leading-none tracking-wide md:hidden">
+                  {item.label}
+                </span>
               </Link>
             </AppTooltip>
           )

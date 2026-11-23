@@ -41,8 +41,8 @@ function DialogContent({
       >
         {children}
         {showClose && (
-          <DialogPrimitive.Close className="absolute right-5 top-5 rounded-xl p-1 text-[#806060] transition-colors hover:bg-white/10 hover:text-white focus:outline-none disabled:pointer-events-none cursor-pointer">
-            <X className="h-5 w-5" />
+          <DialogPrimitive.Close className="absolute right-5 top-5 rounded-xl p-1.5 text-[#E8D5CE] transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none cursor-pointer">
+            <X className="h-5 w-5" aria-hidden="true" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
@@ -96,7 +96,7 @@ function DialogDescription({
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
-      className={cn("text-xs text-[#806060]", className)}
+      className={cn("text-xs text-[#E8D5CE]", className)}
       {...props}
     />
   )

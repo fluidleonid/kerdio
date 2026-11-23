@@ -3,6 +3,8 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
+
     /* =========================================================================
        TIER 1: BASE TOKENS (PRIMITIVES)
        Low-level, raw values. Named strictly by hue, lightness or scale.
@@ -37,13 +39,13 @@
     --base-color-obsidian-950: #140501; /* Deepest dark substrate */
     --base-color-black: #000000;
 
-    /* Warm Gray / Neutral Primitives */
+    /* Warm Gray / Neutral Primitives (WCAG AA/AAA calibrated for dark terracotta glass) */
     --base-color-white: #FFFFFF;
-    --base-color-warm-gray-100: #F5EBEB;
-    --base-color-warm-gray-200: #D6C7C7;
-    --base-color-warm-gray-300: #A89090;
-    --base-color-warm-gray-400: #806060; /* Warm muted secondary */
-    --base-color-warm-gray-500: #6E5353; /* Warm subtle tertiary */
+    --base-color-warm-gray-100: #FAF0EC; /* High-contrast canvas secondary */
+    --base-color-warm-gray-200: #E8D5CE; /* Secondary text on glass (8.09:1) */
+    --base-color-warm-gray-300: #CBB2AA; /* Tertiary & placeholder text on glass (5.72:1) */
+    --base-color-warm-gray-400: #A88E86; /* Subtle decorative / icon-only accent */
+    --base-color-warm-gray-500: #6E5353; /* Non-text divider / muted border */
     --base-color-warm-gray-600: #4A3535;
 
     /* Chromatic Status Primitives */
@@ -74,17 +76,17 @@
        ========================================================================= */
 
     /* Action / Interactive Aliases */
-    --semantic-action-primary: var(--base-color-terracotta-500);
-    --semantic-action-primary-hover: var(--base-color-terracotta-600);
+    --semantic-action-primary: #C2410C; /* 5.18:1 with white text (WCAG AA) */
+    --semantic-action-primary-hover: #D44B12;
     --semantic-action-primary-active: var(--base-color-terracotta-700);
-    --semantic-action-primary-subtle: rgba(226, 88, 34, 0.15);
-    --semantic-action-primary-border: rgba(226, 88, 34, 0.35);
+    --semantic-action-primary-subtle: rgba(226, 88, 34, 0.18);
+    --semantic-action-primary-border: rgba(251, 146, 60, 0.42);
 
-    --semantic-action-accent: var(--base-color-amber-500);
-    --semantic-action-accent-hover: var(--base-color-amber-400);
+    --semantic-action-accent: var(--base-color-amber-400);
+    --semantic-action-accent-hover: var(--base-color-amber-300);
 
-    --semantic-action-destructive: var(--base-color-rose-500);
-    --semantic-action-destructive-hover: var(--base-color-rose-400);
+    --semantic-action-destructive: #E11D48;
+    --semantic-action-destructive-hover: var(--base-color-rose-500);
 
     /* Surface Aliases */
     --semantic-surface-card: rgba(0, 0, 0, var(--base-opacity-surface-card));
@@ -94,12 +96,13 @@
     --semantic-surface-subtle: rgba(255, 255, 255, var(--base-opacity-subtle));
     --semantic-surface-hover: rgba(255, 255, 255, var(--base-opacity-muted));
 
-    /* Text & Typography Aliases */
+    /* Text & Typography Aliases (WCAG AA/AAA >= 4.5:1) */
     --semantic-text-primary: var(--base-color-white);
-    --semantic-text-secondary: var(--base-color-warm-gray-400);
-    --semantic-text-tertiary: var(--base-color-warm-gray-500);
-    --semantic-text-accent: var(--base-color-amber-400);
-    --semantic-text-brand: var(--base-color-terracotta-500);
+    --semantic-text-secondary: var(--base-color-warm-gray-200);
+    --semantic-text-tertiary: var(--base-color-warm-gray-300);
+    --semantic-text-on-canvas: var(--base-color-warm-gray-100);
+    --semantic-text-accent: var(--base-color-amber-300);
+    --semantic-text-brand: var(--base-color-terracotta-300);
     --semantic-text-inverse: var(--base-color-white);
 
     /* Status & Feedback Aliases */
@@ -208,6 +211,16 @@
   }
 
   /* IMMERSIVE WARM AMBER / BURNT ORANGE GRADIENT BACKGROUND REFERENCING BASE TOKENS */
+  html {
+    scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-bottom: 1.5rem;
+    }
+  }
+
   body {
     background: radial-gradient(
       circle at 50% 32%,
@@ -223,7 +236,48 @@
     font-optical-sizing: auto;
     font-style: normal;
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-wrap: break-word;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  p, li {
+    text-wrap: pretty;
+  }
+
+  :where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+  }
+
+  .visually-hidden:where(:not(:focus-within, :active)) {
+    position: absolute !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .skip-link:focus-visible {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    background-color: #140501;
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.875rem;
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
   }
 
   .tabular-nums {
@@ -236,7 +290,7 @@
     font-style: normal;
   }
 
-  /* Solid palette utilities */
+  /* Solid palette utilities (WCAG AA compliant) */
   .text-secondary-solid {
     color: var(--semantic-text-secondary);
   }
@@ -245,6 +299,9 @@
   }
   .text-subtle-solid {
     color: var(--semantic-text-tertiary);
+  }
+  .text-canvas-secondary {
+    color: var(--semantic-text-on-canvas);
   }
 }
 
@@ -457,4 +514,29 @@
 
 .animate-digit-charge-glow {
   animation: digit-charge-glow 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sunbeam-1,
+  .animate-sunbeam-2,
+  .animate-sunbeam-3,
+  .animate-sunbeam-4,
+  .animate-particle-inward,
+  .animate-digit-charge-glow {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .glass-card,
+  .glass-popover,
+  .glass-input,
+  .glass-subtle {
+    border: 1px solid CanvasText;
+  }
+
+  nav [aria-current="page"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
 }

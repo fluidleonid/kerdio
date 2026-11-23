@@ -2110,7 +2110,7 @@ export function TokenCommandInput({
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
-                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#6E5353] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
+                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#CBB2AA] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
                   />
                 </span>
               )
@@ -2131,11 +2131,11 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={handleTriggerOverrideModal}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 hover:text-amber-200 text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 hover:text-amber-100 text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse shrink-0" />
                 <span>Override</span>
-                <span className="font-mono text-[11px] text-amber-200/90 font-bold">
+                <span className="font-mono text-[11px] text-amber-100 font-bold">
                   {billingOverrideInfo.overrideText}
                 </span>
               </button>
@@ -2146,13 +2146,14 @@ export function TokenCommandInput({
           <AppTooltip content="Select project" shortcut="@" side="top">
             <button
               type="button"
+              aria-label="Select project"
               onMouseDown={(e) => {
                 e.preventDefault()
               }}
               onClick={openProjectPicker}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[#806060] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
             >
-              <AtSign className="h-5 w-5" />
+              <AtSign className="h-5 w-5" aria-hidden="true" />
             </button>
           </AppTooltip>
 
@@ -2160,13 +2161,14 @@ export function TokenCommandInput({
           <AppTooltip content="Billing command" shortcut="/" side="top">
             <button
               type="button"
+              aria-label="Billing command"
               onMouseDown={(e) => {
                 e.preventDefault()
               }}
               onClick={openSlashMenu}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[#806060] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors active:scale-95 border-none bg-transparent cursor-pointer"
             >
-              <Slash className="h-5 w-5" />
+              <Slash className="h-5 w-5" aria-hidden="true" />
             </button>
           </AppTooltip>
 
@@ -2185,18 +2187,19 @@ export function TokenCommandInput({
             <span className={`inline-flex ${!canStart ? "cursor-not-allowed" : ""}`}>
               <button
                 type="button"
+                aria-label={isEditingActive ? "Save changes" : "Start session"}
                 disabled={!canStart}
                 onClick={handleStartSession}
-                className={`flex h-9 px-4 items-center justify-center rounded-full transition-all border-none ${
+                className={`flex h-10 sm:h-9 px-4 items-center justify-center rounded-full transition-all border-none ${
                   canStart
-                    ? "bg-orange-600 text-white hover:bg-orange-500 hover:scale-105 active:scale-95 cursor-pointer shadow-none"
-                    : "bg-white/10 text-[#6E5353] cursor-not-allowed opacity-50 shadow-none pointer-events-none"
+                    ? "bg-[#C2410C] text-white hover:bg-[#D44B12] hover:scale-105 active:scale-95 cursor-pointer shadow-none"
+                    : "bg-white/15 text-[#CBB2AA] cursor-not-allowed shadow-none pointer-events-none"
                 }`}
               >
                 {isEditingActive ? (
-                  <Check className="h-5 w-5 stroke-current stroke-[2.5]" />
+                  <Check className="h-5 w-5 stroke-current stroke-[2.5]" aria-hidden="true" />
                 ) : (
-                  <Play className="h-5 w-5 fill-none stroke-current stroke-[2.2]" />
+                  <Play className="h-5 w-5 fill-none stroke-current stroke-[2.2]" aria-hidden="true" />
                 )}
               </button>
             </span>
@@ -2207,8 +2210,8 @@ export function TokenCommandInput({
       {/* CHIPS WITH OPEN MILESTONES OFFERED UNDER THE INPUT CONTAINER */}
       {activeProjectOrMatch && openMilestones.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-[#806060] flex items-center gap-1">
-            <Flag className="h-3 w-3 text-orange-400" />
+          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#FAF0EC] flex items-center gap-1">
+            <Flag className="h-3 w-3 text-amber-300" aria-hidden="true" />
             Milestone:
           </span>
           {openMilestones.map((ms) => {
@@ -2217,17 +2220,18 @@ export function TokenCommandInput({
               <button
                 key={ms.id}
                 type="button"
+                aria-pressed={isSelected}
                 onClick={() => selectOpenMilestone(ms)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
                   isSelected
-                    ? "bg-orange-600/35 text-white border border-orange-500/50 shadow-orange-500/20 font-semibold"
-                    : "bg-white/10 hover:bg-orange-600/25 text-white/90 hover:text-white border border-white/5 hover:border-orange-500/30"
+                    ? "bg-[#C2410C]/80 text-white border border-orange-300/60 font-semibold"
+                    : "bg-black/45 hover:bg-black/60 text-white border border-white/15"
                 }`}
               >
-                <Flag className={`h-2.5 w-2.5 ${isSelected ? "text-orange-300" : "text-white"}`} />
+                <Flag className={`h-2.5 w-2.5 ${isSelected ? "text-amber-200" : "text-white"}`} aria-hidden="true" />
                 <span>{ms.name}</span>
-                <span className="text-white/90 font-mono font-semibold">${ms.amount}</span>
-                {isSelected && <Check className="h-2.5 w-2.5 text-emerald-400 stroke-[3]" />}
+                <span className="text-white font-mono font-semibold">${ms.amount}</span>
+                {isSelected && <Check className="h-2.5 w-2.5 text-emerald-300 stroke-[3]" aria-hidden="true" />}
               </button>
             )
           })}
@@ -2240,7 +2244,7 @@ export function TokenCommandInput({
           {/* MODE 1: RECENT ENTRIES (NO ICON, NO COUNTER, ONLY MEMO & @PROJECT) */}
           {mode === "recents" && (
             <div className="space-y-1">
-              <div className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#6E5353]">
+              <div className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
                 Recent entries
               </div>
 
@@ -2267,13 +2271,14 @@ export function TokenCommandInput({
                 }
 
                 return (
-                  <div
+                  <button
                     key={entry.id}
+                    type="button"
                     onClick={() => selectRecentEntry(entry)}
-                    className={`flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
+                    className={`w-full flex items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                       isSelected
-                        ? "bg-white/10 text-white"
-                        : "text-[#806060] hover:bg-white/10 hover:text-white"
+                        ? "bg-white/15 text-white"
+                        : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -2290,15 +2295,15 @@ export function TokenCommandInput({
 
                     <div className="flex items-center gap-2 shrink-0">
                       {billingTag && (
-                        <span className="font-mono text-sm text-[#806060] font-semibold">
+                        <span className="font-mono text-sm text-[#E8D5CE] font-semibold">
                           {billingTag}
                         </span>
                       )}
-                      <span className="text-sm text-[#6E5353]">
+                      <span className="text-sm text-[#CBB2AA]">
                         @{project?.name || "project"}
                       </span>
                     </div>
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -2307,7 +2312,7 @@ export function TokenCommandInput({
           {/* MODE 2: PROJECTS AUTOCOMPLETE LIST ON @ */}
           {mode === "projects" && (
             <div className="space-y-1">
-              <div className="flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#6E5353]">
+              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
                 <span>Projects ({filteredProjects.length})</span>
                 <span>Select ↵</span>
               </div>
@@ -2316,13 +2321,14 @@ export function TokenCommandInput({
                 {filteredProjects.map((p, index) => {
                   const isSelected = index === dropdownIndex
                   return (
-                    <div
+                    <button
                       key={p.id}
+                      type="button"
                       onClick={() => selectProject(p)}
-                      className={`flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
+                      className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                         isSelected
-                          ? "bg-white/10 text-white"
-                          : "text-[#806060] hover:bg-white/10 hover:text-white"
+                          ? "bg-white/15 text-white"
+                          : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -2336,34 +2342,35 @@ export function TokenCommandInput({
                       </div>
 
                       {p.hourlyRate && (
-                        <span className="text-[#6E5353] font-mono text-sm tabular-nums font-semibold">
+                        <span className="text-[#E8D5CE] font-mono text-sm tabular-nums font-semibold">
                           ${p.hourlyRate}/h
                         </span>
                       )}
-                    </div>
+                    </button>
                   )
                 })}
 
                 {/* Option to create new project if custom query typed */}
                 {atQuery && atQuery.trim() && (
-                  <div
+                  <button
+                    type="button"
                     onClick={() => createNewProject(atQuery.trim())}
-                    className={`flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
+                    className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                       dropdownIndex === filteredProjects.length
-                        ? "bg-white/10 text-orange-400"
-                        : "text-orange-400/80 hover:bg-white/10 hover:text-orange-400"
+                        ? "bg-white/15 text-orange-200"
+                        : "text-orange-300 hover:bg-white/10 hover:text-orange-200"
                     }`}
                   >
                     <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 shrink-0" />
+                      <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
                       <span>
                         Create project <strong className="text-white font-semibold">"{atQuery.trim()}"</strong>
                       </span>
                     </div>
-                    <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-[#6E5353]">
+                    <span className="rounded bg-white/15 px-1.5 py-0.5 font-mono text-xs text-[#E8D5CE]">
                       Enter ↵
                     </span>
-                  </div>
+                  </button>
                 )}
               </div>
             </div>
@@ -2372,7 +2379,7 @@ export function TokenCommandInput({
           {/* MODE 3: DYNAMIC SLASH COMMANDS (NO PRESETS, USER ENTERS COMMAND & VALUE) */}
           {mode === "slash" && (
             <div className="space-y-1">
-              <div className="flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#6E5353]">
+              <div className="flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#CBB2AA]">
                 <span>Billing Command (/)</span>
                 <span>Apply ↵</span>
               </div>
@@ -2383,35 +2390,36 @@ export function TokenCommandInput({
                   const isSelected = index === dropdownIndex
 
                   return (
-                    <div
+                    <button
                       key={opt.id}
+                      type="button"
                       onClick={() => selectSlashOption(opt)}
-                      className={`flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors ${
+                      className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                         isSelected
-                          ? "bg-white/10 text-white"
-                          : "text-[#806060] hover:bg-white/10 hover:text-white"
+                          ? "bg-white/15 text-white"
+                          : "text-[#E8D5CE] hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white shrink-0">
-                          <Icon className="h-4 w-4 text-white" />
+                          <Icon className="h-4 w-4 text-white" aria-hidden="true" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-white text-sm">{opt.title}</span>
                           </div>
-                          <div className="text-xs text-white/70 break-words whitespace-normal text-wrap leading-tight mt-0.5">
+                          <div className="text-xs text-[#E8D5CE] break-words whitespace-normal text-wrap leading-tight mt-0.5">
                             {opt.description}
                           </div>
                         </div>
                       </div>
 
                       <div className="shrink-0 ml-2">
-                        <span className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs text-white/60">
+                        <span className="rounded bg-white/15 px-2 py-0.5 font-mono text-xs text-[#FAF0EC]">
                           {opt.isPending ? "Enter ↵" : opt.command}
                         </span>
                       </div>
-                    </div>
+                    </button>
                   )
                 })}
               </div>
@@ -2422,24 +2430,29 @@ export function TokenCommandInput({
 
       {/* SCOPE CONFIRMATION MODAL FOR BILLING CHANGE */}
       {pendingBillingChange && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center glass-overlay p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md glass-card p-6 space-y-5 animate-in zoom-in-95">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="billing-override-title"
+          className="fixed inset-0 z-50 flex items-center justify-center glass-overlay p-4 animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-md glass-card p-6 space-y-5 animate-in zoom-in-95 max-h-[90dvh] overflow-y-auto">
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <span
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: pendingBillingChange.project.color }}
                   />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-[#806060]">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#E8D5CE]">
                     {pendingBillingChange.project.name}
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-white mt-1">
+                <h3 id="billing-override-title" className="text-base font-bold text-white mt-1">
                   Project Billing Override
                 </h3>
-                <p className="text-xs text-[#806060] mt-0.5">
+                <p className="text-xs text-[#E8D5CE] mt-0.5">
                   New rate:{" "}
                   <span className="text-amber-300 font-mono font-semibold">
                     {pendingBillingChange.newBilling.type === "hourly"
@@ -2449,7 +2462,7 @@ export function TokenCommandInput({
                       : `$${pendingBillingChange.newBilling.amount}`}
                   </span>
                   {billingOverrideInfo && (
-                    <span className="text-[#6E5353] ml-1">
+                    <span className="text-[#CBB2AA] ml-1">
                       (project default: {billingOverrideInfo.projectDefaultText})
                     </span>
                   )}
@@ -2458,10 +2471,11 @@ export function TokenCommandInput({
               </div>
               <button
                 type="button"
+                aria-label="Close dialog"
                 onClick={() => setPendingBillingChange(null)}
-                className="p-1 rounded-xl text-[#806060] hover:text-white hover:bg-white/10 transition-colors"
+                className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
 
@@ -2470,12 +2484,12 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={() => handleResolveBillingChange("current")}
-                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
+                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left group cursor-pointer"
               >
-                <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
+                <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   Current session only
                 </div>
-                <div className="text-xs text-[#806060] mt-0.5">
+                <div className="text-xs text-[#E8D5CE] mt-0.5">
                   Apply only to this session. Project defaults remain unchanged.
                 </div>
               </button>
@@ -2483,12 +2497,12 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={() => handleResolveBillingChange("future")}
-                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
+                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left group cursor-pointer"
               >
-                <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
+                <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   Current & future sessions
                 </div>
-                <div className="text-xs text-[#806060] mt-0.5">
+                <div className="text-xs text-[#E8D5CE] mt-0.5">
                   Update project rate for this and all upcoming sessions.
                 </div>
               </button>
@@ -2496,12 +2510,12 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={() => handleResolveBillingChange("all")}
-                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/15 transition-all text-left group"
+                className="w-full flex flex-col items-start p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left group cursor-pointer"
               >
-                <div className="text-sm font-semibold text-white group-hover:text-orange-400 transition-colors">
+                <div className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
                   All project sessions
                 </div>
-                <div className="text-xs text-[#806060] mt-0.5">
+                <div className="text-xs text-[#E8D5CE] mt-0.5">
                   Update project rate and recalculate all past log entries.
                 </div>
               </button>
@@ -2511,7 +2525,7 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={() => setPendingBillingChange(null)}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-[#806060] hover:text-white hover:bg-white/5 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 Cancel
               </button>

@@ -111,12 +111,18 @@ export function TrackerView() {
   const isTracking = timer.status !== "idle"
 
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center select-none overflow-hidden">
+    <div className="fixed inset-0 z-30 flex items-center justify-center select-none overflow-hidden pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-16">
+      <h1 className="visually-hidden">Time Tracker</h1>
+
       {/* Toast notification on save */}
       {saveToast && (
-        <div className="fixed top-8 z-50 animate-in fade-in slide-in-from-top-4 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black/60 shadow-2xl shadow-black/80 text-sm font-medium text-white backdrop-blur-3xl border-none">
-          <Sparkles className="h-4 w-4 text-orange-400" />
-          <span>{saveToast}</span>
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-6 z-50 animate-in fade-in slide-in-from-top-4 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black/70 shadow-2xl shadow-black/80 text-sm font-medium text-white backdrop-blur-3xl border-none max-w-[90vw]"
+        >
+          <Sparkles className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
+          <span className="truncate">{saveToast}</span>
         </div>
       )}
 
@@ -155,12 +161,14 @@ export function TrackerView() {
           ) : (
             /* HEADER WITHOUT BACKGROUND ("без бэкграунда"), TRANSFORMS INTO INPUT ON CLICK */
             <AppTooltip content="Click to edit session" side="bottom">
-              <div
+              <button
+                type="button"
                 onClick={() => setIsEditingHeader(true)}
-                className="fixed top-5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center gap-2.5 px-3 py-1 cursor-pointer max-w-[90vw] group hover:opacity-90 transition-all active:scale-[0.98]"
+                aria-label="Edit active session details"
+                className="fixed top-5 left-1/2 -translate-x-1/2 z-40 flex flex-wrap items-center justify-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer max-w-[92vw] group hover:opacity-90 transition-all active:scale-[0.98] bg-transparent border-none"
               >
                 {/* Memo text (14px font-medium text-white, no container background) */}
-                <span className="text-sm font-medium text-white group-hover:text-amber-100 transition-colors truncate max-w-[280px]">
+                <span className="text-sm font-medium text-white group-hover:text-amber-100 transition-colors truncate max-w-[200px] sm:max-w-[280px]">
                   {capitalizeMemo(timer.memo) || "What are you working on?"}
                 </span>
 
@@ -174,8 +182,8 @@ export function TrackerView() {
 
                 {/* Milestone Tag */}
                 {timer.milestoneName && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-200 border border-orange-500/30">
-                    <Flag className="h-3 w-3 text-orange-400" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-black/50 text-orange-200 border border-orange-400/40">
+                    <Flag className="h-3 w-3 text-orange-300" aria-hidden="true" />
                     <span>{timer.milestoneName}</span>
                   </span>
                 )}
@@ -189,7 +197,7 @@ export function TrackerView() {
                       : timer.fixedBudget
                   }
                 />
-              </div>
+              </button>
             </AppTooltip>
           )}
 
@@ -199,7 +207,7 @@ export function TrackerView() {
             <Chronograph size={380} />
 
             {/* CONTROLS PANEL: POSITIONED BENEATH THE DIAL WITHOUT OFFSETTING DIAL CENTER */}
-            <div className="absolute top-full mt-7 left-1/2 -translate-x-1/2 flex items-center justify-center gap-4">
+            <div className="absolute top-full mt-5 sm:mt-7 left-1/2 -translate-x-1/2 flex items-center justify-center gap-4">
               {/* 1. Pause / Resume icon button (GHOST) */}
               <AppTooltip
                 content={timer.status === "running" ? "Pause" : "Resume"}
@@ -208,13 +216,14 @@ export function TrackerView() {
               >
                 <button
                   type="button"
+                  aria-label={timer.status === "running" ? "Pause session" : "Resume session"}
                   onClick={timer.status === "running" ? pauseTracking : resumeTracking}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95 border-none shadow-none cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white/90 hover:text-white hover:bg-white/10 transition-all active:scale-95 border-none shadow-none cursor-pointer"
                 >
                   {timer.status === "running" ? (
-                    <Pause className="h-5 w-5" />
+                    <Pause className="h-5 w-5" aria-hidden="true" />
                   ) : (
-                    <Play className="h-5 w-5 fill-current ml-0.5" />
+                    <Play className="h-5 w-5 fill-current ml-0.5" aria-hidden="true" />
                   )}
                 </button>
               </AppTooltip>
@@ -223,10 +232,11 @@ export function TrackerView() {
               <AppTooltip content="Save session" shortcut="⌘↵" side="bottom">
                 <button
                   type="button"
+                  aria-label="Save session"
                   onClick={handleSaveSession}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95 border-none shadow-none cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 transition-all active:scale-95 border-none shadow-none cursor-pointer"
                 >
-                  <Square className="h-4.5 w-4.5 fill-current" />
+                  <Square className="h-4.5 w-4.5 fill-current" aria-hidden="true" />
                 </button>
               </AppTooltip>
 
@@ -234,10 +244,11 @@ export function TrackerView() {
               <AppTooltip content="Reset session" shortcut="Esc" side="bottom">
                 <button
                   type="button"
+                  aria-label="Reset session"
                   onClick={discardTracking}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95 border-none shadow-none cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-transparent text-white/90 hover:text-white hover:bg-white/10 transition-all active:scale-95 border-none shadow-none cursor-pointer"
                 >
-                  <RotateCcw className="h-5 w-5" />
+                  <RotateCcw className="h-5 w-5" aria-hidden="true" />
                 </button>
               </AppTooltip>
             </div>

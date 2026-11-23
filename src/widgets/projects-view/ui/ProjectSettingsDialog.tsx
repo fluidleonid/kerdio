@@ -50,15 +50,15 @@ const BILLING_OPTIONS: {
   },
 ]
 
-const COLOR_OPTIONS = [
-  "#E25822", // Terracotta
-  "#F97316", // Amber
-  "#10B981", // Emerald
-  "#06B6D4", // Cyan
-  "#6366F1", // Indigo
-  "#EC4899", // Pink
-  "#8B5CF6", // Purple
-  "#EAB308", // Yellow
+const COLOR_OPTIONS: { hex: string; label: string }[] = [
+  { hex: "#E25822", label: "Terracotta" },
+  { hex: "#F97316", label: "Amber" },
+  { hex: "#10B981", label: "Emerald" },
+  { hex: "#06B6D4", label: "Cyan" },
+  { hex: "#6366F1", label: "Indigo" },
+  { hex: "#EC4899", label: "Pink" },
+  { hex: "#8B5CF6", label: "Purple" },
+  { hex: "#EAB308", label: "Yellow" },
 ]
 
 export function ProjectSettingsDialog({
@@ -138,30 +138,39 @@ export function ProjectSettingsDialog({
   const SelectedIcon = selectedOption.icon
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay animate-in fade-in duration-200">
-      {/* Modal Dialog Card: Exact same background, blur and shadow tokens as Card */}
-      <div className="w-full max-w-md glass-card p-6 space-y-4 animate-in zoom-in-95">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="project-dialog-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay animate-in fade-in duration-200"
+    >
+      <div className="w-full max-w-md glass-card p-6 space-y-4 animate-in zoom-in-95 max-h-[90dvh] overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-white">
+          <h2 id="project-dialog-title" className="text-lg font-bold text-white">
             {project ? "Edit Project" : "New Project"}
-          </h3>
+          </h2>
           <AppTooltip content="Close" shortcut="Esc">
             <button
               type="button"
+              aria-label="Close project settings dialog"
               onClick={onClose}
-              className="p-1 rounded-xl text-[#806060] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-[#E8D5CE] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5" aria-hidden="true" />
             </button>
           </AppTooltip>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-white/80 block mb-1">
+            <label
+              htmlFor="project-name-input"
+              className="text-xs font-semibold text-[#FAF0EC] block mb-1.5"
+            >
               Project Name
             </label>
             <Input
+              id="project-name-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Kerdio Core or Client Brand"
@@ -170,30 +179,36 @@ export function ProjectSettingsDialog({
             />
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-white/80 block mb-2">
+          <fieldset>
+            <legend className="text-xs font-semibold text-[#FAF0EC] block mb-2">
               Accent Color
-            </label>
-            <div className="flex items-center gap-2">
+            </legend>
+            <div className="flex flex-wrap items-center gap-2.5">
               {COLOR_OPTIONS.map((c) => (
                 <button
-                  key={c}
+                  key={c.hex}
                   type="button"
-                  onClick={() => setColor(c)}
-                  className={`h-7 w-7 rounded-full transition-transform cursor-pointer ${
-                    color === c ? "scale-110 ring-2 ring-white" : "hover:scale-105"
+                  aria-label={`Select ${c.label} color`}
+                  aria-pressed={color === c.hex}
+                  onClick={() => setColor(c.hex)}
+                  className={`h-8 w-8 rounded-full transition-transform cursor-pointer ${
+                    color === c.hex
+                      ? "scale-110 ring-2 ring-white ring-offset-2 ring-offset-black/70"
+                      : "hover:scale-105"
                   }`}
-                  style={{ backgroundColor: c }}
+                  style={{ backgroundColor: c.hex }}
                 />
               ))}
             </div>
-          </div>
+          </fieldset>
 
           {/* Billable toggle card */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl glass-subtle">
+          <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl glass-subtle">
             <div>
-              <span className="text-xs font-semibold text-white/90 block">Billable</span>
-              <span className="text-[11px] text-[#806060] block">
+              <span id="billable-label" className="text-xs font-semibold text-white block">
+                Billable
+              </span>
+              <span className="text-xs text-[#E8D5CE] block mt-0.5">
                 {isBillable
                   ? "Track revenue & hourly yield with client rates"
                   : "Free focus time tracking without client rates"}
@@ -202,6 +217,7 @@ export function ProjectSettingsDialog({
             <button
               type="button"
               role="switch"
+              aria-labelledby="billable-label"
               aria-checked={isBillable}
               onClick={() => {
                 const next = !isBillable
@@ -211,12 +227,12 @@ export function ProjectSettingsDialog({
                 }
                 setIsBillingMenuOpen(false)
               }}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-                isBillable ? "bg-orange-600" : "bg-white/10"
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
+                isBillable ? "bg-[#C2410C]" : "bg-white/20"
               }`}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
+                className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
                   isBillable ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -226,33 +242,41 @@ export function ProjectSettingsDialog({
           {/* Billing settings input (only shown when Billable is ON) */}
           {isBillable && (
             <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-              <label className="text-xs font-semibold text-white/80 block">
+              <label
+                htmlFor="project-billing-amount"
+                className="text-xs font-semibold text-[#FAF0EC] block"
+              >
                 Billing settings
               </label>
               <div className="relative flex items-center h-11 w-full rounded-2xl glass-subtle px-3 focus-within:bg-white/10 transition-all">
                 {/* Combobox Trigger (Left section of unified input) */}
                 <button
                   type="button"
+                  aria-expanded={isBillingMenuOpen}
                   onClick={() => setIsBillingMenuOpen(!isBillingMenuOpen)}
-                  className="flex items-center gap-2 py-1 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
+                  className="flex items-center gap-2 py-1.5 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
                 >
-                  <SelectedIcon className="h-4 w-4 text-orange-400 shrink-0" />
+                  <SelectedIcon className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
                   <span className="text-sm font-semibold text-white select-none whitespace-nowrap">
                     {selectedOption.title}
                   </span>
                   <ChevronDown
-                    className={`h-3.5 w-3.5 text-[#806060] transition-transform ${
+                    aria-hidden="true"
+                    className={`h-3.5 w-3.5 text-[#E8D5CE] transition-transform ${
                       isBillingMenuOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
-                <div className="h-5 w-px bg-white/10 mx-2 shrink-0" />
+                <div className="h-5 w-px bg-white/15 mx-2 shrink-0" />
 
-                {/* Adaptive Amount Input (Right section of unified input) */}
+                {/* Adaptive Amount Input */}
                 <div className="flex items-center flex-1 min-w-0">
-                  <span className="text-sm font-mono font-bold text-white/50 mr-1 select-none">$</span>
+                  <span className="text-sm font-mono font-bold text-[#E8D5CE] mr-1 select-none">
+                    $
+                  </span>
                   <input
+                    id="project-billing-amount"
                     type="number"
                     min="1"
                     value={billingType === "hourly" ? hourlyRate : fixedBudget}
@@ -264,35 +288,36 @@ export function ProjectSettingsDialog({
                       }
                     }}
                     placeholder="0"
-                    className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-[#6E5353] focus:outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-[#CBB2AA] focus:outline-none border-none p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <span className="text-xs font-mono font-semibold text-[#806060] ml-1 select-none shrink-0">
+                  <span className="text-xs font-mono font-semibold text-[#E8D5CE] ml-1 select-none shrink-0">
                     {billingType === "hourly" ? "/h" : "$"}
                   </span>
                 </div>
 
-                {/* Combobox Options Dropdown matching optical glass aesthetics */}
+                {/* Combobox Options Dropdown */}
                 {isBillingMenuOpen && (
                   <div className="absolute left-0 right-0 top-full mt-2 z-50 glass-popover p-1.5 space-y-1">
                     {BILLING_OPTIONS.filter((opt) => opt.type !== "none").map((opt) => (
-                      <div
+                      <button
                         key={opt.type}
+                        type="button"
                         onClick={() => {
                           setBillingType(opt.type)
                           setIsBillingMenuOpen(false)
                         }}
-                        className={`flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors ${
+                        className={`w-full flex items-start gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors text-left ${
                           billingType === opt.type
                             ? "bg-white/15 text-white"
-                            : "hover:bg-white/10 text-white/80"
+                            : "hover:bg-white/10 text-[#FAF0EC]"
                         }`}
                       >
-                        <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
+                        <opt.icon className="h-4 w-4 text-amber-300 mt-0.5 shrink-0" aria-hidden="true" />
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-white">{opt.title}</div>
-                          <div className="text-xs text-[#806060]">{opt.description}</div>
+                          <div className="text-xs text-[#E8D5CE]">{opt.description}</div>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -306,16 +331,16 @@ export function ProjectSettingsDialog({
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="rounded-full text-[#806060] hover:text-white hover:bg-white/10 cursor-pointer"
+              className="h-10 rounded-full px-4 text-[#E8D5CE] hover:text-white hover:bg-white/10 cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               size="sm"
-              className="gap-1.5 rounded-full bg-orange-600 hover:bg-orange-500 text-white cursor-pointer"
+              className="h-10 gap-1.5 rounded-full px-5 bg-[#C2410C] hover:bg-[#D44B12] text-white cursor-pointer"
             >
-              <Check className="h-4 w-4" />
+              <Check className="h-4 w-4" aria-hidden="true" />
               {project ? "Save Changes" : "Create Project"}
             </Button>
           </div>
