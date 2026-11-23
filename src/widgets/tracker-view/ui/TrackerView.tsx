@@ -199,7 +199,7 @@ export function TrackerView() {
           aria-live="polite"
           className="fixed top-6 z-50 animate-in fade-in slide-in-from-top-4 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black/75 shadow-2xl shadow-black/80 text-sm font-medium text-white backdrop-blur-3xl border-none max-w-[90vw]"
         >
-          <Sparkles className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
+          <Sparkles className="h-4 w-4 text-[#E8D5CE] shrink-0" aria-hidden="true" />
           <span className="truncate">{saveToast}</span>
         </div>
       )}
@@ -254,8 +254,8 @@ export function TrackerView() {
                 )}
 
                 {timer.milestoneName && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-black/50 text-orange-200 border border-orange-400/40">
-                    <Flag className="h-3 w-3 text-orange-300" aria-hidden="true" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white">
+                    <Flag className="h-3.5 w-3.5 text-[#E8D5CE]" aria-hidden="true" />
                     <span>{timer.milestoneName}</span>
                   </span>
                 )}
@@ -336,7 +336,7 @@ export function TrackerView() {
             }
             className="flex min-h-[44px] items-center gap-2.5 rounded-full bg-black/55 hover:bg-black/70 px-4 py-2 text-xs sm:text-sm font-medium text-white backdrop-blur-2xl shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer whitespace-nowrap"
           >
-            <ListChecks className="h-4 w-4 text-amber-300 shrink-0" aria-hidden="true" />
+            <ListChecks className="h-4 w-4 text-[#E8D5CE] shrink-0" aria-hidden="true" />
             <span>Today&apos;s Log</span>
             {todayQuickStats.count > 0 && (
               <>
@@ -345,7 +345,7 @@ export function TrackerView() {
                   {todayQuickStats.time}
                 </span>
                 {todayQuickStats.value > 0 && (
-                  <span className="font-mono font-bold text-emerald-300 tabular-nums">
+                  <span className="font-mono font-semibold text-white tabular-nums">
                     ${todayQuickStats.value.toFixed(0)}
                   </span>
                 )}

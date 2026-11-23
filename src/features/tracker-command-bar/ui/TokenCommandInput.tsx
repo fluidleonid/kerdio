@@ -2131,11 +2131,11 @@ export function TokenCommandInput({
               <button
                 type="button"
                 onClick={handleTriggerOverrideModal}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 hover:text-amber-100 text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-pulse shrink-0" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse shrink-0" />
                 <span>Override</span>
-                <span className="font-mono text-[11px] text-amber-100 font-bold">
+                <span className="font-mono text-[11px] text-[#E8D5CE] font-bold">
                   {billingOverrideInfo.overrideText}
                 </span>
               </button>
@@ -2211,7 +2211,7 @@ export function TokenCommandInput({
       {activeProjectOrMatch && openMilestones.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
           <span className="text-[11px] font-semibold tracking-wider uppercase text-[#FAF0EC] flex items-center gap-1">
-            <Flag className="h-3 w-3 text-amber-300" aria-hidden="true" />
+            <Flag className="h-3 w-3 text-[#E8D5CE]" aria-hidden="true" />
             Milestone:
           </span>
           {openMilestones.map((ms) => {
@@ -2224,14 +2224,14 @@ export function TokenCommandInput({
                 onClick={() => selectOpenMilestone(ms)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
                   isSelected
-                    ? "bg-[#C2410C]/80 text-white border border-orange-300/60 font-semibold"
-                    : "bg-black/45 hover:bg-black/60 text-white border border-white/15"
+                    ? "bg-white/20 text-white border border-white/35 font-semibold"
+                    : "bg-black/45 hover:bg-black/60 text-white border border-white/10"
                 }`}
               >
-                <Flag className={`h-2.5 w-2.5 ${isSelected ? "text-amber-200" : "text-white"}`} aria-hidden="true" />
+                <Flag className="h-2.5 w-2.5 text-[#E8D5CE]" aria-hidden="true" />
                 <span>{ms.name}</span>
                 <span className="text-white font-mono font-semibold">${ms.amount}</span>
-                {isSelected && <Check className="h-2.5 w-2.5 text-emerald-300 stroke-[3]" aria-hidden="true" />}
+                {isSelected && <Check className="h-2.5 w-2.5 text-white stroke-[3]" aria-hidden="true" />}
               </button>
             )
           })}

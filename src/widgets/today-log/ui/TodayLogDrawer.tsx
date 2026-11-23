@@ -290,7 +290,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
           <div className="grid grid-cols-3 gap-2.5">
             <div className="rounded-2xl bg-white/[0.06] p-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#CBB2AA]">
-                <Clock className="h-3.5 w-3.5 text-orange-300 shrink-0" aria-hidden="true" />
+                <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 <span>Time</span>
               </div>
               <div className="text-base sm:text-lg font-bold font-mono text-white tabular-nums mt-1">
@@ -300,17 +300,17 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
 
             <div className="rounded-2xl bg-white/[0.06] p-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#CBB2AA]">
-                <DollarSign className="h-3.5 w-3.5 text-emerald-300 shrink-0" aria-hidden="true" />
+                <DollarSign className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 <span>Value</span>
               </div>
-              <div className="text-base sm:text-lg font-bold font-mono text-emerald-300 tabular-nums mt-1 truncate">
+              <div className="text-base sm:text-lg font-bold font-mono text-white tabular-nums mt-1 truncate">
                 ${todayStats.totalValue}
               </div>
             </div>
 
             <div className="rounded-2xl bg-white/[0.06] p-3">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#CBB2AA]">
-                <Layers className="h-3.5 w-3.5 text-amber-300 shrink-0" aria-hidden="true" />
+                <Layers className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 <span>Blocks</span>
               </div>
               <div className="text-base sm:text-lg font-bold font-mono text-white tabular-nums mt-1">
@@ -323,7 +323,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
           {milestoneRollups.length > 0 && (
             <section aria-label="Milestones summary" className="space-y-2.5">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-[#CBB2AA] flex items-center gap-1.5">
-                <Flag className="h-3.5 w-3.5 text-amber-300" aria-hidden="true" />
+                <Flag className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Milestones Today</span>
               </h3>
               <ul className="space-y-2">
@@ -335,7 +335,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                   return (
                     <li
                       key={ms.key}
-                      className="rounded-2xl bg-amber-500/[0.08] border border-amber-400/20 p-3.5 flex items-center justify-between gap-3"
+                      className="rounded-2xl bg-white/[0.06] p-3.5 flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
@@ -348,19 +348,19 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                             {ms.name}
                           </span>
                         </div>
-                        <div className="text-xs text-[#E8D5CE] font-mono mt-0.5">
+                        <div className="text-xs text-[#CBB2AA] font-mono mt-0.5">
                           @{ms.projectName} · {formatDuration(ms.totalSeconds)} ({ms.sessionCount}{" "}
                           {ms.sessionCount === 1 ? "block" : "blocks"})
                         </div>
                       </div>
 
                       <div className="text-right shrink-0 font-mono">
-                        <div className="text-sm font-bold text-emerald-300 tabular-nums">
+                        <div className="text-sm font-bold text-white tabular-nums">
                           {ms.currency}
                           {ms.payout}
                         </div>
                         {effRate !== null && (
-                          <div className="text-[11px] text-amber-200 tabular-nums">
+                          <div className="text-[11px] text-[#CBB2AA] tabular-nums">
                             ~{ms.currency}
                             {effRate}/h
                           </div>
@@ -389,17 +389,11 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                   return (
                     <li
                       key={session.id}
-                      className="group rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] transition-colors p-3.5 flex items-stretch gap-3"
+                      className="group rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] transition-colors p-3.5"
                     >
-                      <span
-                        aria-hidden="true"
-                        className="w-1 rounded-full shrink-0"
-                        style={{ backgroundColor: project?.color || "#F97316" }}
-                      />
-
-                      <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="min-w-0 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E8D5CE] truncate">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#E8D5CE] truncate">
                             <span
                               aria-hidden="true"
                               className="h-2 w-2 rounded-full shrink-0"
@@ -417,25 +411,25 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                         </div>
 
                         {session.milestoneName && (
-                          <div className="inline-flex items-center gap-1 text-xs text-amber-200 font-mono">
-                            <Flag className="h-3 w-3 text-amber-300 shrink-0" aria-hidden="true" />
+                          <div className="inline-flex items-center gap-1 text-xs text-[#E8D5CE] font-mono">
+                            <Flag className="h-3 w-3 text-[#CBB2AA] shrink-0" aria-hidden="true" />
                             <span className="truncate">{session.milestoneName}</span>
                           </div>
                         )}
 
                         <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
                           <div className="flex items-center gap-3 text-xs font-mono">
-                            <span className="text-[#E8D5CE] tabular-nums">
+                            <span className="text-[#CBB2AA] tabular-nums">
                               {formatDuration(session.durationSeconds)}
                             </span>
                             {session.billingType === "hourly" && session.earnedAmount > 0 ? (
-                              <span className="font-bold text-emerald-300 tabular-nums">
+                              <span className="font-semibold text-white tabular-nums">
                                 +${session.earnedAmount.toFixed(2)}
                               </span>
                             ) : session.billingType === "milestone" ? (
-                              <span className="text-amber-200 font-semibold">Milestone</span>
+                              <span className="text-[#E8D5CE]">Milestone</span>
                             ) : session.billingType === "fixed" && session.earnedAmount > 0 ? (
-                              <span className="text-emerald-300 font-semibold">
+                              <span className="text-white font-semibold">
                                 Fixed ${session.earnedAmount.toFixed(0)}
                               </span>
                             ) : (
@@ -447,7 +441,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                             type="button"
                             aria-label={`Delete session ${capitalizeMemo(session.memo)}`}
                             onClick={() => deleteSession(session.id)}
-                            className="flex h-8 w-8 items-center justify-center rounded-xl text-[#CBB2AA] hover:text-rose-300 hover:bg-white/10 transition-colors cursor-pointer"
+                            className="flex h-8 w-8 items-center justify-center rounded-xl text-[#CBB2AA] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                           >
                             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                           </button>
@@ -479,7 +473,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
             className="flex-1 h-11 gap-2 rounded-2xl border-none bg-white/10 text-white hover:bg-white/20 disabled:opacity-40 cursor-pointer"
           >
             {copied ? (
-              <Check className="h-4 w-4 text-emerald-300" aria-hidden="true" />
+              <Check className="h-4 w-4 text-white" aria-hidden="true" />
             ) : (
               <Copy className="h-4 w-4" aria-hidden="true" />
             )}
