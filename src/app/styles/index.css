@@ -486,28 +486,20 @@
   animation: particle-charge-inward var(--p-duration, 2.4s) cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
 }
 
-/* Central digit periodic charge glow pulse */
+/* Central digit periodic soft glow pulse (every 15 seconds) */
 @keyframes digit-charge-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-    text-shadow: 0 0 0px rgba(255, 255, 255, 0);
-  }
-  43% {
+  0%, 42%, 58%, 100% {
     filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
     text-shadow: 0 0 0px rgba(255, 255, 255, 0);
   }
   50% {
-    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.5));
-    text-shadow: 0 0 18px rgba(255, 255, 255, 0.95), 0 0 34px rgba(255, 255, 255, 0.6);
-  }
-  57% {
-    filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
-    text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.36));
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.32);
   }
 }
 
 .animate-digit-charge-glow {
-  animation: digit-charge-glow 3.6s ease-in-out infinite;
+  animation: digit-charge-glow 15s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,9 +28,9 @@ export function ProjectBadge({
     <span
       onClick={!disabled && !loading ? onClick : undefined}
       aria-disabled={disabled}
-      className={`animate-in fade-in inline-flex items-center gap-1.5 rounded-full bg-white/10 ${
+      className={`animate-in fade-in inline-flex h-7 max-w-[160px] items-center gap-1.5 rounded-full bg-white/10 ${
         onRemove ? "pl-3 pr-2" : "px-3"
-      } py-1 text-sm font-medium text-white/90 border-none shrink-0 select-none shadow-none transition-all ${
+      } text-xs font-medium leading-none text-white/95 border-none shrink-0 select-none shadow-none transition-all ${
         onClick && !disabled && !loading ? "cursor-pointer hover:bg-white/15 active:scale-95" : ""
       } ${disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : ""} ${className}`}
     >
@@ -44,7 +44,7 @@ export function ProjectBadge({
           }}
         />
       )}
-      <span>{showAtPrefix ? `@${project.name}` : project.name}</span>
+      <span className="truncate min-w-0">{showAtPrefix ? `@${project.name}` : project.name}</span>
       {onRemove && (
         <AppTooltip content="Remove project">
           <button
@@ -95,31 +95,37 @@ export function BillingBadge({
     if (billingType === "hourly") {
       return (
         <>
-          <Clock className="h-[18px] w-[18px] text-white/90 shrink-0" />
-          <span>{amount !== undefined && amount !== null ? `$${amount}/h` : "Hourly"}</span>
+          <Clock className="h-3.5 w-3.5 text-white/90 shrink-0" />
+          <span className="truncate min-w-0">
+            {amount !== undefined && amount !== null ? `$${amount}/h` : "Hourly"}
+          </span>
         </>
       )
     }
     if (billingType === "fixed") {
       return (
         <>
-          <Briefcase className="h-[18px] w-[18px] text-white/90 shrink-0" />
-          <span>{amount !== undefined && amount !== null ? `Fixed $${amount}` : "Fixed"}</span>
+          <Briefcase className="h-3.5 w-3.5 text-white/90 shrink-0" />
+          <span className="truncate min-w-0">
+            {amount !== undefined && amount !== null ? `Fixed $${amount}` : "Fixed"}
+          </span>
         </>
       )
     }
     if (billingType === "milestone") {
       return (
         <>
-          <Flag className="h-[18px] w-[18px] text-white/90 shrink-0" />
-          <span>{amount !== undefined && amount !== null ? `Milestone $${amount}` : "Milestone"}</span>
+          <Flag className="h-3.5 w-3.5 text-white/90 shrink-0" />
+          <span className="truncate min-w-0">
+            {amount !== undefined && amount !== null ? `Milestone $${amount}` : "Milestone"}
+          </span>
         </>
       )
     }
     return (
       <>
-        <ShieldOff className="h-[18px] w-[18px] text-white/90 shrink-0" />
-        <span>Non-billable</span>
+        <ShieldOff className="h-3.5 w-3.5 text-white/90 shrink-0" />
+        <span className="truncate min-w-0">Non-billable</span>
       </>
     )
   }
@@ -128,9 +134,9 @@ export function BillingBadge({
     <span
       onClick={!disabled && !loading ? onClick : undefined}
       aria-disabled={disabled}
-      className={`animate-in fade-in inline-flex items-center gap-1.5 rounded-full bg-white/10 ${
+      className={`animate-in fade-in inline-flex h-7 max-w-[160px] items-center gap-1.5 rounded-full bg-white/10 ${
         onRemove ? "pl-3 pr-2" : "px-3"
-      } py-1 text-sm font-medium text-white/90 border-none shrink-0 select-none shadow-none transition-all ${
+      } text-xs font-medium leading-none text-white/95 border-none shrink-0 select-none shadow-none transition-all ${
         onClick && !disabled && !loading ? "cursor-pointer hover:bg-white/15 active:scale-95" : ""
       } ${disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : ""} ${className}`}
     >
