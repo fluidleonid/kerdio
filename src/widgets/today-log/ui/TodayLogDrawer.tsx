@@ -43,6 +43,10 @@ interface ProjectReceiptGroup {
   totalValue: number
 }
 
+// Shared 6-column receipt grid: Memo (left) | Start | End | Time spent | Earning | Action
+const RECEIPT_GRID =
+  "grid grid-cols-[minmax(0,1fr)_38px_38px_46px_64px_22px] sm:grid-cols-[minmax(0,1fr)_44px_44px_54px_74px_24px] items-baseline gap-x-2"
+
 export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
   const { sessions, projects, deleteSession } = useTrackerStore()
   const [copied, setCopied] = useState(false)
@@ -187,12 +191,16 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
       lines.push(group.projectName.toUpperCase())
       for (const ms of group.milestoneGroups) {
         lines.push(
-          `  ${ms.name}${ms.payout > 0 ? ` — ${group.currency}${ms.payout}` : ""}`
+          `  ${ms.name}  ${formatDuration(ms.totalSeconds)}  ${
+            ms.payout > 0 ? `${group.currency}${ms.payout}` : "—"
+          }`
         )
         for (const s of ms.sessions) {
           const end = s.endTime || s.startTime + s.durationSeconds * 1000
           lines.push(
-            `    · ${capitalizeMemo(s.memo)}  ${format24h(s.startTime)}–${format24h(end)} (${formatDuration(s.durationSeconds)})`
+            `    ${capitalizeMemo(s.memo)}  ${format24h(s.startTime)}  ${format24h(
+              end
+            )}  ${formatDuration(s.durationSeconds)}  —`
           )
         }
       }
@@ -200,15 +208,17 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
         const end = s.endTime || s.startTime + s.durationSeconds * 1000
         const amt =
           s.billingType === "hourly" && s.earnedAmount > 0
-            ? ` · ${group.currency}${s.earnedAmount.toFixed(2)}`
-            : ""
+            ? `${group.currency}${s.earnedAmount.toFixed(2)}`
+            : "—"
         lines.push(
-          `  · ${capitalizeMemo(s.memo)}  ${format24h(s.startTime)}–${format24h(end)} (${formatDuration(s.durationSeconds)}${amt})`
+          `  ${capitalizeMemo(s.memo)}  ${format24h(s.startTime)}  ${format24h(
+            end
+          )}  ${formatDuration(s.durationSeconds)}  ${amt}`
         )
       }
       lines.push(
-        `  Subtotal: ${formatDuration(group.totalSeconds)}${
-          group.totalValue > 0 ? ` · ${group.currency}${group.totalValue.toFixed(2)}` : ""
+        `  Subtotal  ${formatDuration(group.totalSeconds)}  ${
+          group.totalValue > 0 ? `${group.currency}${group.totalValue.toFixed(2)}` : "—"
         }`,
         ``
       )
@@ -216,7 +226,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
 
     lines.push(
       `----------------------------------`,
-      `TOTAL: ${grandTotal.time}${grandTotal.value > 0 ? ` · $${grandTotal.value.toFixed(2)}` : ""}`
+      `TOTAL  ${grandTotal.time}  ${grandTotal.value > 0 ? `$${grandTotal.value.toFixed(2)}` : "—"}`
     )
 
     await navigator.clipboard.writeText(lines.join("\n"))
@@ -281,7 +291,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-h-[86dvh] sm:max-h-[calc(100dvh-2rem)] sm:my-4 sm:mr-4 sm:max-w-[440px] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-black/75 backdrop-blur-3xl shadow-[0_24px_64px_rgba(0,0,0,0.55)] animate-in slide-in-from-bottom-6 sm:slide-in-from-right-6 duration-250"
+        className="w-full max-h-[86dvh] sm:max-h-[calc(100dvh-2rem)] sm:my-4 sm:mr-4 sm:max-w-[540px] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-black/75 backdrop-blur-3xl shadow-[0_24px_64px_rgba(0,0,0,0.55)] animate-in slide-in-from-bottom-6 sm:slide-in-from-right-6 duration-250"
       >
         {/* Mobile Drag Handle */}
         <div aria-hidden="true" className="flex justify-center pt-3 pb-1 sm:hidden">
@@ -289,7 +299,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
         </div>
 
         {/* Receipt Header */}
-        <div className="flex items-start justify-between gap-3 px-6 pt-4 sm:pt-6 pb-3">
+        <div className="flex items-start justify-between gap-3 px-5 sm:px-6 pt-4 sm:pt-6 pb-3">
           <div>
             <h2 id="today-log-title" className="text-lg font-bold tracking-tight text-white">
               Today&apos;s Log
@@ -307,8 +317,8 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
           </button>
         </div>
 
-        {/* Receipt Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-3 space-y-6">
+        {/* Receipt Body (Strict 5-column alignment, no column labels) */}
+        <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-3 space-y-6">
           {projectGroups.length > 0 ? (
             <>
               {projectGroups.map((group) => (
@@ -328,37 +338,46 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                   {/* Milestone Subgroups */}
                   {group.milestoneGroups.map((ms) => (
                     <div key={ms.key} className="space-y-1.5">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-xs font-medium text-[#DCDCDC] truncate">
+                      {/* Milestone Row aligned to same columns */}
+                      <div className={`${RECEIPT_GRID} font-mono text-xs tabular-nums`}>
+                        <span className="font-sans font-medium text-[#DCDCDC] truncate text-left">
                           {ms.name}
                         </span>
-                        {ms.payout > 0 && (
-                          <span className="text-xs font-mono text-white tabular-nums shrink-0">
-                            {group.currency}
-                            {ms.payout}
-                          </span>
-                        )}
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span className="text-right text-[#DCDCDC]">
+                          {formatDuration(ms.totalSeconds)}
+                        </span>
+                        <span className="text-right text-white font-medium">
+                          {ms.payout > 0 ? `${group.currency}${ms.payout}` : "—"}
+                        </span>
+                        <span aria-hidden="true" />
                       </div>
 
-                      <ul className="space-y-1.5 pl-3">
+                      {/* Milestone Entries */}
+                      <ul className="space-y-1.5">
                         {ms.sessions.map((session) => {
                           const endTime =
                             session.endTime || session.startTime + session.durationSeconds * 1000
                           return (
                             <li
                               key={session.id}
-                              className="group flex items-baseline justify-between gap-3"
+                              className={`group ${RECEIPT_GRID} text-xs tabular-nums`}
                             >
-                              <span className="text-sm text-[#F2F2F2] leading-snug min-w-0 truncate">
+                              <span className="pl-2.5 text-sm text-[#F2F2F2] leading-snug truncate text-left">
                                 {capitalizeMemo(session.memo)}
                               </span>
-                              <span className="flex items-center gap-1.5 shrink-0 font-mono text-xs text-[#B8B8B8] tabular-nums">
-                                <span>
-                                  {format24h(session.startTime)}–{format24h(endTime)}
-                                </span>
-                                <span className="text-[#DCDCDC]">
-                                  {formatDuration(session.durationSeconds)}
-                                </span>
+                              <span className="font-mono text-right text-[#B8B8B8]">
+                                {format24h(session.startTime)}
+                              </span>
+                              <span className="font-mono text-right text-[#B8B8B8]">
+                                {format24h(endTime)}
+                              </span>
+                              <span className="font-mono text-right text-[#DCDCDC]">
+                                {formatDuration(session.durationSeconds)}
+                              </span>
+                              <span className="font-mono text-right text-[#B8B8B8]">—</span>
+                              <span className="flex justify-end">
                                 <button
                                   type="button"
                                   aria-label={`Delete session ${capitalizeMemo(session.memo)}`}
@@ -381,27 +400,36 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                       {group.standaloneSessions.map((session) => {
                         const endTime =
                           session.endTime || session.startTime + session.durationSeconds * 1000
-                        const amt =
+                        const earningText =
                           session.billingType === "hourly" && session.earnedAmount > 0
                             ? `${group.currency}${session.earnedAmount.toFixed(2)}`
-                            : null
+                            : "—"
 
                         return (
                           <li
                             key={session.id}
-                            className="group flex items-baseline justify-between gap-3"
+                            className={`group ${RECEIPT_GRID} text-xs tabular-nums`}
                           >
-                            <span className="text-sm text-[#F2F2F2] leading-snug min-w-0 truncate">
+                            <span className="text-sm text-[#F2F2F2] leading-snug truncate text-left">
                               {capitalizeMemo(session.memo)}
                             </span>
-                            <span className="flex items-center gap-1.5 shrink-0 font-mono text-xs text-[#B8B8B8] tabular-nums">
-                              <span>
-                                {format24h(session.startTime)}–{format24h(endTime)}
-                              </span>
-                              <span className="text-[#DCDCDC]">
-                                {formatDuration(session.durationSeconds)}
-                              </span>
-                              {amt && <span className="text-white">{amt}</span>}
+                            <span className="font-mono text-right text-[#B8B8B8]">
+                              {format24h(session.startTime)}
+                            </span>
+                            <span className="font-mono text-right text-[#B8B8B8]">
+                              {format24h(endTime)}
+                            </span>
+                            <span className="font-mono text-right text-[#DCDCDC]">
+                              {formatDuration(session.durationSeconds)}
+                            </span>
+                            <span
+                              className={`font-mono text-right ${
+                                earningText === "—" ? "text-[#B8B8B8]" : "text-white"
+                              }`}
+                            >
+                              {earningText}
+                            </span>
+                            <span className="flex justify-end">
                               <button
                                 type="button"
                                 aria-label={`Delete session ${capitalizeMemo(session.memo)}`}
@@ -417,30 +445,44 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                     </ul>
                   )}
 
-                  {/* Project Subtotal */}
-                  <div className="flex items-baseline justify-between gap-3 pt-2 border-t border-dashed border-white/15 font-mono text-xs tabular-nums">
-                    <span className="uppercase tracking-wider text-[#B8B8B8]">Subtotal</span>
-                    <span className="text-white font-semibold">
-                      {formatDuration(group.totalSeconds)}
-                      {group.totalValue > 0
-                        ? ` · ${group.currency}${group.totalValue.toFixed(2)}`
-                        : ""}
+                  {/* Project Subtotal aligned to same columns */}
+                  <div
+                    className={`${RECEIPT_GRID} pt-2 border-t border-dashed border-white/15 font-mono text-xs tabular-nums`}
+                  >
+                    <span className="uppercase tracking-wider text-[#B8B8B8] text-left">
+                      Subtotal
                     </span>
+                    <span aria-hidden="true" />
+                    <span aria-hidden="true" />
+                    <span className="text-right text-[#DCDCDC] font-medium">
+                      {formatDuration(group.totalSeconds)}
+                    </span>
+                    <span className="text-right text-white font-semibold">
+                      {group.totalValue > 0
+                        ? `${group.currency}${group.totalValue.toFixed(2)}`
+                        : "—"}
+                    </span>
+                    <span aria-hidden="true" />
                   </div>
                 </section>
               ))}
 
-              {/* Grand Total */}
-              <div className="flex items-baseline justify-between gap-3 pt-4 border-t border-dashed border-white/25 font-mono tabular-nums">
-                <span className="text-xs uppercase tracking-widest text-[#DCDCDC]">Total</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xs text-[#DCDCDC]">{grandTotal.time}</span>
-                  {grandTotal.value > 0 && (
-                    <span className="text-base font-bold text-white">
-                      ${grandTotal.value.toFixed(2)}
-                    </span>
-                  )}
-                </div>
+              {/* Grand Total aligned to same columns */}
+              <div
+                className={`${RECEIPT_GRID} pt-4 border-t border-dashed border-white/25 font-mono tabular-nums`}
+              >
+                <span className="text-xs uppercase tracking-widest text-[#DCDCDC] text-left">
+                  Total
+                </span>
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
+                <span className="text-right text-xs text-[#DCDCDC] font-semibold">
+                  {grandTotal.time}
+                </span>
+                <span className="text-right text-sm font-bold text-white">
+                  {grandTotal.value > 0 ? `$${grandTotal.value.toFixed(2)}` : "—"}
+                </span>
+                <span aria-hidden="true" />
               </div>
             </>
           ) : (
@@ -454,7 +496,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
         </div>
 
         {/* Receipt Footer */}
-        <div className="px-6 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] flex items-center gap-2.5">
+        <div className="px-5 sm:px-6 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] flex items-center gap-2.5">
           <Button
             type="button"
             variant="outline"

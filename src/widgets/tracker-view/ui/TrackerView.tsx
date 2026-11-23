@@ -265,7 +265,7 @@ export function TrackerView() {
                   </span>
 
                   {activeProject && (
-                    <ProjectBadge project={activeProject} showAtPrefix={true} />
+                    <ProjectBadge project={activeProject} />
                   )}
 
                   {timer.billingType === "milestone" && timer.milestoneName && (
