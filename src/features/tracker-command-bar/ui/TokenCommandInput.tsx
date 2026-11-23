@@ -413,10 +413,10 @@ export function TokenCommandInput({
     if (!isDifferent) return null
 
     const formatBill = (b: BillingConfig) => {
-      if (b.type === "hourly") return `$${b.amount}/ч`
-      if (b.type === "fixed") return `$${b.amount} (фикс)`
-      if (b.type === "milestone") return `$${b.amount} (этап)`
-      return "Без оплаты"
+      if (b.type === "hourly") return `$${b.amount}/h`
+      if (b.type === "fixed") return `$${b.amount} (fixed)`
+      if (b.type === "milestone") return `$${b.amount} (milestone)`
+      return "Non-billable"
     }
 
     return {
@@ -1957,7 +1957,7 @@ export function TokenCommandInput({
                       type="button"
                       onClick={() => removePendingBillingToken(seg.id)}
                       className="ml-0.5 -mr-1 p-0.5 rounded-full text-orange-400/80 hover:text-white hover:bg-orange-500/30 transition-colors cursor-pointer"
-                      title="Отменить команду"
+                      title="Cancel command" aria-label="Cancel command"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -1989,10 +1989,10 @@ export function TokenCommandInput({
 
               const specificPlaceholder = pendingBillingSeg
                 ? (pendingBillingSeg.billingType === "hourly"
-                    ? "Введите рейт (например, 85)"
+                    ? "Enter hourly rate (e.g. 85)"
                     : pendingBillingSeg.billingType === "fixed"
-                    ? "Введите стоимость проекта (например, 2500)"
-                    : "Введите название майлстоуна и сумму (например, M 1 Design phase 1 2300)")
+                    ? "Enter fixed fee (e.g. 2500)"
+                    : "Enter milestone name & amount (e.g. M 1 Design phase 1 2300)")
                 : activePlaceholder
 
               const showPlaceholder = isPendingBillingTarget
