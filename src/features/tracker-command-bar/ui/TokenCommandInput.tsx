@@ -1964,6 +1964,7 @@ export function TokenCommandInput({
                   <ProjectBadge
                     project={seg.project}
                     onRemove={() => removeProjectToken(seg.id)}
+                    className="text-sm"
                   />
                 </span>
               )
@@ -1988,6 +1989,7 @@ export function TokenCommandInput({
                         : null)
                     }
                     onRemove={() => removeBillingToken(seg.id)}
+                    className="text-sm"
                   />
                 </span>
               )
@@ -2001,7 +2003,7 @@ export function TokenCommandInput({
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex shrink-0 select-none animate-in fade-in zoom-in-95 duration-150"
                 >
-                  <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 rounded-full bg-white/15 px-3 text-xs font-medium leading-none text-white backdrop-blur-md">
+                  <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 rounded-full bg-white/15 px-3 text-sm font-medium leading-none text-white backdrop-blur-md">
                     {seg.billingType === "hourly" && <Clock className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
                     {seg.billingType === "fixed" && <Briefcase className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
                     {seg.billingType === "milestone" && <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
@@ -2079,7 +2081,7 @@ export function TokenCommandInput({
                       onKeyDown={(e) => handleKeyDown(seg.id, e)}
                       onClick={(e) => e.stopPropagation()}
                       style={{ caretColor: "#ffffff" }}
-                      className="absolute -left-[4px] top-0 w-[8px] h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
+                      className="absolute -left-[4px] top-0 w-[8px] h-full text-center bg-transparent text-sm text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
                     />
                   </span>
                 )
@@ -2110,7 +2112,7 @@ export function TokenCommandInput({
                       onKeyDown={(e) => handleKeyDown(seg.id, e)}
                       onClick={(e) => e.stopPropagation()}
                       style={{ caretColor: "#ffffff" }}
-                      className="absolute -left-[2px] top-0 w-[6px] h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
+                      className="absolute -left-[2px] top-0 w-[6px] h-full text-center bg-transparent text-sm text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
                     />
                   </span>
                 )
@@ -2147,14 +2149,14 @@ export function TokenCommandInput({
                   {showPlaceholder && !seg.text ? (
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none select-none text-lg font-sans leading-normal text-[#B8B8B8] whitespace-nowrap truncate max-w-full"
+                      className="pointer-events-none select-none text-sm font-sans leading-normal text-[#B8B8B8] whitespace-nowrap truncate max-w-full"
                     >
                       {specificPlaceholder}
                     </span>
                   ) : (
                     <span
                       aria-hidden="true"
-                      className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[28px] max-w-full"
+                      className="invisible whitespace-pre text-sm font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[24px] max-w-full"
                       style={{
                         minWidth: seg.text ? undefined : "2px",
                       }}
@@ -2214,7 +2216,7 @@ export function TokenCommandInput({
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
-                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-lg text-white caret-white placeholder:text-[#B8B8B8] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
+                    className="absolute inset-0 w-full h-full min-h-[32px] bg-transparent text-sm text-white caret-white placeholder:text-[#B8B8B8] focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-10 cursor-text"
                   />
                 </span>
               )
