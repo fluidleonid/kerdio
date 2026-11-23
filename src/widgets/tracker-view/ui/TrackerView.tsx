@@ -343,12 +343,8 @@ export function TrackerView() {
                 <span aria-hidden="true" className="h-3.5 w-px bg-white/20" />
                 <span className="font-mono text-[#E8D5CE] tabular-nums">
                   {todayQuickStats.time}
+                  {todayQuickStats.value > 0 ? ` · $${todayQuickStats.value.toFixed(0)}` : ""}
                 </span>
-                {todayQuickStats.value > 0 && (
-                  <span className="font-mono font-semibold text-white tabular-nums">
-                    ${todayQuickStats.value.toFixed(0)}
-                  </span>
-                )}
               </>
             )}
           </button>

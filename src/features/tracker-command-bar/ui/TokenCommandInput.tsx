@@ -312,11 +312,43 @@ export function TokenCommandInput({
     )
   }, [currentProject, segments, projects])
 
-  // Open (not delivered) milestones for this project
-  const openMilestones = useMemo(() => {
+  // Recent milestones for the active project (ordered by most recently tracked, then project list)
+  const recentMilestones = useMemo(() => {
     if (!activeProjectOrMatch) return []
-    return (activeProjectOrMatch.milestones || []).filter((m) => m.status === "open")
-  }, [activeProjectOrMatch])
+    const projectMilestones = activeProjectOrMatch.milestones || []
+    const seen = new Set<string>()
+    const result: Array<{ id: string; name: string; amount: number }> = []
+
+    // 1. Add milestones from recent sessions of this project (most recent first)
+    const projSessions = sessions
+      .filter((s) => s.projectId === activeProjectOrMatch.id && (s.milestoneId || s.milestoneName))
+      .sort((a, b) => b.startTime - a.startTime)
+
+    for (const s of projSessions) {
+      const matched = projectMilestones.find(
+        (m) => m.id === s.milestoneId || (s.milestoneName && m.name.toLowerCase() === s.milestoneName.toLowerCase())
+      )
+      const id = matched?.id || s.milestoneId || `ms-${(s.milestoneName || "").toLowerCase()}`
+      const name = matched?.name || s.milestoneName || ""
+      const amount = matched?.amount ?? s.earnedAmount ?? activeProjectOrMatch.fixedBudget ?? 0
+      const dedupeKey = name.toLowerCase() || id
+      if (name && !seen.has(dedupeKey)) {
+        seen.add(dedupeKey)
+        result.push({ id, name, amount })
+      }
+    }
+
+    // 2. Add any remaining milestones defined on the project
+    for (const m of projectMilestones) {
+      const dedupeKey = m.name.toLowerCase() || m.id
+      if (!seen.has(dedupeKey)) {
+        seen.add(dedupeKey)
+        result.push({ id: m.id, name: m.name, amount: m.amount })
+      }
+    }
+
+    return result.slice(0, 5)
+  }, [activeProjectOrMatch, sessions])
 
   useEffect(() => {
     if (activeProjectOrMatch?.milestones && activeProjectOrMatch.milestones.length > 0) {
@@ -2207,34 +2239,38 @@ export function TokenCommandInput({
         </div>
       </div>
 
-      {/* CHIPS WITH OPEN MILESTONES OFFERED UNDER THE INPUT CONTAINER */}
-      {activeProjectOrMatch && openMilestones.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 mt-2 px-2 animate-in fade-in slide-in-from-top-1 duration-200">
-          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#FAF0EC] flex items-center gap-1">
-            <Flag className="h-3 w-3 text-[#E8D5CE]" aria-hidden="true" />
-            Milestone:
-          </span>
-          {openMilestones.map((ms) => {
-            const isSelected = selectedMilestoneId === ms.id
-            return (
-              <button
-                key={ms.id}
-                type="button"
-                aria-pressed={isSelected}
-                onClick={() => selectOpenMilestone(ms)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${
-                  isSelected
-                    ? "bg-white/20 text-white border border-white/35 font-semibold"
-                    : "bg-black/45 hover:bg-black/60 text-white border border-white/10"
-                }`}
-              >
-                <Flag className="h-2.5 w-2.5 text-[#E8D5CE]" aria-hidden="true" />
-                <span>{ms.name}</span>
-                <span className="text-white font-mono font-semibold">${ms.amount}</span>
-                {isSelected && <Check className="h-2.5 w-2.5 text-white stroke-[3]" aria-hidden="true" />}
-              </button>
-            )
-          })}
+      {/* MINIMALIST RECENT MILESTONES LIST UNDER THE INPUT */}
+      {activeProjectOrMatch && recentMilestones.length > 0 && (
+        <div className="mt-3 px-2 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="text-[11px] font-medium text-[#E8D5CE]">
+            Recent milestones
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {recentMilestones.map((ms) => {
+              const isSelected = selectedMilestoneId === ms.id
+              return (
+                <button
+                  key={ms.id}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => selectOpenMilestone(ms)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl transition-all active:scale-95 cursor-pointer ${
+                    isSelected
+                      ? "bg-white/20 text-white"
+                      : "bg-black/35 hover:bg-black/50 text-[#FAF0EC]"
+                  }`}
+                >
+                  <span>{ms.name}</span>
+                  {ms.amount > 0 && (
+                    <span className="font-mono text-[#E8D5CE] tabular-nums">
+                      · ${ms.amount}
+                    </span>
+                  )}
+                  {isSelected && <Check className="h-3 w-3 text-white stroke-[2.5]" aria-hidden="true" />}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
 
