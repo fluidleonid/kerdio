@@ -115,15 +115,16 @@ export function BillingBadge({
       )
     }
     if (billingType === "milestone") {
-      const label = milestoneName
-        ? milestoneName
-        : amount !== undefined && amount !== null
-        ? `Milestone $${amount}`
-        : "Milestone"
+      const hasAmount = amount !== undefined && amount !== null && amount > 0
       return (
         <>
           <Flag className="h-3.5 w-3.5 text-white/90 shrink-0" />
-          <span className="truncate min-w-0">{label}</span>
+          <span className="truncate min-w-0">{milestoneName || "Milestone"}</span>
+          {hasAmount && (
+            <span className="shrink-0 font-mono text-[#DCDCDC] tabular-nums">
+              $${amount}
+            </span>
+          )}
         </>
       )
     }

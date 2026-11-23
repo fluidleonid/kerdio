@@ -2125,8 +2125,10 @@ export function TokenCommandInput({
                       el.setSelectionRange(len, len)
                     }
                   }}
-                  className={`relative inline-flex items-center shrink-0 min-h-[32px] ${
-                    isTrailingText || isPendingBillingTarget ? "flex-1 min-w-[140px]" : ""
+                  className={`relative inline-flex items-center max-w-full min-h-[32px] ${
+                    isTrailingText || isPendingBillingTarget
+                      ? "flex-1 min-w-[min(100%,220px)]"
+                      : "shrink-0"
                   }`}
                   style={{
                     minWidth:
@@ -2135,20 +2137,30 @@ export function TokenCommandInput({
                         : (seg.text ? undefined : "2px"),
                   }}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[28px]"
-                    style={{
-                      minWidth: showPlaceholder ? undefined : (seg.text ? undefined : "2px"),
-                    }}
-                  >
-                    {seg.text || (showPlaceholder ? specificPlaceholder : "\u200B")}
-                  </span>
+                  {showPlaceholder && !seg.text ? (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none select-none text-lg font-sans leading-normal text-[#B8B8B8] whitespace-normal break-words py-0.5"
+                    >
+                      {specificPlaceholder}
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[28px] max-w-full"
+                      style={{
+                        minWidth: seg.text ? undefined : "2px",
+                      }}
+                    >
+                      {seg.text || "\u200B"}
+                    </span>
+                  )}
                   <input
                     ref={(el) => {
                       inputRefs.current[seg.id] = el
                     }}
                     type="text"
+                    aria-label={showPlaceholder ? specificPlaceholder : "Session memo"}
                     value={seg.text}
                     onChange={(e) => handleTextChange(seg.id, e.target.value)}
                     onFocus={(e) => {
@@ -2191,7 +2203,7 @@ export function TokenCommandInput({
                     }}
                     onKeyDown={(e) => handleKeyDown(seg.id, e)}
                     onClick={(e) => e.stopPropagation()}
-                    placeholder={showPlaceholder ? specificPlaceholder : ""}
+                    placeholder=""
                     style={{
                       caretColor: "#ffffff",
                     } as React.CSSProperties}
