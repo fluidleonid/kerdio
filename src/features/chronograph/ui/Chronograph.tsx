@@ -315,6 +315,7 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
             onClick={() => setDisplayMode((m) => (m === "time" ? "money" : "time"))}
             className="group relative cursor-pointer flex items-center justify-center p-4 rounded-3xl transition-transform active:scale-95 bg-transparent border-none"
           >
+            {timer.status === "running" && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 overflow-visible">
               {CHARGE_PARTICLES.map((p, idx) => {
                 const rad = (p.angle * Math.PI) / 180
@@ -338,10 +339,11 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
                 )
               })}
             </div>
+            )}
 
             <div className="relative flex items-center justify-center">
               <div
-                className={`font-['Oxanium',sans-serif] font-bold tracking-normal tabular-nums leading-none animate-digit-charge-glow transition-colors ${
+                className={`font-['Oxanium',sans-serif] font-bold tracking-normal tabular-nums leading-none ${timer.status === "running" ? "animate-digit-charge-glow" : ""} transition-colors ${
                   displayMode === "money" && !moneyDisplay.hasBilling
                     ? "text-[24px] sm:text-[28px] text-white"
                     : "text-[36px] sm:text-[48px] text-white group-hover:text-[#F2F2F2]"
