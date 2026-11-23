@@ -331,17 +331,8 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
                 : `Current earnings ${moneyDisplay.amountText}. Switch to elapsed time`
             }
             onClick={() => setDisplayMode((m) => (m === "time" ? "money" : "time"))}
-            className="group relative cursor-pointer flex flex-col items-center justify-center p-4 rounded-3xl transition-transform active:scale-95 bg-transparent border-none"
+            className="group relative cursor-pointer flex items-center justify-center p-4 rounded-3xl transition-transform active:scale-95 bg-transparent border-none"
           >
-            {/* БЕЛЫЕ СОЛНЕЧНЫЕ ЗАЙЧИКИ (СВЕТОВАЯ КАУСТИКА С ПРОЗРАЧНОСТЬЮ) */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 overflow-visible">
-              <div className="absolute w-36 h-12 rounded-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 blur-md animate-sunbeam-1" />
-              <div className="absolute w-24 h-14 rounded-full bg-white/15 blur-xl animate-sunbeam-2" />
-              <div className="absolute w-12 h-12 rounded-full bg-white/30 blur-sm animate-sunbeam-3" />
-              <div className="absolute w-16 h-8 rounded-full bg-white/20 blur-md animate-sunbeam-4" />
-            </div>
-
-            {/* ИМИТАЦИЯ ЗАРЯДА БАТАРЕИ: ЧАСТИЦЫ СТЕКАЮТ ОТ КРАЕВ КРУГА К ЦЕНТРУ */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 overflow-visible">
               {CHARGE_PARTICLES.map((p, idx) => {
                 const rad = (p.angle * Math.PI) / 180
@@ -366,41 +357,25 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
               })}
             </div>
 
-            {/* РЕЖИМ 1: ТЕКУЩЕЕ ВРЕМЯ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */}
-            {displayMode === "time" ? (
-              <div className="font-['Oxanium',sans-serif] font-bold text-[36px] sm:text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-100 transition-colors">
-                {formattedTime}
+            <div className="relative flex items-center justify-center">
+              <div
+                className={`font-['Oxanium',sans-serif] font-bold tracking-normal tabular-nums leading-none animate-digit-charge-glow transition-colors ${
+                  displayMode === "money" && !moneyDisplay.hasBilling
+                    ? "text-[24px] sm:text-[28px] text-white"
+                    : "text-[36px] sm:text-[48px] text-white group-hover:text-[#F2F2F2]"
+                }`}
+              >
+                {displayMode === "time" ? formattedTime : moneyDisplay.amountText}
               </div>
-            ) : (
-              /* РЕЖИМ 2: ДЕНЬГИ С ПОДСВЕТКОЙ ПРИ ЗАРЯДЕ */
-              moneyDisplay.hasBilling ? (
-                <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[36px] sm:text-[48px] text-white tracking-normal tabular-nums leading-none animate-digit-charge-glow group-hover:text-amber-200 transition-colors">
-                    {moneyDisplay.amountText}
-                  </div>
-                  {moneyDisplay.effectiveRateText ? (
-                    <div className="text-xs font-semibold font-mono text-amber-200 mt-1 flex items-center justify-center gap-1">
-                      <span className="text-[#F2F2F2]">Effective rate:</span>
-                      <span className="text-white font-bold">{moneyDisplay.effectiveRateText}</span>
-                    </div>
-                  ) : (
-                    <div className="text-xs font-semibold text-[#F2F2F2] mt-1">
-                      {moneyDisplay.hint}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* ЕСЛИ БИЛЛИНГ НЕ ВВЕДЕН: СООБЩЕНИЕ О ВВОДЕ СТАВКИ */
-                <div className="flex flex-col items-center">
-                  <div className="font-['Oxanium',sans-serif] font-bold text-[24px] sm:text-[28px] text-amber-200 leading-tight animate-digit-charge-glow">
-                    {moneyDisplay.amountText}
-                  </div>
-                  <div className="text-xs font-semibold text-[#F2F2F2] mt-1">
-                    {moneyDisplay.hint}
-                  </div>
-                </div>
-              )
-            )}
+
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap text-xs font-mono font-medium text-[#DCDCDC]">
+                {timer.billingType === "milestone"
+                  ? moneyDisplay.effectiveRateText && displayMode === "money"
+                    ? `Milestone · ${moneyDisplay.effectiveRateText}`
+                    : "Milestone"
+                  : moneyDisplay.hint}
+              </div>
+            </div>
           </button>
         </AppTooltip>
       </div>
