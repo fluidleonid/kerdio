@@ -6,6 +6,13 @@ import type { TimeSession } from "@/entities/session"
 import { INITIAL_SESSIONS } from "@/entities/session"
 import { capitalizeMemo } from "@/shared/lib"
 
+function pruneSessionsToToday(sessions: TimeSession[]): TimeSession[] {
+  const startOfToday = new Date()
+  startOfToday.setHours(0, 0, 0, 0)
+  const cutoff = startOfToday.getTime()
+  return sessions.filter((s) => s.startTime >= cutoff)
+}
+
 export interface ActiveTimerState {
   status: "idle" | "running" | "paused"
   startTime: number | null
@@ -480,9 +487,34 @@ export const useTrackerStore = create<TrackerStore>()(
     }),
     {
       name: "kerd-tracker-storage",
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = (persistedState || {}) as Partial<TrackerStore>
+        if (version < 2) {
+          // Clear legacy pre-seeded mock activities on upgrade to single-day MVP
+          return {
+            ...state,
+            sessions: [],
+          }
+        }
+        return {
+          ...state,
+          sessions: Array.isArray(state.sessions)
+            ? pruneSessionsToToday(state.sessions)
+            : [],
+        }
+      },
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray(state.sessions)) {
+          const todayOnly = pruneSessionsToToday(state.sessions)
+          if (todayOnly.length !== state.sessions.length) {
+            state.sessions = todayOnly
+          }
+        }
+      },
       partialize: (state) => ({
         projects: state.projects,
-        sessions: state.sessions,
+        sessions: pruneSessionsToToday(state.sessions),
         timer: state.timer,
       }),
     }
