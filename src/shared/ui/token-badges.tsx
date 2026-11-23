@@ -122,7 +122,7 @@ export function BillingBadge({
           <span className="truncate min-w-0">{milestoneName || "Milestone"}</span>
           {hasAmount && (
             <span className="shrink-0 font-mono text-[#DCDCDC] tabular-nums">
-              $${amount}
+              ${amount}
             </span>
           )}
         </>
