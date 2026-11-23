@@ -2239,38 +2239,43 @@ export function TokenCommandInput({
         </div>
       </div>
 
-      {/* MINIMALIST RECENT MILESTONES LIST UNDER THE INPUT */}
+      {/* MINIMALIST VERTICAL RECENT MILESTONES LIST UNDER THE INPUT */}
       {activeProjectOrMatch && recentMilestones.length > 0 && (
-        <div className="mt-3 px-2 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="text-[11px] font-medium text-[#E8D5CE]">
+        <div className="mt-3 px-1 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="px-2.5 text-[11px] font-medium text-[#E8D5CE]">
             Recent milestones
           </div>
-          <div className="flex flex-wrap items-center gap-1.5">
+          <ul className="space-y-1">
             {recentMilestones.map((ms) => {
               const isSelected = selectedMilestoneId === ms.id
               return (
-                <button
-                  key={ms.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => selectOpenMilestone(ms)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl transition-all active:scale-95 cursor-pointer ${
-                    isSelected
-                      ? "bg-white/20 text-white"
-                      : "bg-black/35 hover:bg-black/50 text-[#FAF0EC]"
-                  }`}
-                >
-                  <span>{ms.name}</span>
-                  {ms.amount > 0 && (
-                    <span className="font-mono text-[#E8D5CE] tabular-nums">
-                      · ${ms.amount}
+                <li key={ms.id}>
+                  <button
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => selectOpenMilestone(ms)}
+                    className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs font-medium text-left backdrop-blur-xl transition-colors cursor-pointer ${
+                      isSelected
+                        ? "bg-white/15 text-white"
+                        : "bg-black/30 hover:bg-black/45 text-[#FAF0EC]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span className="truncate">{ms.name}</span>
+                      {isSelected && (
+                        <Check className="h-3.5 w-3.5 text-white shrink-0 stroke-[2.5]" aria-hidden="true" />
+                      )}
                     </span>
-                  )}
-                  {isSelected && <Check className="h-3 w-3 text-white stroke-[2.5]" aria-hidden="true" />}
-                </button>
+                    {ms.amount > 0 && (
+                      <span className="font-mono text-[#E8D5CE] tabular-nums shrink-0">
+                        ${ms.amount}
+                      </span>
+                    )}
+                  </button>
+                </li>
               )
             })}
-          </div>
+          </ul>
         </div>
       )}
 
