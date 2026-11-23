@@ -12,7 +12,7 @@ import { useTrackerStore } from "@/entities/tracker"
 import { Chronograph } from "@/features/chronograph"
 import { TokenCommandInput } from "@/features/tracker-command-bar"
 import { TodayLogDrawer } from "@/widgets/today-log"
-import { AppTooltip, ProjectBadge, BillingBadge } from "@/shared/ui"
+import { AppTooltip, ProjectBadge } from "@/shared/ui"
 import { capitalizeMemo } from "@/shared/lib"
 
 function formatCompactDuration(seconds: number): string {
@@ -261,21 +261,12 @@ export function TrackerView() {
                   <ProjectBadge project={activeProject} showAtPrefix={true} />
                 )}
 
-                {timer.milestoneName && (
+                {timer.billingType === "milestone" && timer.milestoneName && (
                   <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 px-3 rounded-full text-xs font-medium leading-none bg-white/10 text-white shrink-0">
                     <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" aria-hidden="true" />
                     <span className="truncate min-w-0">{timer.milestoneName}</span>
                   </span>
                 )}
-
-                <BillingBadge
-                  billingType={timer.billingType}
-                  amount={
-                    timer.billingType === "hourly"
-                      ? timer.rate
-                      : timer.fixedBudget
-                  }
-                />
               </button>
             </AppTooltip>
           )}

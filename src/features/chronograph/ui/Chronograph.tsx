@@ -208,8 +208,14 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
 
       return {
         hasBilling: true,
-        amountText: `${currency}${timer.fixedBudget.toFixed(2)}`,
-        hint: timer.billingType === "fixed" ? "Fixed budget" : "Milestone",
+        amountText:
+          timer.billingType === "milestone"
+            ? effectiveRateFormatted
+            : `${currency}${timer.fixedBudget.toFixed(2)}`,
+        hint:
+          timer.billingType === "milestone"
+            ? `Milestone · ${currency}${timer.fixedBudget}`
+            : `Fixed · ${currency}${timer.fixedBudget}`,
         effectiveRateText: effectiveRateFormatted,
       }
     }
@@ -353,13 +359,7 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
               </div>
 
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap text-xs font-mono font-medium text-[#DCDCDC]">
-                {timer.billingType === "milestone"
-                  ? displayMode === "money" && moneyDisplay.effectiveRateText
-                    ? `Milestone · ${moneyDisplay.effectiveRateText}`
-                    : timer.fixedBudget && timer.fixedBudget > 0
-                    ? `Milestone · ${activeProject?.currency || timer.currency || "$"}${timer.fixedBudget}`
-                    : "Milestone"
-                  : moneyDisplay.hint}
+                {moneyDisplay.hint}
               </div>
             </div>
           </button>

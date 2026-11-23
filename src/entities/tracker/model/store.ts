@@ -114,10 +114,17 @@ export const useTrackerStore = create<TrackerStore>()(
           ? state.projects.find((p) => p.id === params.projectId)
           : state.projects.find((p) => p.id === state.timer.projectId) || state.projects[0]
 
-        // Determine active milestone
-        let mId = params?.milestoneId
-        let mName = params?.milestoneName
-        if (mId === undefined && selectedProj?.milestones && selectedProj.milestones.length > 0) {
+        const resolvedBillingType = params?.billingType ?? selectedProj?.billingType ?? "hourly"
+
+        // Only attach a milestone when tracking in milestone mode
+        let mId = resolvedBillingType === "milestone" ? params?.milestoneId : null
+        let mName = resolvedBillingType === "milestone" ? params?.milestoneName : null
+        if (
+          resolvedBillingType === "milestone" &&
+          mId === undefined &&
+          selectedProj?.milestones &&
+          selectedProj.milestones.length > 0
+        ) {
           const activeMs = selectedProj.milestones.find((m) => m.status === "open") || selectedProj.milestones[0]
           if (activeMs) {
             mId = activeMs.id
