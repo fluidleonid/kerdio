@@ -258,7 +258,7 @@ export function TrackerView() {
                   type="button"
                   onClick={() => setIsEditingHeader(true)}
                   aria-label="Edit active session details"
-                  className="pointer-events-auto inline-flex flex-row flex-wrap items-center justify-start gap-2 px-3 py-1.5 rounded-2xl cursor-pointer max-w-full sm:max-w-xl group hover:opacity-90 transition-all active:scale-[0.98] bg-transparent border-none text-left"
+                  className="pointer-events-auto inline-flex flex-row flex-wrap items-center justify-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer max-w-full sm:max-w-xl group hover:opacity-90 transition-all active:scale-[0.98] bg-transparent border-none text-center"
                 >
                   <span className="text-sm font-medium text-white group-hover:text-white/90 transition-colors truncate max-w-[160px] sm:max-w-[260px]">
                     {capitalizeMemo(timer.memo) || "What are you working on?"}
