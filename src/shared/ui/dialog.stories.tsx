@@ -21,7 +21,7 @@ import { Trash2, AlertTriangle } from 'lucide-react'
  * ### Anatomy & Specifications
  * - **Overlay**: Translucent `bg-black/40` backdrop with subtle `backdrop-blur-sm` blurring background surfaces.
  * - **Content Frame**: Floating rounded modal (`rounded-3xl`) with smooth entrance/exit zoom animations.
- * - **Header**: High-contrast title (`text-lg font-bold`) and explanatory description (`text-[#806060]`).
+ * - **Header**: High-contrast title (`text-lg font-bold`) and explanatory description (`text-[#DCDCDC]`).
  * - **Footer**: Responsive action controls with primary submission and secondary cancel triggers.
  */
 const meta: Meta = {

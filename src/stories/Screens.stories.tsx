@@ -1,40 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { TrackerView } from '@/widgets/tracker-view'
-import { ProjectsView } from '@/widgets/projects-view'
-import { JournalView } from '@/widgets/journal-view'
-import { ReportsView } from '@/widgets/reports-view'
-import { Sidebar } from '@/widgets/sidebar'
-import { MemoryRouter } from 'react-router-dom'
+import { useEffect } from "react"
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { MemoryRouter } from "react-router-dom"
+import { TrackerView } from "@/widgets/tracker-view"
+import { TodayLogDrawer } from "@/widgets/today-log"
+import { useTrackerStore } from "@/entities/tracker"
 
-/**
- * # Full Application Views
- *
- * End-to-end composite screen layouts integrating all atomic primitives,
- * feature modules, and widgets inside a production-grade workspace frame.
- *
- * ### Architectural Layout
- * - **Atmospheric Shell**: Dark terracotta glow background (\`#140501\`) with hardware-accelerated blur surfaces.
- * - **Fixed Sidebar Dock**: Collapsed navigation rail on the left.
- * - **Scrollable Viewport Canvas**: Dynamic main viewport responsive across desktop and tablet breakpoints.
- */
 const meta: Meta = {
-  title: 'Screens/Full Application Views',
-  tags: ['autodocs'],
+  title: "Screens/Single-Day MVP Cockpit",
+  tags: ["autodocs"],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
-        component: `
-### Application Screen Views
-
-Production-grade composite screens demonstrating real-world layouts, widget composition, and navigation flows.
-
-#### Views Overview
-1. **Tracker Cockpit**: The primary screen centering the Horological Chronograph and Token Command Bar.
-2. **Projects View**: Client portfolio management, rate configuration, and budget tracking.
-3. **Journal View**: Chronological timeline of focus blocks and recorded work sessions.
-4. **Reports View**: High-level financial analytics, hourly yield distributions, and invoice summaries.
-        `,
+        component:
+          "Production single-day MVP screens: centered command cockpit, active horological timer, and receipt-style Today's Log drawer.",
       },
     },
   },
@@ -42,70 +21,106 @@ Production-grade composite screens demonstrating real-world layouts, widget comp
 
 export default meta
 
-/**
- * **Tracker Cockpit**:
- * Central workspace screen with the 12-hour Chronograph and Token Command Bar.
- */
-export const TrackerScreen: StoryObj = {
-  render: () => (
-    <MemoryRouter initialEntries={['/']}>
-      <div className="relative min-h-screen w-screen bg-[#140501] overflow-hidden flex">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto">
+export const IdleCockpit: StoryObj = {
+  render: () => {
+    useEffect(() => {
+      useTrackerStore.getState().discardTracking()
+    }, [])
+
+    return (
+      <MemoryRouter initialEntries={["/"]}>
+        <div className="relative min-h-dvh w-screen overflow-hidden">
           <TrackerView />
-        </main>
-      </div>
-    </MemoryRouter>
-  ),
+        </div>
+      </MemoryRouter>
+    )
+  },
 }
 
-/**
- * **Projects & Clients Screen**:
- * Project rate configuration, budget tracking cards, and portfolio status.
- */
-export const ProjectsScreen: StoryObj = {
-  render: () => (
-    <MemoryRouter initialEntries={['/projects']}>
-      <div className="relative min-h-screen w-screen bg-[#140501] overflow-hidden flex">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6 md:p-12">
-          <ProjectsView />
-        </main>
-      </div>
-    </MemoryRouter>
-  ),
+export const ActiveTimerCockpit: StoryObj = {
+  render: () => {
+    useEffect(() => {
+      const now = Date.now()
+      const durationSeconds = 4200
+      useTrackerStore.setState((s) => ({
+        timer: {
+          ...s.timer,
+          status: "running",
+          memo: "SVG Chronograph bezel trigonometry",
+          projectId: "proj-kerd",
+          milestoneId: null,
+          milestoneName: null,
+          startTime: now - durationSeconds * 1000,
+          accumulatedSeconds: 0,
+          elapsedSeconds: durationSeconds,
+          rate: 85,
+          billingType: "hourly",
+          fixedBudget: 0,
+          currency: "$",
+          segments: [],
+        },
+      }))
+    }, [])
+
+    return (
+      <MemoryRouter initialEntries={["/"]}>
+        <div className="relative min-h-dvh w-screen overflow-hidden">
+          <TrackerView />
+        </div>
+      </MemoryRouter>
+    )
+  },
 }
 
-/**
- * **Journal & Calendar Screen**:
- * Session log, multi-slot time entries, and calendar view.
- */
-export const JournalCalendarScreen: StoryObj = {
-  render: () => (
-    <MemoryRouter initialEntries={['/journal']}>
-      <div className="relative min-h-screen w-screen bg-[#140501] overflow-hidden flex">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6 md:p-12">
-          <JournalView />
-        </main>
-      </div>
-    </MemoryRouter>
-  ),
-}
+export const TodayLogReceiptOpen: StoryObj = {
+  render: () => {
+    useEffect(() => {
+      const d = new Date()
+      const at = (h: number, m: number) => {
+        const t = new Date(d)
+        t.setHours(h, m, 0, 0)
+        return t.getTime()
+      }
+      useTrackerStore.getState().discardTracking()
+      useTrackerStore.setState({
+        sessions: [
+          {
+            id: "scr-1",
+            projectId: "proj-kerd",
+            milestoneId: "ms-kerd-2",
+            milestoneName: "M 2 Token Command Palette",
+            memo: "Token badges & responsive polish",
+            startTime: at(10, 0),
+            endTime: at(11, 30),
+            durationSeconds: 5400,
+            rateSnapshot: 0,
+            earnedAmount: 2300,
+            billingType: "milestone",
+            currency: "$",
+          },
+          {
+            id: "scr-2",
+            projectId: "proj-kerd",
+            memo: "WCAG contrast & Storybook audit",
+            startTime: at(12, 0),
+            endTime: at(13, 0),
+            durationSeconds: 3600,
+            rateSnapshot: 85,
+            earnedAmount: 85,
+            billingType: "hourly",
+            currency: "$",
+          },
+        ],
+      })
+    }, [])
 
-/**
- * **Reports & Financial Analytics**:
- * Aggregated yield metrics, hourly revenue curves, and client totals.
- */
-export const ReportsScreen: StoryObj = {
-  render: () => (
-    <MemoryRouter initialEntries={['/reports']}>
-      <div className="relative min-h-screen w-screen bg-[#140501] overflow-hidden flex">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6 md:p-12">
-          <ReportsView />
-        </main>
-      </div>
-    </MemoryRouter>
-  ),
+    return (
+      <MemoryRouter initialEntries={["/"]}>
+        <div className="relative min-h-dvh w-screen overflow-hidden">
+          <TrackerView />
+          <TodayLogDrawer isOpen={true} onClose={() => {}} />
+        </div>
+      </MemoryRouter>
+    )
+  },
 }

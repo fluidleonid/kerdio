@@ -179,7 +179,7 @@ export const StatesMatrix: Story = {
     <div className="max-w-4xl mx-auto p-8 space-y-6 text-white font-sans">
       <div>
         <h3 className="text-xl font-bold mb-1">Button States Matrix</h3>
-        <p className="text-xs text-[#806060]">
+        <p className="text-xs text-[#DCDCDC]">
           Standard rested, icon variations, busy loading, and disabled safeguards.
         </p>
       </div>

@@ -54,7 +54,7 @@ export const DefaultTrackerActive: Story = {
         <div className="flex-1 p-12 text-white/50 text-sm flex items-center justify-center">
           <div className="text-center">
             <div className="text-lg font-semibold text-white mb-1">Tracker Cockpit View</div>
-            <div className="text-xs text-[#806060]">Active Route: <code className="text-orange-400">/</code> (Shortcut: Shift+1)</div>
+            <div className="text-xs text-[#DCDCDC]">Active Route: <code className="text-orange-400">/</code> (Shortcut: Shift+1)</div>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@ export const JournalRouteActive: Story = {
         <div className="flex-1 p-12 text-white/50 text-sm flex items-center justify-center">
           <div className="text-center">
             <div className="text-lg font-semibold text-white mb-1">Journal & Calendar View</div>
-            <div className="text-xs text-[#806060]">Active Route: <code className="text-orange-400">/journal</code> (Shortcut: Shift+2)</div>
+            <div className="text-xs text-[#DCDCDC]">Active Route: <code className="text-orange-400">/journal</code> (Shortcut: Shift+2)</div>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ export const ProjectsRouteActive: Story = {
         <div className="flex-1 p-12 text-white/50 text-sm flex items-center justify-center">
           <div className="text-center">
             <div className="text-lg font-semibold text-white mb-1">Projects & Clients View</div>
-            <div className="text-xs text-[#806060]">Active Route: <code className="text-orange-400">/projects</code> (Shortcut: Shift+3)</div>
+            <div className="text-xs text-[#DCDCDC]">Active Route: <code className="text-orange-400">/projects</code> (Shortcut: Shift+3)</div>
           </div>
         </div>
       </div>
@@ -114,7 +114,7 @@ export const ReportsRouteActive: Story = {
         <div className="flex-1 p-12 text-white/50 text-sm flex items-center justify-center">
           <div className="text-center">
             <div className="text-lg font-semibold text-white mb-1">Financial Reports View</div>
-            <div className="text-xs text-[#806060]">Active Route: <code className="text-orange-400">/reports</code> (Shortcut: Shift+4)</div>
+            <div className="text-xs text-[#DCDCDC]">Active Route: <code className="text-orange-400">/reports</code> (Shortcut: Shift+4)</div>
           </div>
         </div>
       </div>

@@ -42,7 +42,7 @@ export const GlassTiers: StoryObj = {
     <div className="max-w-4xl mx-auto p-8 space-y-10 text-white font-sans">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white mb-2">Glassmorphism & Elevation</h1>
-        <p className="text-sm text-[#806060]">
+        <p className="text-sm text-[#DCDCDC]">
           Multi-layer optical hierarchy: borderless glass, deep blurs, and diffused ambient shadows.
         </p>
       </div>
@@ -52,7 +52,7 @@ export const GlassTiers: StoryObj = {
         <div className="rounded-3xl bg-black/50 p-6 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-none space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Card Glass Tier</span>
-            <span className="text-xs font-mono text-[#806060]">bg-black/50 • blur-3xl</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">bg-black/50 • blur-3xl</span>
           </div>
           <p className="text-sm text-white/90">
             Primary surface for Modals, the Command Bar wrapper, and Project metric cards. Borderless with diffused 50px black shadow.
@@ -66,7 +66,7 @@ export const GlassTiers: StoryObj = {
         <div className="rounded-3xl bg-black/40 p-6 backdrop-blur-3xl shadow-[0_10px_25px_rgba(0,0,0,0.25)] border-none space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Input Glass Tier</span>
-            <span className="text-xs font-mono text-[#806060]">bg-black/40 • rounded-2xl</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">bg-black/40 • rounded-2xl</span>
           </div>
           <p className="text-sm text-white/90">
             Single-row form inputs and composite billing selectors. Smoothly deepens to <code className="text-white">bg-black/60</code> on focus.
@@ -80,7 +80,7 @@ export const GlassTiers: StoryObj = {
         <div className="rounded-2xl bg-black/95 p-5 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Popover Dropdown Tier</span>
-            <span className="text-xs font-mono text-[#806060]">bg-black/95 • border-white/10</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">bg-black/95 • border-white/10</span>
           </div>
           <p className="text-sm text-white/90">
             Autocomplete dropdowns for @projects, /billing commands, and combobox menus. Maximum contrast against busy backgrounds.
@@ -91,7 +91,7 @@ export const GlassTiers: StoryObj = {
         <div className="rounded-3xl bg-black/30 p-6 backdrop-blur-xl border border-white/5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Pill Badge Tier</span>
-            <span className="text-xs font-mono text-[#806060]">bg-white/10 • rounded-full</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">bg-white/10 • rounded-full</span>
           </div>
           <p className="text-sm text-white/90">
             Tactile inline chips for projects and rates. Translucent white pill with hover transition.

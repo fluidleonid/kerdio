@@ -8,7 +8,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
  *
  * ### Core Typographic Guidelines
  * - **Tabular Numerals**: \`tabular-nums\` ensures fixed-width numbers so digits never jitter or jump on live timer ticks.
- * - **Micro-Labels**: Uppercase \`10px\` to \`12px\` metadata labels in muted warm tones (\`#806060\`).
+ * - **Micro-Labels**: Uppercase \`10px\` to \`12px\` metadata labels in muted warm tones (\`#DCDCDC\`).
  * - **Keyboard Kbd**: Tactile bordered keycap representations for shortcuts.
  */
 const meta: Meta = {
@@ -25,7 +25,7 @@ Engineered for optimal readability across real-time counters, currency accruals,
 
 #### Key Principles
 1. **Tabular Figures (\`tabular-nums\`)**: Mandatory for all timer counters and financial metrics to prevent character jitter.
-2. **High-Contrast Hierarchy**: Bold white display headlines paired with warm muted secondary copy (\`#806060\`).
+2. **High-Contrast Hierarchy**: Bold white display headlines paired with warm muted secondary copy (\`#DCDCDC\`).
 3. **Keyboard Shortcuts**: Embedded \`<kbd>\` elements with tactile micro-borders.
         `,
       },
@@ -40,7 +40,7 @@ export const TypographyScale: StoryObj = {
     <div className="max-w-4xl mx-auto p-8 space-y-10 text-white font-sans">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white mb-2">Typography & Digital Numerals</h1>
-        <p className="text-sm text-[#806060]">
+        <p className="text-sm text-[#DCDCDC]">
           Custom display typography with tabular numbers, engineered for high-precision digital instruments.
         </p>
       </div>
@@ -58,7 +58,7 @@ export const TypographyScale: StoryObj = {
             +$245.50
           </div>
         </div>
-        <p className="text-xs text-[#806060]">
+        <p className="text-xs text-[#DCDCDC]">
           Zero width variance: digits never jump or jitter during live second updates.
         </p>
       </div>
@@ -69,36 +69,36 @@ export const TypographyScale: StoryObj = {
 
         <div className="space-y-4 border-t border-white/10 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Display / 48px</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">Display / 48px</span>
             <div className="md:col-span-3 text-4xl font-extrabold tracking-tight">Kerdio Focused Value</div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Heading 1 / 24px</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">Heading 1 / 24px</span>
             <div className="md:col-span-3 text-2xl font-bold">24-Hour Calendar Journal</div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Heading 2 / 18px</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">Heading 2 / 18px</span>
             <div className="md:col-span-3 text-lg font-semibold">Project Billing Settings</div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Body / 14px</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">Body / 14px</span>
             <div className="md:col-span-3 text-sm text-white/90 leading-relaxed">
               Keyboard-driven workflow: type <code className="text-orange-400 bg-white/10 px-1.5 py-0.5 rounded">@</code> to autocomplete projects, <code className="text-orange-400 bg-white/10 px-1.5 py-0.5 rounded">/</code> to set hourly rate or milestone budget.
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Label / 12px</span>
-            <div className="md:col-span-3 text-xs font-medium text-[#806060] tracking-wide uppercase">
+            <span className="text-xs font-mono text-[#DCDCDC]">Label / 12px</span>
+            <div className="md:col-span-3 text-xs font-medium text-[#DCDCDC] tracking-wide uppercase">
               Effective Hourly Rate: $95.50/h
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
-            <span className="text-xs font-mono text-[#806060]">Keyboard / 10px</span>
+            <span className="text-xs font-mono text-[#DCDCDC]">Keyboard / 10px</span>
             <div className="md:col-span-3 flex items-center gap-2">
               <kbd className="px-2 py-1 rounded bg-white/10 text-xs font-mono text-white/80 border border-white/10">⇧ 1</kbd>
               <kbd className="px-2 py-1 rounded bg-white/10 text-xs font-mono text-white/80 border border-white/10">⌘ Enter</kbd>

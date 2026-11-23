@@ -14,7 +14,7 @@ import { Clock, TrendingUp, Sparkles, ArrowRight } from 'lucide-react'
  * - **Card**: Root container with `rounded-3xl` corners and ambient depth shadow.
  * - **CardHeader**: Auto-responsive container grid for title, description, and top-right actions.
  * - **CardTitle**: High-contrast typography with tight tracking.
- * - **CardDescription**: Dimmed auxiliary guidance text (`text-[#806060]`).
+ * - **CardDescription**: Dimmed auxiliary guidance text (`text-[#DCDCDC]`).
  * - **CardAction**: Optional slot pinned to the top-right corner of the header.
  * - **CardContent**: Main body area with standard padding.
  * - **CardFooter**: Bottom actions row with aligned buttons.
@@ -62,11 +62,11 @@ export const Default: Story = {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-[#806060] tracking-wider">Metrics</span>
+            <span className="text-xs font-mono uppercase text-[#DCDCDC] tracking-wider">Metrics</span>
             <Badge variant="secondary" className="text-[10px]">Weekly</Badge>
           </div>
           <CardTitle className="text-xl font-bold text-white mt-1">Focus Time</CardTitle>
-          <CardDescription className="text-xs text-[#806060]">
+          <CardDescription className="text-xs text-[#DCDCDC]">
             Tracked hours accumulated over the current billing cycle.
           </CardDescription>
         </CardHeader>
@@ -79,7 +79,7 @@ export const Default: Story = {
             <div className="h-full bg-orange-600 rounded-full w-[70%]" />
           </div>
         </CardContent>
-        <CardFooter className="justify-between text-xs text-[#806060] border-t border-white/5 pt-4">
+        <CardFooter className="justify-between text-xs text-[#DCDCDC] border-t border-white/5 pt-4">
           <span>Target: 40 hrs</span>
           <span className="text-emerald-400 font-semibold">+12% vs last week</span>
         </CardFooter>
@@ -105,17 +105,17 @@ export const HoverAndActive: Story = {
           <CardTitle className="text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
             Interactive Project Card
           </CardTitle>
-          <CardDescription className="text-xs text-[#806060]">
+          <CardDescription className="text-xs text-[#DCDCDC]">
             Hover to observe subtle surface transition and action trigger.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#806060]">Rate:</span>
+            <span className="text-[#DCDCDC]">Rate:</span>
             <span className="font-mono font-bold text-white">$120/h</span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#806060]">Yield:</span>
+            <span className="text-[#DCDCDC]">Yield:</span>
             <span className="font-mono font-bold text-emerald-400">$4,140</span>
           </div>
         </CardContent>
@@ -135,12 +135,12 @@ export const Disabled: Story = {
         <CardHeader>
           <Badge variant="outline" className="w-fit">Archived</Badge>
           <CardTitle className="text-lg font-bold text-white mt-1">Archived Client Vault</CardTitle>
-          <CardDescription className="text-xs text-[#806060]">
+          <CardDescription className="text-xs text-[#DCDCDC]">
             This project has been deactivated and is read-only.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <span className="text-xs text-[#806060] font-mono">No active time sessions recorded.</span>
+          <span className="text-xs text-[#DCDCDC] font-mono">No active time sessions recorded.</span>
         </CardContent>
       </Card>
     </div>
@@ -156,35 +156,35 @@ export const GridDashboard: Story = {
     <div className="max-w-4xl p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
       <Card>
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between text-[#806060]">
+          <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Hours</span>
             <Clock className="h-4 w-4 text-orange-400" />
           </div>
           <CardTitle className="text-2xl font-bold font-mono text-white tabular-nums">42.8 h</CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 text-[11px] text-[#806060]">Across 18 sessions</CardContent>
+        <CardContent className="pt-0 text-[11px] text-[#DCDCDC]">Across 18 sessions</CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between text-[#806060]">
+          <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Accrued</span>
             <TrendingUp className="h-4 w-4 text-emerald-400" />
           </div>
           <CardTitle className="text-2xl font-bold font-mono text-emerald-400 tabular-nums">$3,640</CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 text-[11px] text-[#806060]">Effective: $85/h</CardContent>
+        <CardContent className="pt-0 text-[11px] text-[#DCDCDC]">Effective: $85/h</CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between text-[#806060]">
+          <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Yield</span>
             <Sparkles className="h-4 w-4 text-amber-400" />
           </div>
           <CardTitle className="text-2xl font-bold font-mono text-white tabular-nums">94.2%</CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 text-[11px] text-[#806060]">Target billable ratio</CardContent>
+        <CardContent className="pt-0 text-[11px] text-[#DCDCDC]">Target billable ratio</CardContent>
       </Card>
     </div>
   ),

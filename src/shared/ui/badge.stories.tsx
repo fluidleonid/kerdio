@@ -161,7 +161,7 @@ export const VariantsGallery: Story = {
         <h3 className="text-sm font-semibold uppercase tracking-wider text-orange-400 mb-1">
           Badge Variants Matrix
         </h3>
-        <p className="text-xs text-[#806060]">
+        <p className="text-xs text-[#DCDCDC]">
           Visual hierarchy options across UI surfaces
         </p>
       </div>

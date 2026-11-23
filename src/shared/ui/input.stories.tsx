@@ -12,7 +12,7 @@ import { Clock, Briefcase, Flag, ShieldOff, ChevronDown, Search } from 'lucide-r
  * ### Design System Anatomy
  * - **Optical Glass**: `bg-black/50` tinted layer with `backdrop-blur-3xl`.
  * - **Focus Elevation**: Transitions to `bg-black/60` with expanded 35px diffused shadow.
- * - **Placeholder Tone**: Calibrated warm grey `#6E5353` for legible guidance without visual competition.
+ * - **Placeholder Tone**: Calibrated warm grey `#B8B8B8` for legible guidance without visual competition.
  * - **Height & Geometry**: 44px height (`h-11`) with generous 16px corner radius (`rounded-2xl`).
  */
 const meta: Meta<typeof Input> = {
@@ -108,7 +108,7 @@ export const WithSearchIcon: Story = {
   render: () => (
     <div className="w-[420px] p-6 bg-black/40 rounded-3xl border border-white/5">
       <div className="relative flex items-center">
-        <Search className="absolute left-3.5 h-4 w-4 text-[#806060] pointer-events-none" />
+        <Search className="absolute left-3.5 h-4 w-4 text-[#DCDCDC] pointer-events-none" />
         <Input className="pl-10" placeholder="Search sessions or project tags..." />
       </div>
     </div>
@@ -144,7 +144,7 @@ function CompositeBillingDemo() {
         >
           <selected.icon className="h-4 w-4 text-orange-400 shrink-0" />
           <span className="text-sm font-semibold text-white select-none whitespace-nowrap">{selected.title}</span>
-          <ChevronDown className={`h-3.5 w-3.5 text-[#806060] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`h-3.5 w-3.5 text-[#DCDCDC] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         <div className="h-5 w-px bg-white/10 mx-2 shrink-0" />
@@ -158,10 +158,10 @@ function CompositeBillingDemo() {
               onChange={(e) => setRate(e.target.value)}
               className="w-full bg-transparent text-sm font-semibold text-white outline-none border-none p-0"
             />
-            <span className="text-xs font-mono font-semibold text-[#806060] ml-1 select-none shrink-0">{selected.suffix}</span>
+            <span className="text-xs font-mono font-semibold text-[#DCDCDC] ml-1 select-none shrink-0">{selected.suffix}</span>
           </div>
         ) : (
-          <span className="text-xs text-[#806060]">No billing</span>
+          <span className="text-xs text-[#DCDCDC]">No billing</span>
         )}
 
         {isOpen && (
@@ -180,7 +180,7 @@ function CompositeBillingDemo() {
                 <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold text-white">{opt.title}</div>
-                  <div className="text-xs text-[#806060]">{opt.desc}</div>
+                  <div className="text-xs text-[#DCDCDC]">{opt.desc}</div>
                 </div>
               </div>
             ))}
