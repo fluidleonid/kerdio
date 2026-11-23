@@ -580,14 +580,6 @@ export function TokenCommandInput({
         icon: Clock,
       },
       {
-        id: "fixed",
-        command: "/fixed",
-        type: "fixed" as const,
-        title: "Fixed fee",
-        defaultDesc: "Set fixed project fee ($)",
-        icon: Briefcase,
-      },
-      {
         id: "milestone",
         command: "/milestone",
         type: "milestone" as const,

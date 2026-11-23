@@ -336,12 +336,15 @@ export function TrackerView() {
             }
             className="flex min-h-[44px] items-center gap-2.5 rounded-full bg-black/55 hover:bg-black/70 px-4 py-2 text-xs sm:text-sm font-medium text-white backdrop-blur-2xl shadow-[0_12px_32px_rgba(0,0,0,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer whitespace-nowrap"
           >
-            <ListChecks className="h-4 w-4 text-[#E8D5CE] shrink-0" aria-hidden="true" />
-            <span>Today&apos;s Log</span>
+            <ListChecks
+              className="h-4 w-4 text-white shrink-0 -translate-y-[1px]"
+              aria-hidden="true"
+            />
+            <span className="leading-none text-white">Today&apos;s Log</span>
             {todayQuickStats.count > 0 && (
               <>
-                <span aria-hidden="true" className="h-3.5 w-px bg-white/20" />
-                <span className="font-mono text-[#E8D5CE] tabular-nums">
+                <span aria-hidden="true" className="h-3.5 w-px bg-white/25" />
+                <span className="font-mono leading-none text-white tabular-nums">
                   {todayQuickStats.time}
                   {todayQuickStats.value > 0 ? ` · $${todayQuickStats.value.toFixed(0)}` : ""}
                 </span>
