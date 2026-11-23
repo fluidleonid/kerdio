@@ -204,7 +204,12 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
       const elapsedHours = timer.elapsedSeconds / 3600
       const effectiveRate =
         elapsedHours > 0 ? timer.fixedBudget / elapsedHours : timer.fixedBudget
-      const effectiveRateFormatted = `${currency}${Math.round(effectiveRate)}/h`
+      const effectiveRateFormatted =
+        effectiveRate >= 1_000_000
+          ? `${currency}${(effectiveRate / 1_000_000).toFixed(1)}M/h`
+          : effectiveRate >= 10_000
+          ? `${currency}${(effectiveRate / 1_000).toFixed(1)}k/h`
+          : `${currency}${Math.round(effectiveRate)}/h`
 
       return {
         hasBilling: true,
@@ -233,6 +238,7 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
       style={{
         width: `min(82vw, ${size}px)`,
         height: `min(82vw, ${size}px)`,
+        containerType: "inline-size",
       }}
     >
       <svg
@@ -347,16 +353,30 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
             </div>
             )}
 
-            <div className="relative flex items-center justify-center">
-              <div
-                className={`font-['Oxanium',sans-serif] font-bold tracking-normal tabular-nums leading-none ${timer.status === "running" ? "animate-digit-charge-glow" : ""} transition-colors ${
+            <div className="relative flex items-center justify-center max-w-[60cqi]">
+              {(() => {
+                const mainText = displayMode === "time" ? formattedTime : moneyDisplay.amountText
+                const len = mainText.length
+                const dynamicSize =
                   displayMode === "money" && !moneyDisplay.hasBilling
-                    ? "text-[24px] sm:text-[28px] text-white"
-                    : "text-[36px] sm:text-[48px] text-white group-hover:text-[#F2F2F2]"
-                }`}
-              >
-                {displayMode === "time" ? formattedTime : moneyDisplay.amountText}
-              </div>
+                    ? "clamp(18px, 7.5cqi, 28px)"
+                    : len <= 8
+                    ? "clamp(24px, 11.5cqi, 46px)"
+                    : len <= 10
+                    ? "clamp(20px, 9.5cqi, 38px)"
+                    : "clamp(16px, 7.8cqi, 30px)"
+
+                return (
+                  <div
+                    style={{ fontSize: dynamicSize }}
+                    className={`font-['Oxanium',sans-serif] font-bold tracking-normal tabular-nums leading-none whitespace-nowrap ${
+                      timer.status === "running" ? "animate-digit-charge-glow" : ""
+                    } transition-colors text-white group-hover:text-[#F2F2F2]`}
+                  >
+                    {mainText}
+                  </div>
+                )
+              })()}
 
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap text-xs font-mono font-medium text-[#DCDCDC]">
                 {moneyDisplay.hint}
