@@ -27,6 +27,8 @@ export interface ActiveTimerState {
   fixedBudget?: number
   currency: string
   intervals?: number[]
+  pausedAt?: number | null
+  segments?: Array<{ startTime: number; endTime: number }>
 }
 
 interface TrackerStore {
@@ -95,6 +97,8 @@ const defaultTimerState: ActiveTimerState = {
   billingType: "hourly",
   currency: "$",
   intervals: [],
+  pausedAt: null,
+  segments: [],
 }
 
 export const useTrackerStore = create<TrackerStore>()(
@@ -137,6 +141,8 @@ export const useTrackerStore = create<TrackerStore>()(
             fixedBudget: params?.fixedBudget !== undefined ? params.fixedBudget : selectedProj?.fixedBudget,
             currency: selectedProj?.currency ?? "$",
             intervals: [],
+            pausedAt: null,
+            segments: [],
           },
         })
       },
@@ -152,6 +158,10 @@ export const useTrackerStore = create<TrackerStore>()(
         const totalElapsed = (timer.accumulatedSeconds || 0) + currentSegment
         const prevIntervals = timer.intervals || []
         const updatedIntervals = currentSegment > 0 ? [...prevIntervals, currentSegment] : prevIntervals
+        const prevSegments = timer.segments || []
+        const updatedSegments = timer.startTime
+          ? [...prevSegments, { startTime: timer.startTime, endTime: now }]
+          : prevSegments
 
         set({
           timer: {
@@ -160,7 +170,9 @@ export const useTrackerStore = create<TrackerStore>()(
             accumulatedSeconds: totalElapsed,
             elapsedSeconds: totalElapsed,
             startTime: null,
+            pausedAt: now,
             intervals: updatedIntervals,
+            segments: updatedSegments,
           },
         })
       },
@@ -175,6 +187,7 @@ export const useTrackerStore = create<TrackerStore>()(
             ...timer,
             status: "running",
             startTime: now,
+            pausedAt: null,
           },
         })
       },

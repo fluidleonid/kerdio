@@ -39,7 +39,7 @@ function timestampToClockAngle(timestamp: number): number {
   return (hours + minutes / 60 + seconds / 3600) * 30
 }
 
-const GAP_DEGREES = 14 // Gap in degrees between consecutive intervals
+const MIN_VISIBLE_PAUSE_SECONDS = 60 // Pauses under 60s merge seamlessly with no visible gap
 const MIN_ARC_DEGREES = 1.0 // Below 1 degree (~2 min), minimally forms a circular bead
 
 // 24 battery charging particles streaming inwards from perimeter to center
@@ -92,64 +92,46 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
   const trackSegments = useMemo(() => {
     if (timer.status === "idle") return []
 
-    const completed = timer.intervals || []
-    const segments: Array<{
-      id: string
-      startAngle: number
-      endAngle: number
-      spanDeg: number
-      isCircle: boolean
-      center: { x: number; y: number }
-    }> = []
-
-    // Start angle corresponds to current time on 12-hour dial when session started
     const now = Date.now()
-    const sessionStart = timer.startTime
-      ? timer.startTime - (timer.accumulatedSeconds || 0) * 1000
-      : now - (timer.elapsedSeconds || 0) * 1000
+    const rawRanges: Array<{ startTime: number; endTime: number }> = [
+      ...(timer.segments || []),
+    ]
 
-    let currentAngle = timestampToClockAngle(sessionStart)
+    if (timer.status === "running" && timer.startTime) {
+      rawRanges.push({ startTime: timer.startTime, endTime: now })
+    } else if (rawRanges.length === 0) {
+      // Fallback for legacy persisted timers without segments array
+      const elapsedMs = (timer.elapsedSeconds || 0) * 1000
+      rawRanges.push({ startTime: now - elapsedMs, endTime: now })
+    }
 
-    const pushSegment = (id: string, durationSec: number) => {
-      // 12 hours = 360° => 1 hour (3600s) = 30° => 1 minute = 0.5°
-      const rawSpan = (durationSec / 3600) * 30
-      const spanDeg = Math.min(rawSpan, 350)
+    // Merge adjacent intervals whose pause gap is under MIN_VISIBLE_PAUSE_SECONDS
+    const merged: Array<{ startTime: number; endTime: number }> = []
+    for (const r of rawRanges) {
+      const last = merged[merged.length - 1]
+      if (last && (r.startTime - last.endTime) / 1000 < MIN_VISIBLE_PAUSE_SECONDS) {
+        last.endTime = Math.max(last.endTime, r.endTime)
+      } else {
+        merged.push({ startTime: r.startTime, endTime: r.endTime })
+      }
+    }
+
+    return merged.map((range, index) => {
+      const durationSec = Math.max(0, (range.endTime - range.startTime) / 1000)
+      const startAngle = timestampToClockAngle(range.startTime)
+      const spanDeg = Math.min((durationSec / 3600) * 30, 350)
       const isCircle = spanDeg < MIN_ARC_DEGREES
-      const startAngle = currentAngle
-      const endAngle = currentAngle + spanDeg
       const center = getPointOnCircle(cx, cy, dialRadius, startAngle)
-
-      segments.push({
-        id,
+      return {
+        id: `seg-${index}`,
         startAngle,
-        endAngle,
+        endAngle: startAngle + spanDeg,
         spanDeg,
         isCircle,
         center,
-      })
-
-      // Advance start angle for the next segment:
-      // Cap radius is ~5.9 deg; GAP_DEGREES = 14 leaves a clean ~7px visible spacing between rounded caps
-      currentAngle = (currentAngle + spanDeg + GAP_DEGREES) % 360
-    }
-
-    // 1. All completed session intervals
-    completed.forEach((duration, index) => {
-      pushSegment(`completed-${index}`, duration)
+      }
     })
-
-    // 2. Active or new paused interval
-    if (timer.status === "running") {
-      const activeDuration = Math.max(0, timer.elapsedSeconds - (timer.accumulatedSeconds || 0))
-      pushSegment("active", activeDuration)
-    } else if (timer.status === "paused") {
-      // On pause, we build a new arc right next to the previous one ("если делаем паузу то мы строим рядом новую дугу")
-      // Minimally at 0 seconds it forms a circle ("но минимально она кружок образует")
-      pushSegment("paused-next", 0)
-    }
-
-    return segments
-  }, [timer.status, timer.startTime, timer.intervals, timer.elapsedSeconds, timer.accumulatedSeconds, cx, cy, dialRadius])
+  }, [timer.status, timer.startTime, timer.segments, timer.elapsedSeconds, cx, cy, dialRadius])
 
   // 12 hour numbers (12, 1, 2, ..., 11) upright around the circle
   const hourMarkers = useMemo(() => {
