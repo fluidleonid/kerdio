@@ -2293,16 +2293,37 @@ export function TokenCommandInput({
                 const project = projects.find((p) => p.id === entry.projectId)
                 const isSelected = index === dropdownIndex
 
-                // Determine display rate/billing for entry
+                const isMilestoneEntry =
+                  entry.billingType === "milestone" ||
+                  Boolean(entry.milestoneId || entry.milestoneName) ||
+                  project?.billingType === "milestone"
+
+                const matchedMs = project?.milestones?.find(
+                  (m) =>
+                    m.id === entry.milestoneId ||
+                    (entry.milestoneName && m.name === entry.milestoneName)
+                )
+                const milestoneAmount =
+                  matchedMs?.amount ?? entry.earnedAmount ?? project?.fixedBudget ?? 0
+                const milestoneLabel = matchedMs?.name || entry.milestoneName || "Milestone"
+
+                // Determine display rate/billing for non-milestone entries
                 let billingTag = ""
-                if (entry.billingType === "hourly" && entry.rateSnapshot && entry.rateSnapshot > 0) {
+                if (isMilestoneEntry) {
+                  billingTag =
+                    milestoneAmount > 0 ? `$${milestoneAmount}` : "Milestone"
+                } else if (
+                  entry.billingType === "hourly" &&
+                  entry.rateSnapshot &&
+                  entry.rateSnapshot > 0
+                ) {
                   billingTag = `$${entry.rateSnapshot}/h`
                 } else if (
-                  (entry.billingType === "fixed" || entry.billingType === "milestone") &&
+                  entry.billingType === "fixed" &&
                   entry.earnedAmount &&
                   entry.earnedAmount > 0
                 ) {
-                  billingTag = `$${entry.earnedAmount}`
+                  billingTag = `Fixed $${entry.earnedAmount}`
                 } else if (entry.rateSnapshot && entry.rateSnapshot > 0) {
                   billingTag = `$${entry.rateSnapshot}/h`
                 } else if (project?.billingType === "hourly" && project?.hourlyRate) {
@@ -2335,10 +2356,20 @@ export function TokenCommandInput({
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {billingTag && (
-                        <span className="font-mono text-sm text-[#E8D5CE] font-semibold">
-                          {billingTag}
+                      {isMilestoneEntry ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-xs font-mono text-[#E8D5CE]">
+                          <Flag className="h-3 w-3 text-[#CBB2AA] shrink-0" aria-hidden="true" />
+                          <span className="max-w-[110px] truncate">{milestoneLabel}</span>
+                          {milestoneAmount > 0 && (
+                            <span className="tabular-nums">· ${milestoneAmount}</span>
+                          )}
                         </span>
+                      ) : (
+                        billingTag && (
+                          <span className="font-mono text-sm text-[#E8D5CE] font-semibold">
+                            {billingTag}
+                          </span>
+                        )
                       )}
                       <span className="text-sm text-[#CBB2AA]">
                         @{project?.name || "project"}
