@@ -119,24 +119,23 @@ export function cleanupSegments(rawList: TokenSegment[]): TokenSegment[] {
 
 export function getProjectDefaultBilling(proj: Project | null | undefined): BillingConfig | null {
   if (!proj) return null
+  if (proj.billingType === "milestone") {
+    const activeMs =
+      proj.milestones?.find((m) => m.status === "open") || proj.milestones?.[0]
+    const amount = activeMs?.amount ?? proj.fixedBudget ?? 0
+    return { type: "milestone", amount }
+  }
   if (proj.billingType === "hourly" && proj.hourlyRate && proj.hourlyRate > 0) {
     return { type: "hourly", amount: proj.hourlyRate }
   }
-  if (
-    (proj.billingType === "fixed" || proj.billingType === "milestone") &&
-    proj.fixedBudget &&
-    proj.fixedBudget > 0
-  ) {
-    return { type: proj.billingType, amount: proj.fixedBudget }
-  }
-  if (proj.hourlyRate && proj.hourlyRate > 0) {
-    return { type: "hourly", amount: proj.hourlyRate }
-  }
-  if (proj.fixedBudget && proj.fixedBudget > 0) {
+  if (proj.billingType === "fixed" && proj.fixedBudget && proj.fixedBudget > 0) {
     return { type: "fixed", amount: proj.fixedBudget }
   }
   if (proj.billingType === "none") {
     return { type: "none", amount: 0 }
+  }
+  if (proj.hourlyRate && proj.hourlyRate > 0) {
+    return { type: "hourly", amount: proj.hourlyRate }
   }
   return null
 }
@@ -351,13 +350,17 @@ export function TokenCommandInput({
   }, [activeProjectOrMatch, sessions])
 
   useEffect(() => {
-    if (activeProjectOrMatch?.milestones && activeProjectOrMatch.milestones.length > 0) {
+    if (
+      activeProjectOrMatch?.billingType === "milestone" &&
+      activeProjectOrMatch?.milestones &&
+      activeProjectOrMatch.milestones.length > 0
+    ) {
       const openMs = activeProjectOrMatch.milestones.find((m) => m.status === "open")
       setSelectedMilestoneId(openMs ? openMs.id : activeProjectOrMatch.milestones[0].id)
     } else {
       setSelectedMilestoneId(null)
     }
-  }, [activeProjectOrMatch?.id])
+  }, [activeProjectOrMatch?.id, activeProjectOrMatch?.billingType])
 
   // Active custom billing token in segments
   const activeBilling = useMemo(() => {
@@ -999,12 +1002,26 @@ export function TokenCommandInput({
 
   // Select open milestone chip from under input
   const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
-    setSelectedMilestoneId((prev) => (prev === ms.id ? null : ms.id))
+    const isDeselecting = selectedMilestoneId === ms.id
+    setSelectedMilestoneId(isDeselecting ? null : ms.id)
     setSegments((prev) => {
-      const hasBilling = prev.some((s) => s.type === "billing")
-      if (hasBilling) return prev
-
-      const cleaned = prev.filter((s) => s.type !== "pending-billing")
+      const cleaned = prev.filter((s) => s.type !== "pending-billing" && s.type !== "billing")
+      if (isDeselecting) {
+        const defaultBill = getProjectDefaultBilling(activeProjectOrMatch)
+        if (defaultBill && defaultBill.type === "hourly") {
+          const projIdx = cleaned.findIndex((s) => s.type === "project")
+          const nextSegs = [...cleaned]
+          const billSeg: TokenSegment = {
+            id: `bill-${Date.now()}`,
+            type: "billing",
+            billing: defaultBill,
+          }
+          if (projIdx !== -1) nextSegs.splice(projIdx + 1, 0, billSeg)
+          else nextSegs.push(billSeg)
+          return cleanupSegments(nextSegs)
+        }
+        return cleanupSegments(cleaned)
+      }
       const projIdx = cleaned.findIndex((s) => s.type === "project")
       const newSegs = [...cleaned]
       const billSeg: TokenSegment = {
@@ -2246,10 +2263,10 @@ export function TokenCommandInput({
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => selectOpenMilestone(ms)}
-                    className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs font-medium text-left backdrop-blur-xl transition-colors cursor-pointer ${
+                    className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs font-medium text-left transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-white/15 text-white"
-                        : "bg-black/30 hover:bg-black/45 text-[#FAF0EC]"
+                        : "bg-transparent text-[#FAF0EC] hover:bg-white/15 hover:text-white"
                     }`}
                   >
                     <span className="flex items-center gap-2 min-w-0">
@@ -2405,10 +2422,18 @@ export function TokenCommandInput({
                         <span className="font-semibold text-white text-sm">{p.name}</span>
                       </div>
 
-                      {p.hourlyRate && (
-                        <span className="text-[#E8D5CE] font-mono text-sm tabular-nums font-semibold">
-                          ${p.hourlyRate}/h
+                      {p.billingType === "milestone" ? (
+                        <span className="inline-flex items-center gap-1 text-[#E8D5CE] font-mono text-xs tabular-nums">
+                          <Flag className="h-3 w-3 text-[#CBB2AA]" aria-hidden="true" />
+                          <span>Milestone</span>
                         </span>
+                      ) : (
+                        p.billingType === "hourly" &&
+                        p.hourlyRate && (
+                          <span className="text-[#E8D5CE] font-mono text-sm tabular-nums font-semibold">
+                            ${p.hourlyRate}/h
+                          </span>
+                        )
                       )}
                     </button>
                   )
