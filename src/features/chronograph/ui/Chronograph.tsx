@@ -354,8 +354,10 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
 
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap text-xs font-mono font-medium text-[#DCDCDC]">
                 {timer.billingType === "milestone"
-                  ? moneyDisplay.effectiveRateText && displayMode === "money"
+                  ? displayMode === "money" && moneyDisplay.effectiveRateText
                     ? `Milestone · ${moneyDisplay.effectiveRateText}`
+                    : timer.fixedBudget && timer.fixedBudget > 0
+                    ? `Milestone · ${activeProject?.currency || timer.currency || "$"}${timer.fixedBudget}`
                     : "Milestone"
                   : moneyDisplay.hint}
               </div>
