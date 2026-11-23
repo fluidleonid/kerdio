@@ -226,9 +226,9 @@ export function Chronograph({ className, size = 420 }: ChronographProps) {
     }
 
     return {
-      hasBilling: false,
-      amountText: "Set rate",
-      hint: "Non-billable session",
+      hasBilling: true,
+      amountText: `${currency}0.00`,
+      hint: "Non-billable",
     }
   }, [timer.billingType, timer.rate, timer.fixedBudget, timer.elapsedSeconds, activeProject?.currency, timer.currency])
 

@@ -111,10 +111,10 @@ export const useTrackerStore = create<TrackerStore>()(
       startTracking: (params) => {
         const state = get()
         const selectedProj = params?.projectId
-          ? state.projects.find((p) => p.id === params.projectId)
-          : state.projects.find((p) => p.id === state.timer.projectId) || state.projects[0]
+          ? state.projects.find((p) => p.id === params.projectId) || null
+          : null
 
-        const resolvedBillingType = params?.billingType ?? selectedProj?.billingType ?? "hourly"
+        const resolvedBillingType = params?.billingType ?? "none"
 
         // Only attach a milestone when tracking in milestone mode
         let mId = resolvedBillingType === "milestone" ? params?.milestoneId : null
@@ -144,8 +144,8 @@ export const useTrackerStore = create<TrackerStore>()(
             milestoneName: mName || null,
             memo: capitalizeMemo(params?.memo?.trim() || state.timer.memo || "Focused session"),
             rate: params?.rate !== undefined ? params.rate : null,
-            billingType: params?.billingType ?? selectedProj?.billingType ?? "hourly",
-            fixedBudget: params?.fixedBudget !== undefined ? params.fixedBudget : selectedProj?.fixedBudget,
+            billingType: resolvedBillingType,
+            fixedBudget: params?.fixedBudget !== undefined ? params.fixedBudget : 0,
             currency: selectedProj?.currency ?? "$",
             intervals: [],
             pausedAt: null,
@@ -225,7 +225,7 @@ export const useTrackerStore = create<TrackerStore>()(
 
         const newSession: TimeSession = {
           id: `sess-${Date.now()}`,
-          projectId: timer.projectId || "proj-kerd",
+          projectId: timer.projectId || "no-project",
           milestoneId: timer.milestoneId || undefined,
           milestoneName: timer.milestoneName || undefined,
           memo: capitalizeMemo(timer.memo || "Focused session"),
@@ -319,18 +319,20 @@ export const useTrackerStore = create<TrackerStore>()(
       },
 
       updateActiveSessionInfo: (params) => {
-        const project = get().projects.find((p) => p.id === params.projectId)
+        const project = params.projectId
+          ? get().projects.find((p) => p.id === params.projectId) || null
+          : null
         set((state) => ({
           timer: {
             ...state.timer,
             memo: capitalizeMemo(params.memo),
-            projectId: params.projectId,
-            milestoneId: params.milestoneId !== undefined ? params.milestoneId : state.timer.milestoneId,
-            milestoneName: params.milestoneName !== undefined ? params.milestoneName : state.timer.milestoneName,
-            rate: params.rate !== undefined ? params.rate : state.timer.rate,
-            billingType: params.billingType ?? project?.billingType ?? state.timer.billingType,
-            fixedBudget: params.fixedBudget !== undefined ? params.fixedBudget : project?.fixedBudget,
-            currency: project?.currency ?? state.timer.currency,
+            projectId: project?.id || null,
+            milestoneId: params.milestoneId !== undefined ? params.milestoneId : null,
+            milestoneName: params.milestoneName !== undefined ? params.milestoneName : null,
+            rate: params.rate !== undefined ? params.rate : null,
+            billingType: params.billingType ?? "none",
+            fixedBudget: params.fixedBudget !== undefined ? params.fixedBudget : 0,
+            currency: project?.currency ?? state.timer.currency ?? "$",
           },
         }))
       },

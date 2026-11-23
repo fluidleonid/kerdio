@@ -139,7 +139,8 @@ export function TrackerView() {
   }
 
   const activeProject = useMemo(() => {
-    return projects.find((p) => p.id === timer.projectId) || projects[0]
+    if (!timer.projectId) return null
+    return projects.find((p) => p.id === timer.projectId) || null
   }, [projects, timer.projectId])
 
   // Today's quick summary for the single floating log pill
@@ -264,8 +265,12 @@ export function TrackerView() {
                     {capitalizeMemo(timer.memo) || "What are you working on?"}
                   </span>
 
-                  {activeProject && (
+                  {activeProject ? (
                     <ProjectBadge project={activeProject} />
+                  ) : (
+                    <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 px-3 rounded-full text-xs font-medium leading-none bg-white/10 text-[#DCDCDC] shrink-0">
+                      <span className="truncate min-w-0">No project</span>
+                    </span>
                   )}
 
                   {timer.billingType === "milestone" && timer.milestoneName && (

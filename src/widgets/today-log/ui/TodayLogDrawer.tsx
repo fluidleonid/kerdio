@@ -94,15 +94,16 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
     >()
 
     for (const s of todaySessions) {
-      const project = projects.find((p) => p.id === s.projectId)
-      const projectName = project?.name || "Project"
-      const projectColor = project?.color || "#F97316"
+      const project = s.projectId ? projects.find((p) => p.id === s.projectId) : undefined
+      const groupKey = project ? project.id : "no-project"
+      const projectName = project?.name || "No project"
+      const projectColor = project?.color || "#9A9A9A"
       const currency = s.currency || project?.currency || "$"
 
-      let group = map.get(s.projectId)
+      let group = map.get(groupKey)
       if (!group) {
         group = {
-          projectId: s.projectId,
+          projectId: groupKey,
           projectName,
           projectColor,
           currency,
@@ -112,7 +113,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
           totalValue: 0,
           countedFixed: false,
         }
-        map.set(s.projectId, group)
+        map.set(groupKey, group)
       }
 
       group.totalSeconds += s.durationSeconds
@@ -257,7 +258,7 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
       const mins = Math.max(1, Math.round(s.durationSeconds / 60))
       return [
         `"${dateStr}"`,
-        `"${proj?.name || s.projectId}"`,
+        `"${proj?.name || "No project"}"`,
         `"${(s.milestoneName || "").replace(/"/g, '""')}"`,
         `"${capitalizeMemo(s.memo).replace(/"/g, '""')}"`,
         `"${format24h(s.startTime)}"`,
