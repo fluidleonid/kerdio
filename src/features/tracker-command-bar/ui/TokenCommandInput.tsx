@@ -2492,8 +2492,8 @@ export function TokenCommandInput({
                     onClick={() => createNewProject(atQuery.trim())}
                     className={`w-full flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-sm font-medium cursor-pointer transition-colors text-left ${
                       dropdownIndex === filteredProjects.length
-                        ? "bg-white/15 text-orange-200"
-                        : "text-orange-300 hover:bg-white/10 hover:text-orange-200"
+                        ? "bg-white/15 text-white"
+                        : "text-white hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2 text-sm">
