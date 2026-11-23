@@ -428,12 +428,7 @@ export function TokenCommandInput({
     }
   }, [currentProject, activeProjectOrMatch, activeBilling])
 
-  const [overrideConfirmed, setOverrideConfirmed] = useState(false)
 
-  // Reset confirmation whenever billing or project changes
-  useEffect(() => {
-    setOverrideConfirmed(false)
-  }, [activeBilling?.type, activeBilling?.amount, currentProject?.id])
 
   // Project milestones analysis from sessions
   const milestoneStats = useMemo(() => {
@@ -1744,33 +1739,10 @@ export function TokenCommandInput({
   // Session start: assembling all text segments into clean memo!
   const handleStartSession = () => {
     if (!canStart) return
-
-    // If an override is active and hasn't been confirmed yet, ask scope on confirmation!
-    if (billingOverrideInfo && !overrideConfirmed) {
-      setPendingBillingChange({
-        project: billingOverrideInfo.project,
-        newBilling: billingOverrideInfo.activeBilling,
-        apply: () => {
-          setOverrideConfirmed(true)
-          executeStartSession()
-        },
-      })
-      return
-    }
-
     executeStartSession()
   }
 
-  const handleTriggerOverrideModal = () => {
-    if (!billingOverrideInfo) return
-    setPendingBillingChange({
-      project: billingOverrideInfo.project,
-      newBilling: billingOverrideInfo.activeBilling,
-      apply: () => {
-        setOverrideConfirmed(true)
-      },
-    })
-  }
+
 
   handleStartSessionRef.current = handleStartSession
 
@@ -2185,25 +2157,6 @@ export function TokenCommandInput({
 
         {/* ROW 2: CONTROLS (Right: @ project, / billing, primary Run button) */}
         <div className="mt-2 flex items-center justify-end gap-1.5 border-none">
-          {/* Billing Override Badge with hover tooltip showing project default vs override */}
-          {billingOverrideInfo && (
-            <AppTooltip
-              content={`Project default: ${billingOverrideInfo.projectDefaultText}. Applied override: ${billingOverrideInfo.overrideText}`}
-              side="top"
-            >
-              <button
-                type="button"
-                onClick={handleTriggerOverrideModal}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 animate-in fade-in zoom-in-95"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse shrink-0" />
-                <span>Override</span>
-                <span className="font-mono text-[11px] text-[#DCDCDC] font-bold">
-                  {billingOverrideInfo.overrideText}
-                </span>
-              </button>
-            </AppTooltip>
-          )}
 
           {/* Ghost @ button (icon-only, no label) with custom AppTooltip */}
           <AppTooltip content="Select project" shortcut="@" side="top">
