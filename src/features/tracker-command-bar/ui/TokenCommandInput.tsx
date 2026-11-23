@@ -1698,16 +1698,16 @@ export function TokenCommandInput({
     // 2. Project from project badge
     const projSeg = segments.find((s) => s.type === "project")
     const proj = projSeg && projSeg.type === "project" ? projSeg.project : null
-    const projId = proj?.id || projects[0]?.id || "proj-kerd"
+    const projId = proj?.id || ""
 
-    // 3. Billing from billing badge or pending-billing
+    // 3. Billing from billing badge or pending-billing (defaults to Non-billable when omitted)
     const billSeg = segments.find((s) => s.type === "billing")
     const bill = billSeg && billSeg.type === "billing" ? billSeg.billing : null
     const pendingSeg = segments.find((s) => s.type === "pending-billing")
 
     let rate: number | null = null
-    let billingType: BillingType | "none" = proj?.billingType || "hourly"
-    let fixedBudget: number | undefined = proj?.fixedBudget
+    let billingType: BillingType | "none" = "none"
+    let fixedBudget: number | undefined = 0
 
     if (bill) {
       if (bill.type === "hourly") {
@@ -1743,14 +1743,19 @@ export function TokenCommandInput({
     }
 
     const activeMs = (activeProjectOrMatch || proj)?.milestones?.find((m) => m.id === selectedMilestoneId)
+    const resolvedMsId = billingType === "milestone" ? (activeMs?.id || null) : null
+    const resolvedMsName =
+      billingType === "milestone"
+        ? (activeMs?.name || bill?.milestoneName || (isEditingActive ? initialMilestoneName : null) || null)
+        : null
     const finalMemo = capitalizeMemo(assembledMemo || "Focused development session")
 
     if (isEditingActive && onSaveActive) {
       onSaveActive({
         memo: finalMemo,
         projectId: projId,
-        milestoneId: activeMs?.id,
-        milestoneName: activeMs?.name,
+        milestoneId: resolvedMsId,
+        milestoneName: resolvedMsName,
         rate,
         billingType,
         fixedBudget,
@@ -1761,8 +1766,8 @@ export function TokenCommandInput({
 
     startTracking({
       projectId: projId,
-      milestoneId: activeMs?.id,
-      milestoneName: activeMs?.name,
+      milestoneId: resolvedMsId,
+      milestoneName: resolvedMsName,
       memo: finalMemo,
       rate,
       billingType,
