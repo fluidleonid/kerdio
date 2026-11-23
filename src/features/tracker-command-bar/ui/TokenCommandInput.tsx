@@ -54,6 +54,7 @@ export type TokenSegment =
       type: "pending-billing"
       billingType: "hourly" | "fixed" | "milestone"
       commandText: string
+      milestoneName?: string
     }
 
 /**
@@ -160,6 +161,7 @@ export function TokenCommandInput({
     projects,
     sessions,
     addProject,
+    addProjectMilestone,
     startTracking,
     applyProjectBillingScope,
   } = useTrackerStore()
@@ -451,7 +453,8 @@ export function TokenCommandInput({
 
   function getLiveBillingDetails(
     type: "hourly" | "fixed" | "milestone" | "none",
-    rawInput: string
+    rawInput: string,
+    confirmedMilestoneName?: string
   ) {
   const trimmed = rawInput.trim()
 
@@ -492,41 +495,38 @@ export function TokenCommandInput({
   }
 
   if (type === "milestone") {
-    const parsed = parseMilestoneWithAmount(trimmed)
-    const amount = parsed.amount
-    const displayName = parsed.memo || parsed.title
-
-    if (amount !== null && amount > 0 && displayName) {
-      return {
-        amount,
-        title: "Milestone payout",
-        description: `Set milestone "${displayName}" to $${amount.toLocaleString("en-US")}`,
-        memo: parsed.memo,
-        isReady: true,
+    if (confirmedMilestoneName) {
+      const num = parseFloat(trimmed.replace(/[^0-9.]/g, ""))
+      if (!isNaN(num) && num > 0) {
+        return {
+          amount: num,
+          title: confirmedMilestoneName,
+          description: `Set price to $${num.toLocaleString("en-US")}`,
+          memo: "",
+          isReady: true,
+        }
       }
-    }
-    if (amount !== null && amount > 0) {
-      return {
-        amount,
-        title: "Milestone payout",
-        description: `Set milestone payout to $${amount.toLocaleString("en-US")}`,
-        memo: parsed.memo,
-        isReady: true,
-      }
-    }
-    if (displayName) {
       return {
         amount: null,
-        title: "Milestone payout",
-        description: `Set milestone "${displayName}" (enter amount)`,
-        memo: parsed.memo,
+        title: confirmedMilestoneName,
+        description: "Enter milestone price ($)",
+        memo: "",
         isReady: false,
+      }
+    }
+    if (trimmed) {
+      return {
+        amount: null,
+        title: "Milestone name",
+        description: `Confirm "${trimmed}" ? next enter price`,
+        memo: "",
+        isReady: true,
       }
     }
     return {
       amount: null,
-      title: "Milestone payout",
-      description: "Set milestone payout (e.g. M1 Design 2300)",
+      title: "Milestone",
+      description: "Enter milestone name, then press Enter",
       memo: "",
       isReady: false,
     }
@@ -577,7 +577,7 @@ export function TokenCommandInput({
     const currentVal = activeSeg ? activeSeg.text : ""
 
     if (isPendingValue && prevSeg) {
-      const details = getLiveBillingDetails(prevSeg.billingType, currentVal)
+      const details = getLiveBillingDetails(prevSeg.billingType, currentVal, prevSeg.milestoneName)
       const Icon =
         prevSeg.billingType === "hourly"
           ? Clock
@@ -861,7 +861,7 @@ export function TokenCommandInput({
 
   // Commit value typed after pending billing command into a formal BillingBadge!
   const commitPendingBillingValue = (
-    pendingSeg: { id: string; billingType: "hourly" | "fixed" | "milestone" },
+    pendingSeg: { id: string; billingType: "hourly" | "fixed" | "milestone"; milestoneName?: string },
     valueSegId: string,
     rawVal?: string
   ) => {
@@ -911,9 +911,48 @@ export function TokenCommandInput({
         return true
       }
     } else if (pendingSeg.billingType === "milestone") {
-      const parsed = parseMilestoneWithAmount(trimmed)
-      const amount = parsed.amount
-      if (amount !== null && amount > 0) {
+      // Step 1: Confirm milestone name first, then prompt for price
+      if (!pendingSeg.milestoneName) {
+        if (!trimmed) return false
+        setSegments((prev) =>
+          prev.map((s) => {
+            if (s.id === pendingSeg.id && s.type === "pending-billing") {
+              return { ...s, milestoneName: trimmed, commandText: trimmed }
+            }
+            if (s.id === valueSegId && s.type === "text") {
+              return { ...s, text: "" }
+            }
+            return s
+          })
+        )
+        setActiveSegId(valueSegId)
+        setTimeout(() => inputRefs.current[valueSegId]?.focus(), 20)
+        setMode("slash")
+        setIsDropdownOpen(true)
+        setDropdownIndex(0)
+        return true
+      }
+
+      // Step 2: Confirm milestone price
+      const amount = parseFloat(trimmed.replace(/[^0-9.]/g, ""))
+      if (!isNaN(amount) && amount > 0) {
+        const msName = pendingSeg.milestoneName
+        if (activeProjectOrMatch) {
+          const existing = (activeProjectOrMatch.milestones || []).find(
+            (m) => m.name.toLowerCase() === msName.toLowerCase()
+          )
+          if (existing) {
+            setSelectedMilestoneId(existing.id)
+          } else {
+            const created = addProjectMilestone(activeProjectOrMatch.id, {
+              name: msName,
+              amount,
+              status: "open",
+            })
+            setSelectedMilestoneId(created.id)
+          }
+        }
+
         setSegments((prev) => {
           const nextSegs: TokenSegment[] = []
           for (let i = 0; i < prev.length; i++) {
@@ -921,7 +960,7 @@ export function TokenCommandInput({
               nextSegs.push({
                 id: `bill-${Date.now()}`,
                 type: "billing",
-                billing: { type: "milestone", amount },
+                billing: { type: "milestone", amount, milestoneName: msName },
               })
               if (prev[i + 1]?.id === valueSegId) {
                 i++
@@ -931,14 +970,6 @@ export function TokenCommandInput({
             } else {
               nextSegs.push(prev[i])
             }
-          }
-
-          if (parsed.memo) {
-            nextSegs.unshift({
-              id: `seg-ms-memo-${Date.now()}`,
-              type: "text",
-              text: parsed.memo,
-            })
           }
 
           const nextTextId = `seg-after-${Date.now()}`
@@ -1965,15 +1996,15 @@ export function TokenCommandInput({
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex shrink-0 select-none animate-in fade-in zoom-in-95 duration-150"
                 >
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 border border-orange-500/35 px-2.5 py-1 text-xs font-semibold text-orange-200 shadow-sm backdrop-blur-md">
-                    {seg.billingType === "hourly" && <Clock className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
-                    {seg.billingType === "fixed" && <Briefcase className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
-                    {seg.billingType === "milestone" && <Flag className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
-                    <span className="font-mono">{seg.commandText}</span>
+                  <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 rounded-full bg-white/15 px-3 text-xs font-medium leading-none text-white backdrop-blur-md">
+                    {seg.billingType === "hourly" && <Clock className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
+                    {seg.billingType === "fixed" && <Briefcase className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
+                    {seg.billingType === "milestone" && <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" />}
+                    <span className="truncate min-w-0 font-mono">{seg.milestoneName || seg.commandText}</span>
                     <button
                       type="button"
                       onClick={() => removePendingBillingToken(seg.id)}
-                      className="ml-0.5 -mr-1 p-0.5 rounded-full text-orange-400/80 hover:text-white hover:bg-orange-500/30 transition-colors cursor-pointer"
+                      className="ml-0.5 -mr-1 p-0.5 rounded-full text-[#DCDCDC] hover:text-white hover:bg-white/20 transition-colors cursor-pointer shrink-0"
                       title="Cancel command" aria-label="Cancel command"
                     >
                       <X className="h-3 w-3" />
@@ -2009,7 +2040,9 @@ export function TokenCommandInput({
                     ? "Enter hourly rate (e.g. 85)"
                     : pendingBillingSeg.billingType === "fixed"
                     ? "Enter fixed fee (e.g. 2500)"
-                    : "Enter milestone name & amount (e.g. M 1 Design phase 1 2300)")
+                    : pendingBillingSeg.milestoneName
+                    ? "Enter milestone price (e.g. 2300)"
+                    : "Enter milestone name (e.g. M1 Design)")
                 : activePlaceholder
 
               const showPlaceholder = isPendingBillingTarget
