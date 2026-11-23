@@ -2127,7 +2127,9 @@ export function TokenCommandInput({
                   }}
                   className={`relative inline-flex items-center max-w-full min-h-[32px] ${
                     isTrailingText || isPendingBillingTarget
-                      ? "flex-1 min-w-[min(100%,220px)]"
+                      ? showPlaceholder && !seg.text
+                        ? "flex-1 shrink-0 basis-auto"
+                        : "flex-1 min-w-[140px]"
                       : "shrink-0"
                   }`}
                   style={{
@@ -2140,7 +2142,7 @@ export function TokenCommandInput({
                   {showPlaceholder && !seg.text ? (
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none select-none text-lg font-sans leading-normal text-[#B8B8B8] whitespace-normal break-words py-0.5"
+                      className="pointer-events-none select-none text-lg font-sans leading-normal text-[#B8B8B8] whitespace-nowrap truncate max-w-full"
                     >
                       {specificPlaceholder}
                     </span>
