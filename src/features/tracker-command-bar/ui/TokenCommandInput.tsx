@@ -2015,7 +2015,7 @@ export function TokenCommandInput({
                       setActiveSegId(seg.id)
                       inputRefs.current[seg.id]?.focus()
                     }}
-                    className="relative inline-flex items-center justify-center shrink-0 -mx-[4px] w-[8px] h-[28px] z-20"
+                    className="relative inline-flex items-center justify-center shrink-0 w-0 h-[28px] -mx-[4px] overflow-visible z-20"
                   >
                     <input
                       ref={(el) => {
@@ -2030,7 +2030,7 @@ export function TokenCommandInput({
                       onKeyDown={(e) => handleKeyDown(seg.id, e)}
                       onClick={(e) => e.stopPropagation()}
                       style={{ caretColor: "#ffffff" }}
-                      className="w-full h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
+                      className="absolute -left-[4px] top-0 w-[8px] h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
                     />
                   </span>
                 )
@@ -2046,7 +2046,7 @@ export function TokenCommandInput({
                       setActiveSegId(seg.id)
                       inputRefs.current[seg.id]?.focus()
                     }}
-                    className="relative inline-flex items-center justify-center shrink-0 -mr-[4px] w-[8px] h-[28px] z-20"
+                    className="relative inline-flex items-center justify-center shrink-0 w-0 h-[28px] -mr-[8px] overflow-visible z-20"
                   >
                     <input
                       ref={(el) => {
@@ -2061,7 +2061,7 @@ export function TokenCommandInput({
                       onKeyDown={(e) => handleKeyDown(seg.id, e)}
                       onClick={(e) => e.stopPropagation()}
                       style={{ caretColor: "#ffffff" }}
-                      className="w-full h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
+                      className="absolute -left-[2px] top-0 w-[6px] h-full text-center bg-transparent text-lg text-white caret-white focus:outline-none border-none ring-0 shadow-none font-sans p-0 m-0 leading-normal z-20 cursor-text"
                     />
                   </span>
                 )
@@ -2088,14 +2088,14 @@ export function TokenCommandInput({
                     minWidth:
                       isTrailingText || isPendingBillingTarget
                         ? undefined
-                        : (seg.text ? undefined : "12px"),
+                        : (seg.text ? undefined : "2px"),
                   }}
                 >
                   <span
                     aria-hidden="true"
                     className="invisible whitespace-pre text-lg font-sans select-none pointer-events-none p-0 m-0 leading-normal inline-block min-h-[28px]"
                     style={{
-                      minWidth: showPlaceholder ? undefined : (seg.text ? undefined : "12px"),
+                      minWidth: showPlaceholder ? undefined : (seg.text ? undefined : "2px"),
                     }}
                   >
                     {seg.text || (showPlaceholder ? specificPlaceholder : "\u200B")}
