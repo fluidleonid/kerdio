@@ -60,6 +60,7 @@ export const INITIAL_PROJECTS: Project[] = [
     slug: "fintech",
     color: "#10B981", // Emerald
     billingType: "milestone",
+    hourlyRate: 0,
     fixedBudget: 3500,
     currency: "$",
     createdAt: Date.now() - 86400000 * 3,

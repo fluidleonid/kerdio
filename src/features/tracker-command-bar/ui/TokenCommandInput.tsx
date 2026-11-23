@@ -1005,7 +1005,7 @@ export function TokenCommandInput({
     const isDeselecting = selectedMilestoneId === ms.id
     setSelectedMilestoneId(isDeselecting ? null : ms.id)
     setSegments((prev) => {
-      const cleaned = prev.filter((s) => s.type !== "pending-billing" && s.type !== "billing")
+      const cleaned: TokenSegment[] = prev.filter((s) => s.type !== "pending-billing" && s.type !== "billing")
       if (isDeselecting) {
         const defaultBill = getProjectDefaultBilling(activeProjectOrMatch)
         if (defaultBill && defaultBill.type === "hourly") {
