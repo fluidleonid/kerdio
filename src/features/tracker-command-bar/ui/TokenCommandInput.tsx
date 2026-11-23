@@ -311,38 +311,74 @@ export function TokenCommandInput({
     )
   }, [currentProject, segments, projects])
 
-  // Recent milestones for the active project (ordered by most recently tracked, then project list)
-  const recentMilestones = useMemo(() => {
+  // Unified recent tracking presets for the active project (recent hourly rates + milestones)
+  const recentProjectTracks = useMemo(() => {
     if (!activeProjectOrMatch) return []
     const projectMilestones = activeProjectOrMatch.milestones || []
     const seen = new Set<string>()
-    const result: Array<{ id: string; name: string; amount: number }> = []
+    const result: Array<
+      | { key: string; kind: "hourly"; label: string; amount: number }
+      | { key: string; kind: "milestone"; id: string; label: string; amount: number }
+    > = []
 
-    // 1. Add milestones from recent sessions of this project (most recent first)
     const projSessions = sessions
-      .filter((s) => s.projectId === activeProjectOrMatch.id && (s.milestoneId || s.milestoneName))
+      .filter((s) => s.projectId === activeProjectOrMatch.id)
       .sort((a, b) => b.startTime - a.startTime)
 
+    // 1. Add recent tracked modes from sessions (most recent first: hourly or milestone)
     for (const s of projSessions) {
-      const matched = projectMilestones.find(
-        (m) => m.id === s.milestoneId || (s.milestoneName && m.name.toLowerCase() === s.milestoneName.toLowerCase())
-      )
-      const id = matched?.id || s.milestoneId || `ms-${(s.milestoneName || "").toLowerCase()}`
-      const name = matched?.name || s.milestoneName || ""
-      const amount = matched?.amount ?? s.earnedAmount ?? activeProjectOrMatch.fixedBudget ?? 0
-      const dedupeKey = name.toLowerCase() || id
-      if (name && !seen.has(dedupeKey)) {
-        seen.add(dedupeKey)
-        result.push({ id, name, amount })
+      if (s.milestoneId || s.milestoneName || s.billingType === "milestone") {
+        const matched = projectMilestones.find(
+          (m) =>
+            m.id === s.milestoneId ||
+            (s.milestoneName && m.name.toLowerCase() === s.milestoneName.toLowerCase())
+        )
+        const id = matched?.id || s.milestoneId || `ms-${(s.milestoneName || "").toLowerCase()}`
+        const label = matched?.name || s.milestoneName || ""
+        const amount = matched?.amount ?? s.earnedAmount ?? activeProjectOrMatch.fixedBudget ?? 0
+        const dedupeKey = `ms:${label.toLowerCase() || id}`
+        if (label && !seen.has(dedupeKey)) {
+          seen.add(dedupeKey)
+          result.push({ key: dedupeKey, kind: "milestone", id, label, amount })
+        }
+      } else if (s.billingType === "hourly" && s.rateSnapshot && s.rateSnapshot > 0) {
+        const dedupeKey = `hourly:${s.rateSnapshot}`
+        if (!seen.has(dedupeKey)) {
+          seen.add(dedupeKey)
+          result.push({
+            key: dedupeKey,
+            kind: "hourly",
+            label: "Hourly",
+            amount: s.rateSnapshot,
+          })
+        }
       }
     }
 
-    // 2. Add any remaining milestones defined on the project
-    for (const m of projectMilestones) {
-      const dedupeKey = m.name.toLowerCase() || m.id
+    // 2. Include project's saved hourly rate if it's an hourly project and not yet listed
+    if (
+      activeProjectOrMatch.billingType === "hourly" &&
+      activeProjectOrMatch.hourlyRate &&
+      activeProjectOrMatch.hourlyRate > 0
+    ) {
+      const dedupeKey = `hourly:${activeProjectOrMatch.hourlyRate}`
       if (!seen.has(dedupeKey)) {
         seen.add(dedupeKey)
-        result.push({ id: m.id, name: m.name, amount: m.amount })
+        result.push({
+          key: dedupeKey,
+          kind: "hourly",
+          label: "Hourly",
+          amount: activeProjectOrMatch.hourlyRate,
+        })
+      }
+    }
+
+    // 3. Include remaining saved milestones on the project
+    for (const m of projectMilestones) {
+      const dedupeKey = `ms:${m.name.toLowerCase() || m.id}`
+      if (!seen.has(dedupeKey)) {
+        seen.add(dedupeKey)
+        result.push({ key: dedupeKey, kind: "milestone", id: m.id, label: m.name, amount: m.amount })
       }
     }
 
@@ -350,17 +386,8 @@ export function TokenCommandInput({
   }, [activeProjectOrMatch, sessions])
 
   useEffect(() => {
-    if (
-      activeProjectOrMatch?.billingType === "milestone" &&
-      activeProjectOrMatch?.milestones &&
-      activeProjectOrMatch.milestones.length > 0
-    ) {
-      const openMs = activeProjectOrMatch.milestones.find((m) => m.status === "open")
-      setSelectedMilestoneId(openMs ? openMs.id : activeProjectOrMatch.milestones[0].id)
-    } else {
-      setSelectedMilestoneId(null)
-    }
-  }, [activeProjectOrMatch?.id, activeProjectOrMatch?.billingType])
+    setSelectedMilestoneId(null)
+  }, [activeProjectOrMatch?.id])
 
   // Active custom billing token in segments
   const activeBilling = useMemo(() => {
@@ -1000,26 +1027,28 @@ export function TokenCommandInput({
     acceptBillingCommand(opt.type, activeSegId, "")
   }
 
-  // Select open milestone chip from under input
-  const selectOpenMilestone = (ms: { id: string; name: string; amount: number }) => {
-    const isDeselecting = selectedMilestoneId === ms.id
-    setSelectedMilestoneId(isDeselecting ? null : ms.id)
+  // Toggle a recent hourly rate or milestone from the unified list under the input
+  const selectRecentProjectTrack = (
+    item:
+      | { kind: "hourly"; amount: number }
+      | { kind: "milestone"; id: string; amount: number }
+  ) => {
+    const isAlreadyActive =
+      item.kind === "milestone"
+        ? selectedMilestoneId === item.id && activeBilling?.type === "milestone"
+        : activeBilling?.type === "hourly" && activeBilling?.amount === item.amount
+
+    if (item.kind === "milestone") {
+      setSelectedMilestoneId(isAlreadyActive ? null : item.id)
+    } else {
+      setSelectedMilestoneId(null)
+    }
+
     setSegments((prev) => {
-      const cleaned: TokenSegment[] = prev.filter((s) => s.type !== "pending-billing" && s.type !== "billing")
-      if (isDeselecting) {
-        const defaultBill = getProjectDefaultBilling(activeProjectOrMatch)
-        if (defaultBill && defaultBill.type === "hourly") {
-          const projIdx = cleaned.findIndex((s) => s.type === "project")
-          const nextSegs = [...cleaned]
-          const billSeg: TokenSegment = {
-            id: `bill-${Date.now()}`,
-            type: "billing",
-            billing: defaultBill,
-          }
-          if (projIdx !== -1) nextSegs.splice(projIdx + 1, 0, billSeg)
-          else nextSegs.push(billSeg)
-          return cleanupSegments(nextSegs)
-        }
+      const cleaned: TokenSegment[] = prev.filter(
+        (s) => s.type !== "pending-billing" && s.type !== "billing"
+      )
+      if (isAlreadyActive) {
         return cleanupSegments(cleaned)
       }
       const projIdx = cleaned.findIndex((s) => s.type === "project")
@@ -1027,7 +1056,10 @@ export function TokenCommandInput({
       const billSeg: TokenSegment = {
         id: `bill-${Date.now()}`,
         type: "billing",
-        billing: { type: "milestone", amount: ms.amount },
+        billing:
+          item.kind === "hourly"
+            ? { type: "hourly", amount: item.amount }
+            : { type: "milestone", amount: item.amount },
       }
       if (projIdx !== -1) {
         newSegs.splice(projIdx + 1, 0, billSeg)
@@ -1201,18 +1233,8 @@ export function TokenCommandInput({
       const projId = `proj-${Date.now()}`
       newSegs.push({ id: projId, type: "project", project: proj })
 
-      // 4. If custom billing was entered first, DO NOT add project default billing badge!
-      // Otherwise, if project has default billing configured, insert it inline:
-      if (!existingBillingSeg) {
-        const projBill = getProjectDefaultBilling(proj)
-        if (projBill && projBill.type !== "none") {
-          newSegs.push({
-            id: `bill-${Date.now()}`,
-            type: "billing",
-            billing: projBill,
-          })
-        }
-      }
+      // 4. Keep billing explicit: selecting a project only inserts the project badge;
+      // recent hourly rates and milestones are offered cleanly in the list below.
 
       // 5. Follow-up text segment for further typing
       const nextTextId = `seg-${Date.now() + 1}`
@@ -2248,21 +2270,25 @@ export function TokenCommandInput({
         </div>
       </div>
 
-      {/* MINIMALIST VERTICAL RECENT MILESTONES LIST UNDER THE INPUT */}
-      {activeProjectOrMatch && recentMilestones.length > 0 && (
+      {/* MINIMALIST VERTICAL RECENT TRACKS (HOURLY + MILESTONES) UNDER THE INPUT */}
+      {activeProjectOrMatch && !isDropdownOpen && recentProjectTracks.length > 0 && (
         <div className="mt-3 px-1 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="px-2.5 text-[11px] font-medium text-[#E8D5CE]">
-            Recent milestones
+          <div className="px-3 text-[11px] font-medium text-[#E8D5CE]">
+            Recent
           </div>
-          <ul className="space-y-1">
-            {recentMilestones.map((ms) => {
-              const isSelected = selectedMilestoneId === ms.id
+          <ul className="space-y-0.5">
+            {recentProjectTracks.map((item) => {
+              const isSelected =
+                item.kind === "milestone"
+                  ? selectedMilestoneId === item.id && activeBilling?.type === "milestone"
+                  : activeBilling?.type === "hourly" && activeBilling?.amount === item.amount
+
               return (
-                <li key={ms.id}>
+                <li key={item.key}>
                   <button
                     type="button"
                     aria-pressed={isSelected}
-                    onClick={() => selectOpenMilestone(ms)}
+                    onClick={() => selectRecentProjectTrack(item)}
                     className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs font-medium text-left transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-white/15 text-white"
@@ -2270,14 +2296,19 @@ export function TokenCommandInput({
                     }`}
                   >
                     <span className="flex items-center gap-2 min-w-0">
-                      <span className="truncate">{ms.name}</span>
+                      {item.kind === "hourly" ? (
+                        <Clock className="h-3.5 w-3.5 text-[#E8D5CE] shrink-0" aria-hidden="true" />
+                      ) : (
+                        <Flag className="h-3.5 w-3.5 text-[#E8D5CE] shrink-0" aria-hidden="true" />
+                      )}
+                      <span className="truncate">{item.label}</span>
                       {isSelected && (
                         <Check className="h-3.5 w-3.5 text-white shrink-0 stroke-[2.5]" aria-hidden="true" />
                       )}
                     </span>
-                    {ms.amount > 0 && (
+                    {item.amount > 0 && (
                       <span className="font-mono text-[#E8D5CE] tabular-nums shrink-0">
-                        ${ms.amount}
+                        {item.kind === "hourly" ? `${item.amount}/h` : `${item.amount}`}
                       </span>
                     )}
                   </button>
