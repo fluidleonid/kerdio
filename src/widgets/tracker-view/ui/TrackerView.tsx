@@ -226,13 +226,19 @@ export function TrackerView() {
                   isEditingActive={true}
                   initialMemo={timer.memo}
                   initialProjectId={timer.projectId}
+                  initialMilestoneId={timer.milestoneId}
+                  initialMilestoneName={timer.milestoneName}
                   initialBilling={
                     timer.billingType === "hourly"
                       ? { type: "hourly", amount: timer.rate || 0 }
                       : timer.billingType === "fixed"
                       ? { type: "fixed", amount: timer.fixedBudget || 0 }
                       : timer.billingType === "milestone"
-                      ? { type: "milestone", amount: timer.fixedBudget || 0 }
+                      ? {
+                          type: "milestone",
+                          amount: timer.fixedBudget || 0,
+                          milestoneName: timer.milestoneName,
+                        }
                       : { type: "none", amount: 0 }
                   }
                   onSaveActive={(params) => {
@@ -246,29 +252,31 @@ export function TrackerView() {
             </>
           ) : (
             /* HEADER WITHOUT BACKGROUND, TRANSFORMS INTO INPUT ON CLICK */
-            <AppTooltip content="Click to edit session" side="bottom">
-              <button
-                type="button"
-                onClick={() => setIsEditingHeader(true)}
-                aria-label="Edit active session details"
-                className="fixed top-5 left-1/2 -translate-x-1/2 z-40 flex flex-row flex-wrap items-center justify-center gap-2 px-3 py-1.5 rounded-2xl cursor-pointer max-w-[92vw] group hover:opacity-90 transition-all active:scale-[0.98] bg-transparent border-none"
-              >
-                <span className="text-sm font-medium text-white group-hover:text-white/90 transition-colors truncate max-w-[160px] sm:max-w-[260px]">
-                  {capitalizeMemo(timer.memo) || "What are you working on?"}
-                </span>
-
-                {activeProject && (
-                  <ProjectBadge project={activeProject} showAtPrefix={true} />
-                )}
-
-                {timer.billingType === "milestone" && timer.milestoneName && (
-                  <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 px-3 rounded-full text-xs font-medium leading-none bg-white/10 text-white shrink-0">
-                    <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" aria-hidden="true" />
-                    <span className="truncate min-w-0">{timer.milestoneName}</span>
+            <div className="fixed top-5 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+              <AppTooltip content="Click to edit session" side="bottom">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingHeader(true)}
+                  aria-label="Edit active session details"
+                  className="pointer-events-auto inline-flex flex-row flex-wrap items-center justify-start gap-2 px-3 py-1.5 rounded-2xl cursor-pointer max-w-full sm:max-w-xl group hover:opacity-90 transition-all active:scale-[0.98] bg-transparent border-none text-left"
+                >
+                  <span className="text-sm font-medium text-white group-hover:text-white/90 transition-colors truncate max-w-[160px] sm:max-w-[260px]">
+                    {capitalizeMemo(timer.memo) || "What are you working on?"}
                   </span>
-                )}
-              </button>
-            </AppTooltip>
+
+                  {activeProject && (
+                    <ProjectBadge project={activeProject} showAtPrefix={true} />
+                  )}
+
+                  {timer.billingType === "milestone" && timer.milestoneName && (
+                    <span className="inline-flex h-7 max-w-[160px] items-center gap-1.5 px-3 rounded-full text-xs font-medium leading-none bg-white/10 text-white shrink-0">
+                      <Flag className="h-3.5 w-3.5 text-[#DCDCDC] shrink-0" aria-hidden="true" />
+                      <span className="truncate min-w-0">{timer.milestoneName}</span>
+                    </span>
+                  )}
+                </button>
+              </AppTooltip>
+            </div>
           )}
 
           {/* MAIN TIMER IN EXACT PHYSICAL CENTER OF SCREEN */}

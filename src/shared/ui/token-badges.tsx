@@ -67,6 +67,7 @@ export function ProjectBadge({
 export interface BillingBadgeProps {
   billingType: BillingType | "none"
   amount?: number | null
+  milestoneName?: string | null
   onRemove?: () => void
   className?: string
   disabled?: boolean
@@ -77,6 +78,7 @@ export interface BillingBadgeProps {
 export function BillingBadge({
   billingType,
   amount,
+  milestoneName,
   onRemove,
   className = "",
   disabled = false,
@@ -113,12 +115,15 @@ export function BillingBadge({
       )
     }
     if (billingType === "milestone") {
+      const label = milestoneName
+        ? milestoneName
+        : amount !== undefined && amount !== null
+        ? `Milestone $${amount}`
+        : "Milestone"
       return (
         <>
           <Flag className="h-3.5 w-3.5 text-white/90 shrink-0" />
-          <span className="truncate min-w-0">
-            {amount !== undefined && amount !== null ? `Milestone $${amount}` : "Milestone"}
-          </span>
+          <span className="truncate min-w-0">{label}</span>
         </>
       )
     }

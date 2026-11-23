@@ -23,6 +23,8 @@ interface TokenCommandInputProps {
   isEditingActive?: boolean
   initialMemo?: string
   initialProjectId?: string | null
+  initialMilestoneId?: string | null
+  initialMilestoneName?: string | null
   initialBilling?: BillingConfig | null
   onSaveActive?: (params: {
     memo: string
@@ -39,6 +41,7 @@ interface TokenCommandInputProps {
 export interface BillingConfig {
   type: BillingType | "none"
   amount: number
+  milestoneName?: string | null
 }
 
 // Token segment for inline rich editing
@@ -147,6 +150,8 @@ export function TokenCommandInput({
   isEditingActive = false,
   initialMemo = "",
   initialProjectId = null,
+  initialMilestoneId = null,
+  initialMilestoneName = null,
   initialBilling = null,
   onSaveActive,
   onClose,
@@ -211,7 +216,8 @@ export function TokenCommandInput({
   const [atQuery, setAtQuery] = useState<string | null>(null)
   const [slashQuery, setSlashQuery] = useState<string | null>(null)
   const [activeBillingPrompt, setActiveBillingPrompt] = useState<"hourly" | "fixed" | "milestone" | null>(null)
-  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null)
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(initialMilestoneId || null)
+  const prevProjectIdRef = useRef<string | null>(initialProjectId || null)
 
   // Dynamic input refs for each text segment
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
@@ -386,7 +392,11 @@ export function TokenCommandInput({
   }, [activeProjectOrMatch, sessions])
 
   useEffect(() => {
-    setSelectedMilestoneId(null)
+    const nextProjId = activeProjectOrMatch?.id || null
+    if (prevProjectIdRef.current !== nextProjId) {
+      prevProjectIdRef.current = nextProjId
+      setSelectedMilestoneId(null)
+    }
   }, [activeProjectOrMatch?.id])
 
   // Active custom billing token in segments
@@ -1026,7 +1036,7 @@ export function TokenCommandInput({
   const selectRecentProjectTrack = (
     item:
       | { kind: "hourly"; amount: number }
-      | { kind: "milestone"; id: string; amount: number }
+      | { kind: "milestone"; id: string; label: string; amount: number }
   ) => {
     const isAlreadyActive =
       item.kind === "milestone"
@@ -1054,7 +1064,7 @@ export function TokenCommandInput({
         billing:
           item.kind === "hourly"
             ? { type: "hourly", amount: item.amount }
-            : { type: "milestone", amount: item.amount },
+            : { type: "milestone", amount: item.amount, milestoneName: item.label },
       }
       if (projIdx !== -1) {
         newSegs.splice(projIdx + 1, 0, billSeg)
@@ -1934,6 +1944,13 @@ export function TokenCommandInput({
                   <BillingBadge
                     billingType={seg.billing.type}
                     amount={seg.billing.amount}
+                    milestoneName={
+                      seg.billing.milestoneName ||
+                      (seg.billing.type === "milestone"
+                        ? (activeProjectOrMatch?.milestones?.find((m) => m.id === selectedMilestoneId)?.name ||
+                          initialMilestoneName)
+                        : null)
+                    }
                     onRemove={() => removeBillingToken(seg.id)}
                   />
                 </span>
