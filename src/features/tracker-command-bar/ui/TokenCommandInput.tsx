@@ -2308,7 +2308,7 @@ export function TokenCommandInput({
                     </span>
                     {item.amount > 0 && (
                       <span className="font-mono text-[#DCDCDC] tabular-nums shrink-0">
-                        {item.kind === "hourly" ? `${item.amount}/h` : `${item.amount}`}
+                        {item.kind === "hourly" ? `$${item.amount}/h` : `$${item.amount}`}
                       </span>
                     )}
                   </button>
