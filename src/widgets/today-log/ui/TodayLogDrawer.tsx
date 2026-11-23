@@ -445,44 +445,40 @@ export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
                     </ul>
                   )}
 
-                  {/* Project Subtotal aligned to same columns */}
-                  <div
-                    className={`${RECEIPT_GRID} pt-2 border-t border-dashed border-white/15 font-mono text-xs tabular-nums`}
-                  >
-                    <span className="uppercase tracking-wider text-[#B8B8B8] text-left">
-                      Subtotal
-                    </span>
-                    <span aria-hidden="true" />
-                    <span aria-hidden="true" />
-                    <span className="text-right text-[#DCDCDC] font-medium">
-                      {formatDuration(group.totalSeconds)}
-                    </span>
-                    <span className="text-right text-white font-semibold">
-                      {group.totalValue > 0
-                        ? `${group.currency}${group.totalValue.toFixed(2)}`
-                        : "—"}
-                    </span>
-                    <span aria-hidden="true" />
+                  {/* Project Subtotal (2 lines: time & earnings) */}
+                  <div className="pt-2 border-t border-dashed border-white/15 space-y-1 pr-[30px] sm:pr-[32px] font-mono text-xs tabular-nums">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="uppercase tracking-wider text-[#B8B8B8]">Subtotal time</span>
+                      <span className="text-right text-[#DCDCDC]">
+                        {formatDuration(group.totalSeconds)}
+                      </span>
+                    </div>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="uppercase tracking-wider text-[#B8B8B8]">Subtotal earned</span>
+                      <span className="text-right text-white font-semibold">
+                        {group.totalValue > 0
+                          ? `${group.currency}${group.totalValue.toFixed(2)}`
+                          : "—"}
+                      </span>
+                    </div>
                   </div>
                 </section>
               ))}
 
-              {/* Grand Total aligned to same columns */}
-              <div
-                className={`${RECEIPT_GRID} pt-4 border-t border-dashed border-white/25 font-mono tabular-nums`}
-              >
-                <span className="text-xs uppercase tracking-widest text-[#DCDCDC] text-left">
-                  Total
-                </span>
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <span className="text-right text-xs text-[#DCDCDC] font-semibold">
-                  {grandTotal.time}
-                </span>
-                <span className="text-right text-sm font-bold text-white">
-                  {grandTotal.value > 0 ? `$${grandTotal.value.toFixed(2)}` : "—"}
-                </span>
-                <span aria-hidden="true" />
+              {/* Grand Total (2 lines: time & earnings) */}
+              <div className="pt-4 border-t border-dashed border-white/25 space-y-1.5 pr-[30px] sm:pr-[32px] font-mono tabular-nums">
+                <div className="flex items-baseline justify-between gap-3 text-xs">
+                  <span className="uppercase tracking-widest text-[#DCDCDC]">Total time</span>
+                  <span className="text-right text-[#DCDCDC] font-medium">{grandTotal.time}</span>
+                </div>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-xs uppercase tracking-widest text-white font-semibold">
+                    Total earned
+                  </span>
+                  <span className="text-right text-base font-bold text-white">
+                    {grandTotal.value > 0 ? `$${grandTotal.value.toFixed(2)}` : "—"}
+                  </span>
+                </div>
               </div>
             </>
           ) : (
