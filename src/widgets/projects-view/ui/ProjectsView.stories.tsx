@@ -14,7 +14,7 @@ import { ProjectsView } from './ProjectsView'
  * - **Composite Billing Configuration**: Unified modal for configuring hourly, fixed, or milestone rates.
  */
 const meta: Meta<typeof ProjectsView> = {
-  title: 'Widgets/Projects View',
+  title: 'Roadmap (Planned)/Projects View',
   component: ProjectsView,
   tags: ['autodocs'],
   parameters: {

@@ -1,7 +1,7 @@
-import type { Preview } from '@storybook/react-vite'
-import '@/app/styles/index.css'
-import { TooltipProvider } from '@/shared/ui'
-import { MemoryRouter } from 'react-router-dom'
+import type { Preview } from "@storybook/react-vite"
+import "@/app/styles/index.css"
+import { TooltipProvider } from "@/shared/ui"
+import { MemoryRouter } from "react-router-dom"
 
 const preview: Preview = {
   decorators: [
@@ -16,24 +16,41 @@ const preview: Preview = {
     ),
   ],
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     options: {
       storySort: {
         order: [
-          'Design System',
-          ['Colors & Gradients', 'Typography', 'Glass & Shadows'],
-          'Components',
-          ['Analogue Chronograph', 'Command Input Bar', 'Token Badges', 'UI Primitives', 'Navigation Sidebar'],
-          'Screens',
-          ['Full Application Views'],
+          "Design System",
+          ["Colors & Gradients", "Typography", "Glass & Shadows"],
+          "Screens",
+          ["Single-Day MVP Cockpit"],
+          "Features",
+          ["Chronograph", "Tracker Command Bar"],
+          "Widgets",
+          ["Tracker View", "Today Log Drawer"],
+          "Shared",
+          [
+            "Tokens",
+            ["Token Badges"],
+            "UI Primitives",
+            ["Button", "Input", "Badge", "Card", "Dialog", "Tooltip"],
+          ],
+          "Roadmap (Planned)",
+          [
+            "Navigation Sidebar",
+            "Journal View",
+            "Projects View",
+            "Project Settings Dialog",
+            "Reports View",
+          ],
         ],
       },
     },
     backgrounds: {
-      default: 'terracotta-glow',
+      default: "terracotta-glow",
       values: [
-        { name: 'terracotta-glow', value: '#140501' },
-        { name: 'dark', value: '#0d0d0f' },
+        { name: "terracotta-glow", value: "#140501" },
+        { name: "dark", value: "#0d0d0f" },
       ],
     },
     controls: {
@@ -43,7 +60,7 @@ const preview: Preview = {
       },
     },
     a11y: {
-      test: 'todo',
+      test: "todo",
     },
   },
 }

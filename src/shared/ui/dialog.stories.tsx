@@ -60,7 +60,7 @@ export const Default: Story = {
 
     return (
       <div className="p-8 flex flex-col items-center gap-4">
-        <Button onClick={() => setOpen(true)} className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+        <Button onClick={() => setOpen(true)} className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
           Open Configuration Dialog
         </Button>
 
@@ -88,7 +88,7 @@ export const Default: Story = {
               <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-full">
                 Cancel
               </Button>
-              <Button onClick={() => setOpen(false)} className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+              <Button onClick={() => setOpen(false)} className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
                 Save Changes
               </Button>
             </DialogFooter>
@@ -150,7 +150,7 @@ export const LoadingState: Story = {
 
     return (
       <div className="p-8 flex flex-col items-center gap-4">
-        <Button onClick={() => setOpen(true)} className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+        <Button onClick={() => setOpen(true)} className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
           Simulate Submitting Dialog
         </Button>
 
@@ -171,7 +171,7 @@ export const LoadingState: Story = {
               <Button disabled variant="ghost" className="rounded-full">
                 Cancel
               </Button>
-              <Button loading={true} className="rounded-full bg-orange-600 text-white">
+              <Button loading={true} className="rounded-full bg-[#C2410C] text-white">
                 Synchronizing...
               </Button>
             </DialogFooter>

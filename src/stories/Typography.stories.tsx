@@ -47,14 +47,14 @@ export const TypographyScale: StoryObj = {
 
       {/* Tabular Monospace Counter Showcase */}
       <div className="p-8 rounded-3xl bg-black/50 backdrop-blur-3xl border border-white/5 space-y-4">
-        <div className="text-xs font-semibold tracking-wider uppercase text-orange-400">
+        <div className="text-xs font-semibold tracking-wider uppercase text-[#DCDCDC]">
           Chronograph Tabular Timer (Tabular Figures)
         </div>
         <div className="flex flex-wrap items-baseline gap-6">
           <div className="text-5xl sm:text-7xl font-bold tracking-tight text-white tabular-nums font-sans">
             03:53:18
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-sm font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-white font-mono text-sm font-semibold">
             +$245.50
           </div>
         </div>
@@ -65,7 +65,7 @@ export const TypographyScale: StoryObj = {
 
       {/* Type Hierarchy Scale */}
       <div className="space-y-6">
-        <h2 className="text-sm font-semibold tracking-wider uppercase text-orange-400">Scale & Roles</h2>
+        <h2 className="text-sm font-semibold tracking-wider uppercase text-[#DCDCDC]">Scale & Roles</h2>
 
         <div className="space-y-4 border-t border-white/10 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
@@ -86,7 +86,7 @@ export const TypographyScale: StoryObj = {
           <div className="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
             <span className="text-xs font-mono text-[#DCDCDC]">Body / 14px</span>
             <div className="md:col-span-3 text-sm text-white/90 leading-relaxed">
-              Keyboard-driven workflow: type <code className="text-orange-400 bg-white/10 px-1.5 py-0.5 rounded">@</code> to autocomplete projects, <code className="text-orange-400 bg-white/10 px-1.5 py-0.5 rounded">/</code> to set hourly rate or milestone budget.
+              Keyboard-driven workflow: type <code className="text-[#DCDCDC] bg-white/10 px-1.5 py-0.5 rounded">@</code> to autocomplete projects, <code className="text-[#DCDCDC] bg-white/10 px-1.5 py-0.5 rounded">/</code> to set hourly rate or milestone budget.
             </div>
           </div>
 

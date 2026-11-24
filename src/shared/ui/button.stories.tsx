@@ -100,7 +100,7 @@ export const Default: Story = {
     children: 'Start Session',
   },
   render: (args) => (
-    <Button {...args} className={args.variant === 'default' ? 'rounded-full bg-orange-600 hover:bg-orange-500 text-white' : undefined}>
+    <Button {...args} className={args.variant === 'default' ? 'rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white' : undefined}>
       <Play className="h-4 w-4 mr-2" />
       {args.children}
     </Button>
@@ -114,7 +114,7 @@ export const Default: Story = {
 export const HoverAndActive: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4 items-center p-6 bg-black/40 rounded-3xl border border-white/5">
-      <Button className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+      <Button className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
         Hover Me
       </Button>
       <Button variant="secondary" className="rounded-full">
@@ -141,7 +141,7 @@ export const Loading: Story = {
   },
   render: (args) => (
     <div className="flex gap-4 items-center p-6 bg-black/40 rounded-3xl border border-white/5">
-      <Button {...args} className="rounded-full bg-orange-600 text-white" />
+      <Button {...args} className="rounded-full bg-[#C2410C] text-white" />
       <Button {...args} variant="secondary" className="rounded-full">
         Syncing Projects...
       </Button>
@@ -160,7 +160,7 @@ export const Disabled: Story = {
   },
   render: (args) => (
     <div className="flex gap-4 items-center p-6 bg-black/40 rounded-3xl border border-white/5">
-      <Button {...args} className="rounded-full bg-orange-600 text-white">
+      <Button {...args} className="rounded-full bg-[#C2410C] text-white">
         <Play className="h-4 w-4 mr-2" /> Disabled Primary
       </Button>
       <Button {...args} variant="outline" className="rounded-full border-white/10 text-white">
@@ -186,43 +186,43 @@ export const StatesMatrix: Story = {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Default Primary</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Default Primary</span>
           <div>
-            <Button className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+            <Button className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
               <Play className="h-4 w-4 mr-2" /> Start Timer
             </Button>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Without Icon</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Without Icon</span>
           <div>
-            <Button className="rounded-full bg-orange-600 hover:bg-orange-500 text-white">
+            <Button className="rounded-full bg-[#C2410C] hover:bg-[#D44B12] text-white">
               Start Timer
             </Button>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Loading (Busy)</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Loading (Busy)</span>
           <div>
-            <Button loading={true} className="rounded-full bg-orange-600 text-white">
+            <Button loading={true} className="rounded-full bg-[#C2410C] text-white">
               Saving Session...
             </Button>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Disabled</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Disabled</span>
           <div>
-            <Button disabled={true} className="rounded-full bg-orange-600 text-white">
+            <Button disabled={true} className="rounded-full bg-[#C2410C] text-white">
               <Play className="h-4 w-4 mr-2" /> Start Timer
             </Button>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Secondary Outline</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Secondary Outline</span>
           <div>
             <Button variant="outline" className="rounded-full gap-2 text-white border-white/10 hover:bg-white/10">
               <Check className="h-4 w-4" /> Save Changes
@@ -231,7 +231,7 @@ export const StatesMatrix: Story = {
         </div>
 
         <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
-          <span className="text-[11px] font-semibold text-orange-400 uppercase">Destructive Action</span>
+          <span className="text-[11px] font-semibold text-[#DCDCDC] uppercase">Destructive Action</span>
           <div>
             <Button variant="destructive" size="sm" className="rounded-full gap-2">
               <Trash2 className="h-3.5 w-3.5" /> Discard

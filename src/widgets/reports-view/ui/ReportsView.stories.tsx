@@ -13,7 +13,7 @@ import { ReportsView } from './ReportsView'
  * - **Export Tools**: One-click CSV export and markdown text report generator.
  */
 const meta: Meta<typeof ReportsView> = {
-  title: 'Widgets/Reports View',
+  title: 'Roadmap (Planned)/Reports View',
   component: ReportsView,
   tags: ['autodocs'],
   parameters: {

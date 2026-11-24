@@ -73,15 +73,15 @@ export const Default: Story = {
         <CardContent>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-bold font-mono text-white tabular-nums">34.5</span>
-            <span className="text-sm font-semibold text-orange-400">hours</span>
+            <span className="text-sm font-semibold text-[#DCDCDC]">hours</span>
           </div>
           <div className="mt-3 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-600 rounded-full w-[70%]" />
+            <div className="h-full bg-[#C2410C] rounded-full w-[70%]" />
           </div>
         </CardContent>
         <CardFooter className="justify-between text-xs text-[#DCDCDC] border-t border-white/5 pt-4">
           <span>Target: 40 hrs</span>
-          <span className="text-emerald-400 font-semibold">+12% vs last week</span>
+          <span className="text-white font-semibold">+12% vs last week</span>
         </CardFooter>
       </Card>
     </div>
@@ -102,7 +102,7 @@ export const HoverAndActive: Story = {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </CardAction>
-          <CardTitle className="text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
+          <CardTitle className="text-lg font-bold text-white group-hover:text-[#DCDCDC] transition-colors">
             Interactive Project Card
           </CardTitle>
           <CardDescription className="text-xs text-[#DCDCDC]">
@@ -116,7 +116,7 @@ export const HoverAndActive: Story = {
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-[#DCDCDC]">Yield:</span>
-            <span className="font-mono font-bold text-emerald-400">$4,140</span>
+            <span className="font-mono font-bold text-white">$4,140</span>
           </div>
         </CardContent>
       </Card>
@@ -158,7 +158,7 @@ export const GridDashboard: Story = {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Hours</span>
-            <Clock className="h-4 w-4 text-orange-400" />
+            <Clock className="h-4 w-4 text-[#DCDCDC]" />
           </div>
           <CardTitle className="text-2xl font-bold font-mono text-white tabular-nums">42.8 h</CardTitle>
         </CardHeader>
@@ -169,9 +169,9 @@ export const GridDashboard: Story = {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Accrued</span>
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <TrendingUp className="h-4 w-4 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold font-mono text-emerald-400 tabular-nums">$3,640</CardTitle>
+          <CardTitle className="text-2xl font-bold font-mono text-white tabular-nums">$3,640</CardTitle>
         </CardHeader>
         <CardContent className="pt-0 text-[11px] text-[#DCDCDC]">Effective: $85/h</CardContent>
       </Card>
@@ -180,7 +180,7 @@ export const GridDashboard: Story = {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between text-[#DCDCDC]">
             <span className="text-[11px] font-mono uppercase tracking-wider">Yield</span>
-            <Sparkles className="h-4 w-4 text-amber-400" />
+            <Sparkles className="h-4 w-4 text-[#DCDCDC]" />
           </div>
           <CardTitle className="text-2xl font-bold font-mono text-white tabular-nums">94.2%</CardTitle>
         </CardHeader>

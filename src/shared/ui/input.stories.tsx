@@ -142,7 +142,7 @@ function CompositeBillingDemo() {
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 py-1 px-2 -ml-1 rounded-xl hover:bg-white/10 transition-colors text-left shrink-0 cursor-pointer"
         >
-          <selected.icon className="h-4 w-4 text-orange-400 shrink-0" />
+          <selected.icon className="h-4 w-4 text-[#DCDCDC] shrink-0" />
           <span className="text-sm font-semibold text-white select-none whitespace-nowrap">{selected.title}</span>
           <ChevronDown className={`h-3.5 w-3.5 text-[#DCDCDC] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
@@ -177,7 +177,7 @@ function CompositeBillingDemo() {
                   billingType === opt.type ? 'bg-white/15 text-white' : 'hover:bg-white/10 text-white/80'
                 }`}
               >
-                <opt.icon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
+                <opt.icon className="h-4 w-4 text-[#DCDCDC] mt-0.5 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold text-white">{opt.title}</div>
                   <div className="text-xs text-[#DCDCDC]">{opt.desc}</div>

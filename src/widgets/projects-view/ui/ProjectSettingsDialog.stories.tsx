@@ -10,7 +10,7 @@ import { ProjectSettingsDialog } from './ProjectSettingsDialog'
  * `bg-black/50 backdrop-blur-3xl border-none shadow-[0_20px_50px_rgba(0,0,0,0.32)] rounded-3xl`.
  */
 const meta: Meta<typeof ProjectSettingsDialog> = {
-  title: 'Widgets/Projects View/Project Settings Dialog',
+  title: 'Roadmap (Planned)/Project Settings Dialog',
   component: ProjectSettingsDialog,
   tags: ['autodocs'],
   parameters: {

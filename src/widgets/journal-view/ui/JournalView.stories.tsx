@@ -15,7 +15,7 @@ import { JournalView } from './JournalView'
  * - **Manual Logging**: Integrated modal dialog for manual time entry.
  */
 const meta: Meta<typeof JournalView> = {
-  title: 'Widgets/Journal View',
+  title: 'Roadmap (Planned)/Journal View',
   component: JournalView,
   tags: ['autodocs'],
   parameters: {

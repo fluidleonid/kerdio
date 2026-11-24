@@ -158,7 +158,7 @@ export const VariantsGallery: Story = {
   render: () => (
     <div className="max-w-xl p-6 bg-black/40 rounded-3xl backdrop-blur-2xl border border-white/5 space-y-6">
       <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-orange-400 mb-1">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#DCDCDC] mb-1">
           Badge Variants Matrix
         </h3>
         <p className="text-xs text-[#DCDCDC]">

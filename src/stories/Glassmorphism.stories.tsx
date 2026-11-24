@@ -51,7 +51,7 @@ export const GlassTiers: StoryObj = {
         {/* Tier 1: Main Container Card */}
         <div className="rounded-3xl bg-black/50 p-6 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-none space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Card Glass Tier</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#DCDCDC]">Card Glass Tier</span>
             <span className="text-xs font-mono text-[#DCDCDC]">bg-black/50 • blur-3xl</span>
           </div>
           <p className="text-sm text-white/90">
@@ -65,7 +65,7 @@ export const GlassTiers: StoryObj = {
         {/* Tier 2: Input Field Glass */}
         <div className="rounded-3xl bg-black/40 p-6 backdrop-blur-3xl shadow-[0_10px_25px_rgba(0,0,0,0.25)] border-none space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Input Glass Tier</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#DCDCDC]">Input Glass Tier</span>
             <span className="text-xs font-mono text-[#DCDCDC]">bg-black/40 • rounded-2xl</span>
           </div>
           <p className="text-sm text-white/90">
@@ -79,7 +79,7 @@ export const GlassTiers: StoryObj = {
         {/* Tier 3: Floating Popover Dropdown */}
         <div className="rounded-2xl bg-black/95 p-5 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Popover Dropdown Tier</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#DCDCDC]">Popover Dropdown Tier</span>
             <span className="text-xs font-mono text-[#DCDCDC]">bg-black/95 • border-white/10</span>
           </div>
           <p className="text-sm text-white/90">
@@ -90,7 +90,7 @@ export const GlassTiers: StoryObj = {
         {/* Tier 4: Token Badges */}
         <div className="rounded-3xl bg-black/30 p-6 backdrop-blur-xl border border-white/5 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">Pill Badge Tier</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#DCDCDC]">Pill Badge Tier</span>
             <span className="text-xs font-mono text-[#DCDCDC]">bg-white/10 • rounded-full</span>
           </div>
           <p className="text-sm text-white/90">
