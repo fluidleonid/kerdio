@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react"
-import { useTrackerStore } from "@/entities/tracker"
+import { useTrackerStore, type ActiveTimerState } from "@/entities/tracker"
 import { AppTooltip } from "@/shared/ui"
 
 interface ChronographProps {
   className?: string
   size?: number
+  /** Optional isolated timer state for Storybook docs/previews */
+  timerOverride?: ActiveTimerState
 }
 
 // Convert angle in degrees (where 0 deg = 12 o'clock, clockwise) to SVG coordinates (cx, cy)
@@ -70,8 +72,10 @@ const CHARGE_PARTICLES = [
   { angle: 345, delay: 2.0, duration: 2.5, size: 2 },
 ]
 
-export function Chronograph({ className, size = 420 }: ChronographProps) {
-  const { timer, projects } = useTrackerStore()
+export function Chronograph({ className, size = 420, timerOverride }: ChronographProps) {
+  const store = useTrackerStore()
+  const timer = timerOverride ?? store.timer
+  const projects = store.projects
   const [displayMode, setDisplayMode] = useState<"time" | "money">("time")
 
   const activeProject = useMemo(() => {

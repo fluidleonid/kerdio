@@ -23,6 +23,8 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
+          "Introduction",
+          ["Overview"],
           "Design System",
           ["Colors & Gradients", "Typography", "Glass & Shadows"],
           "Screens",

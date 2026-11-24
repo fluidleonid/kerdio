@@ -85,8 +85,18 @@ const meta: Meta<typeof TodayLogDrawer> = {
     layout: "fullscreen",
     docs: {
       description: {
-        component:
-          "Minimalist receipt-style daily activity log grouped by project and milestone, with strict 5-column tabular alignment (Memo, Start, End, Duration, Earning), 2-line Subtotals and Grand Total, and Copy/CSV export.",
+        component: `
+### Receipt-Style Today's Log Drawer (US-5)
+
+**User Story**: *As a freelancer wrapping up my day, I want to open a clean receipt-style Today's Log drawer (shortcut \`L\`), review grouped projects/milestones with subtotals and grand total, and copy a formatted summary or export CSV.*
+
+#### Receipt Anatomy & Rules
+- **Single-Day Scope**: Persists and displays only sessions started on the current calendar day.
+- **Hierarchy**: \`Project → Milestone subgroup (with nested entries) + Standalone entries → 2-line Project Subtotal → 2-line Grand Total\`.
+- **Strict 5-Column Alignment (Zero Column Headers)**: \`Memo\` (left) · \`Start\` · \`End\` · \`Duration\` · \`Earning\` (right, \`—\` when non-billable or covered by milestone payout).
+- **Zero Inner Card Chrome**: Plain typographic hierarchy separated only by dashed receipt rules (\`border-dashed\`).
+- **Actions**: \`Copy Summary\` (formatted plain-text receipt) and \`Export CSV\` (UTF-8 BOM spreadsheet).
+        `,
       },
     },
   },
@@ -95,18 +105,10 @@ const meta: Meta<typeof TodayLogDrawer> = {
       control: "boolean",
       table: { category: "State" },
     },
-    onClose: {
-      table: { disable: true },
-    },
-    sessionsOverride: {
-      table: { disable: true },
-    },
-    projectsOverride: {
-      table: { disable: true },
-    },
-    onDeleteSession: {
-      table: { disable: true },
-    },
+    onClose: { table: { disable: true } },
+    sessionsOverride: { table: { disable: true } },
+    projectsOverride: { table: { disable: true } },
+    onDeleteSession: { table: { disable: true } },
   },
   args: {
     isOpen: true,
@@ -118,6 +120,14 @@ export default meta
 type Story = StoryObj<typeof TodayLogDrawer>
 
 export const ReceiptWithProjectsAndMilestones: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Populated Daily Receipt** · **US-5**: Full realistic day showing `Kerdio Core` (milestone subgroup `M 2 Token Command Palette` with 2 entries + standalone hourly entry), `Raycast Extension` (hourly), and `No project` (non-billable with `—`). Hover any row to test interactive deletion.",
+      },
+    },
+  },
   render: (args) => {
     const [sessions, setSessions] = useState<TimeSession[]>(createSampleSessions)
 
@@ -135,6 +145,14 @@ export const ReceiptWithProjectsAndMilestones: Story = {
 }
 
 export const EmptyState: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Empty Day** · **US-5**: Start of a new calendar day (or after deleting all entries). Renders clean centered typography with no empty-state card box and disables `Copy Summary` / `Export CSV`.",
+      },
+    },
+  },
   render: (args) => (
     <div className="relative h-[520px] w-full overflow-hidden transform-gpu">
       <TodayLogDrawer

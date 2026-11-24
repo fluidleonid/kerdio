@@ -8,12 +8,24 @@ import {
   Flag,
   ListChecks,
 } from "lucide-react"
-import { useTrackerStore } from "@/entities/tracker"
+import { useTrackerStore, type ActiveTimerState } from "@/entities/tracker"
+import type { TimeSession } from "@/entities/session"
 import { Chronograph } from "@/features/chronograph"
 import { TokenCommandInput } from "@/features/tracker-command-bar"
 import { TodayLogDrawer } from "@/widgets/today-log"
 import { AppTooltip, ProjectBadge } from "@/shared/ui"
 import { capitalizeMemo } from "@/shared/lib"
+
+interface TrackerViewProps {
+  /** Optional isolated timer state for Storybook documentation previews */
+  timerOverride?: ActiveTimerState
+  /** Optional isolated today sessions list for Storybook documentation previews */
+  sessionsOverride?: TimeSession[]
+  /** Open the inline header editor immediately (for Storybook editing state) */
+  initialEditingHeader?: boolean
+  /** Open the Today's Log receipt drawer immediately (for Storybook previews) */
+  initialLogOpen?: boolean
+}
 
 function formatCompactDuration(seconds: number): string {
   const mins = Math.max(1, Math.round(seconds / 60))
@@ -24,26 +36,32 @@ function formatCompactDuration(seconds: number): string {
   return `${h}h ${m}m`
 }
 
-export function TrackerView() {
+export function TrackerView({
+  timerOverride,
+  sessionsOverride,
+  initialEditingHeader = false,
+  initialLogOpen = false,
+}: TrackerViewProps = {}) {
+  const store = useTrackerStore()
+  const timer = timerOverride ?? store.timer
+  const projects = store.projects
+  const sessions = sessionsOverride ?? store.sessions
   const {
-    timer,
-    projects,
-    sessions,
     tick,
     pauseTracking,
     resumeTracking,
     stopAndSaveSession,
     discardTracking,
     updateActiveSessionInfo,
-  } = useTrackerStore()
+  } = store
 
-  const [isEditingHeader, setIsEditingHeader] = useState(false)
-  const [isLogOpen, setIsLogOpen] = useState(false)
+  const [isEditingHeader, setIsEditingHeader] = useState(initialEditingHeader)
+  const [isLogOpen, setIsLogOpen] = useState(initialLogOpen)
   const [saveToast, setSaveToast] = useState<string | null>(null)
 
   // Precision 1-second interval timer tick
   useEffect(() => {
-    if (timer.status !== "running") return
+    if (timerOverride || timer.status !== "running") return
 
     tick()
     const interval = setInterval(() => {
@@ -51,7 +69,7 @@ export function TrackerView() {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timer.status, tick])
+  }, [timerOverride, timer.status, tick])
 
   // Keyboard shortcuts (Space = pause/resume, Cmd/Ctrl + Enter = save, Esc = discard, L = toggle Today's Log)
   useEffect(() => {
@@ -286,7 +304,7 @@ export function TrackerView() {
 
           {/* MAIN TIMER IN EXACT PHYSICAL CENTER OF SCREEN */}
           <div className="relative flex items-center justify-center animate-in fade-in zoom-in-95 duration-700">
-            <Chronograph size={380} />
+            <Chronograph size={380} timerOverride={timerOverride} />
 
             {/* CONTROLS PANEL: POSITIONED BENEATH THE DIAL WITHOUT OFFSETTING DIAL CENTER */}
             <div className="absolute top-full mt-5 sm:mt-7 left-1/2 -translate-x-1/2 flex items-center justify-center gap-4">
@@ -367,7 +385,11 @@ export function TrackerView() {
       </div>
 
       {/* TODAY'S LOG & EXPORT SHEET */}
-      <TodayLogDrawer isOpen={isLogOpen} onClose={() => setIsLogOpen(false)} />
+      <TodayLogDrawer
+        isOpen={isLogOpen}
+        onClose={() => setIsLogOpen(false)}
+        sessionsOverride={sessionsOverride}
+      />
     </div>
   )
 }

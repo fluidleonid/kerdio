@@ -1,0 +1,105 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+<Meta title="Introduction/Overview" />
+
+# Kerdio — Product & Design System Documentation
+
+**Kerdio** is a focused, single-day horological time tracker built for independent designers and engineers.
+This Storybook serves as the living source of truth for **User Stories**, **UI States**, **Interaction Contracts**, and **Visual Tokens** across the production MVP (`main`) and planned multi-page roadmap (`full`).
+
+---
+
+## 1. Core User Stories (Production MVP)
+
+### US-1 · Zero-Friction Session Start
+> **As a freelancer**, I want to type what I'm working on in a single command bar using `@project` and `/hourly` or `/milestone` tokens (or start with no project/rate at all), so that I can begin tracking in under 3 seconds without filling out forms.
+
+- **Defaults**: Missing project resolves to **`No project`**; missing billing resolves to **`Non-billable`**.
+- **Explicit Project Selection**: Selecting `@project` attaches only the project badge and never silently forces an hourly rate.
+- **Unified Recent List**: Focusing an empty command bar surfaces recent hourly rates and milestones in a minimalist vertical list below the input.
+- **Typography & Wrapping**: Plain text, placeholders, and inline tokens share a unified `14px` scale; long placeholders drop cleanly onto line 2 below badges instead of splitting mid-line.
+- **See**: `Features/Tracker Command Bar`
+
+### US-2 · Two-Step Milestone Entry
+> **As a fixed-scope contractor**, I want to create a milestone inline via `/milestone` in two quick Enter steps (name → payout amount), so that I can track deliverables without leaving the cockpit.
+
+- **Step 1**: Type `/milestone`, enter the deliverable name (e.g. `M 2 Token Command Palette`), press `Enter`.
+- **Step 2**: Enter the total payout (e.g. `2300`), press `Enter` — the milestone is saved to the project and tokenized inline as `[Flag] Name · $2300` (name truncates gracefully while `$amount` remains always visible).
+- **See**: `Features/Tracker Command Bar`
+
+### US-3 · Horological Focus & Live Rate Inspection
+> **As a focused maker**, I want a calm 12-hour chronograph dial that shows real wall-clock segments and lets me click the centerpiece to inspect my live earned amount or decreasing effective hourly rate, so that I stay aware of pace without visual noise.
+
+- **True-Time Segments**: Brief pauses (`< 60s`) merge seamlessly with no gap; real breaks (`>= 60s`) render as distinct gaps on the 12-hour dial.
+- **Calm Motion**: While running, subtle inward particles and a slow `15s` pulse signal active recording; both stop immediately when paused.
+- **Click-to-Toggle**: Clicking the center display switches between `HH:MM:SS` and live earnings (`$127.50` for hourly, live decreasing `$1150/h` for milestones) while keeping the subtitle anchored underneath (`$85/h`, `Milestone · $2300`, or `Non-billable`).
+- **Overflow Guard**: Extreme early milestone rates compact automatically (`$12.5k/h`, `$1.2M/h`) and scale via CSS container queries (`cqi`) so numerals never touch the dial ring.
+- **See**: `Features/Chronograph` · `Widgets/Tracker View`
+
+### US-4 · In-Flight Session Editing
+> **As a user who started a timer quickly**, I want to click the session header above the dial to edit the memo, project, or billing mode mid-session without pausing or losing elapsed time.
+
+- **Blurred Focus Backdrop**: Clicking the centered top header opens `TokenCommandInput` in `isEditingActive` mode over a `bg-black/35 backdrop-blur-md` scrim.
+- **Clean Header**: Displays memo, project badge (or `No project`), and milestone badge (only for milestone sessions — never duplicates hourly billing badges).
+- **See**: `Widgets/Tracker View` · `Screens/Single-Day MVP Cockpit`
+
+### US-5 · End-of-Day Receipt Review & Export
+> **As a freelancer wrapping up my day**, I want to open a clean receipt-style `Today's Log` drawer (shortcut `L`), review grouped projects/milestones with subtotals and grand total, and copy a formatted summary or export CSV.
+
+- **Single-Day Persistence**: Activity logs automatically prune to the current calendar day.
+- **Receipt Alignment**: Grouped by **Project → Milestone subgroups + Standalone entries** using a strict 5-column tabular grid (`Memo` left; `Start`, `End`, `Time spent`, `Earning` right, `—` when non-billable).
+- **2-Line Totals**: Both project subtotals (`Subtotal time` / `Subtotal earned`) and the grand total (`Total time` / `Total earned`) split cleanly into two lines.
+- **Actions**: `Copy Summary` (plain-text receipt to clipboard) and `Export CSV` (UTF-8 BOM spreadsheet download).
+- **See**: `Widgets/Today Log Drawer` · `Screens/Single-Day MVP Cockpit`
+
+---
+
+## 2. Application State Machine
+
+| State | Trigger | Primary UI | Available Actions |
+| :--- | :--- | :--- | :--- |
+| **Idle** | Initial load / after Save or Reset | Centered `TokenCommandInput` + floating `Today's Log` pill | Type memo, `@project`, `/hourly`, `/milestone`, pick Recent, `Enter` to start, `L` for log |
+| **Running** | Submit command bar | Top session header + `Chronograph` (particles + `15s` pulse) + bottom controls | Click dial (Time ↔ Money), click header (Edit), `Space` (Pause), `⌘↵` (Save), `Esc` (Reset), `L` (Log) |
+| **Paused** | Click Pause or press `Space` | Static `Chronograph` (no particles, no pulse) + Play icon | `Space` (Resume), `⌘↵` (Save), `Esc` (Reset), click header (Edit) |
+| **Editing Active** | Click top session header | `TokenCommandInput` (`isEditingActive`) over blurred backdrop | Edit tokens/memo, `Enter` (Save changes), `Esc` (Cancel) |
+| **Today's Log Open** | Click `Today's Log` pill or press `L` | Right-side sheet (desktop) / bottom sheet (mobile) | Delete individual entries, `Copy Summary`, `Export CSV`, `Esc` (Close) |
+
+---
+
+## 3. Keyboard Shortcuts
+
+| Shortcut | Context | Action |
+| :--- | :--- | :--- |
+| `@` | Command bar | Open fuzzy project selector (or create new project) |
+| `/` | Command bar | Open billing selector (`/hourly`, `/milestone`, `/none`) |
+| `Enter` | Command bar | Confirm suggestion / advance milestone step / start timer |
+| `Backspace` | Command bar (at token edge) | Remove preceding project or billing badge |
+| `ArrowLeft` / `ArrowRight` | Command bar | Navigate smoothly across inline badges |
+| `Space` | Active timer (outside input) | Pause / Resume session |
+| `⌘ + Enter` / `Ctrl + Enter` | Active timer | Stop & Save session to Today's Log |
+| `Esc` | Active timer / Drawer / Editor | Reset timer / Close drawer / Cancel edit |
+| `L` | Anywhere (outside input) | Toggle `Today's Log` receipt drawer |
+
+---
+
+## 4. Design System & Accessibility Contract
+
+- **0%-Saturation Neutral Typography (WCAG AA/AAA)** over the warm terracotta glass backdrop:
+  - `#FFFFFF` — Primary text, active numerals, `Create project` CTA, `Today's Log` pill
+  - `#F2F2F2` — High-emphasis body & log entries
+  - `#DCDCDC` — Secondary labels, durations, icons
+  - `#B8B8B8` — Timestamps, subtitles, muted metadata (`>= 4.5:1`)
+  - `#C2410C` — Single brand primary action (`Export CSV`, primary submit — `5.18:1` contrast with white)
+- **Glass Depth Tiers**: `bg-black/50 backdrop-blur-3xl` (Command Bar), `bg-black/55 backdrop-blur-2xl` (Floating Trigger), `bg-black/75 backdrop-blur-3xl` (Today's Log Receipt Drawer).
+- **Zero Chrome Clutter**: No nested cards, no 1px borders around receipt items, no decorative emojis (Lucide SVG icons only).
+
+---
+
+## 5. Documentation Map
+
+- **`Design System/*`** — Colors & Gradients, Typography, Glass & Shadows
+- **`Screens/Single-Day MVP Cockpit`** — End-to-end production screens (Idle, Active Hourly, Active Milestone, Editing Header, Today's Log Open)
+- **`Features/*`** — `Chronograph` dial states & `Tracker Command Bar` input states + interactive tests
+- **`Widgets/*`** — `Tracker View` cockpit & `Today Log Drawer` receipt states
+- **`Shared/*`** — `Token Badges` and base UI primitives (`Button`, `Input`, `Badge`, `Card`, `Dialog`, `Tooltip`)
+- **`Roadmap (Planned)/*`** — Future multi-page modules (`Navigation Sidebar`, `Journal View`, `Projects View`, `Project Settings Dialog`, `Reports View`) developed on branch `full`

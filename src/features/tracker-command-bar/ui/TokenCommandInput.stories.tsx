@@ -1,114 +1,93 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { within, userEvent, expect } from '@storybook/test'
-import { TokenCommandInput } from './TokenCommandInput'
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { within, userEvent, expect } from "@storybook/test"
+import { TokenCommandInput } from "./TokenCommandInput"
 
-/**
- * # TokenCommandInput
- *
- * Ultra-responsive, borderless command palette input for frictionless time tracking.
- * Interleaves inline text descriptions with high-fidelity chip badges for projects
- * and billing models.
- *
- * ### Design System Anatomy
- * - **Glass Container**: 50% opacity tinted glass with 50px diffused ambient shadow (`backdrop-blur-3xl`).
- * - **Interleaved Tokens**: Natural-language stream mixing auto-sizing text inputs, `ProjectBadge`, and `BillingBadge`.
- * - **Quick Action Controls**: Direct icon triggers for `@` (project picker), `/` (billing mode), and dynamic submit/save.
- * - **Floating Dropdown Popover**: Keyboard-navigable autocomplete popover matching identical optical glass tiers.
- *
- * ### Interaction Rules & Shortcuts
- * - `@`: Triggers fuzzy-search project selector.
- * - `/`: Triggers billing configuration menu (Hourly, Fixed Fee, Milestone, Non-billable).
- * - `Backspace`: Deletes preceding badge token when cursor is at the boundary.
- * - `ArrowLeft` / `ArrowRight`: Seamlessly steps across badge tokens without breaking context.
- * - `Enter`: Starts session or selects highlighted autocomplete item.
- * - `Escape`: Closes autocomplete popover or cancels active session editing.
- */
 const meta: Meta<typeof TokenCommandInput> = {
-  title: 'Features/Tracker Command Bar',
+  title: "Features/Tracker Command Bar",
   component: TokenCommandInput,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
-### Command Input Bar (TokenCommandInput)
+### Command Input Bar (US-1, US-2, US-4)
 
-Production command input engineered in the style of Linear and Raycast command bars. Supports natural-language task entry, instant tokenization of projects and billing rules, and seamless keyboard navigation.
+**User Story**: *As a freelancer, I want to type what I'm working on in a single command bar using \`@project\` and \`/hourly\` or \`/milestone\` tokens (or start with no project/rate at all), so that I can begin tracking in under 3 seconds.*
 
-#### Anatomy
-1. **Container**: Borderless \`bg-black/50\` glassmorphic container with diffused drop shadow.
-2. **Inline Token Flow**: Interleaved text segments and chip badges. Auto-sizing eliminates default HTML 20ch width quirks.
-3. **Quick Action Dock**: Bottom-right dock containing project trigger (\`@\`), billing trigger (\`/\`), and play/commit button.
-4. **Autocomplete Popover**: Floats below the container with fuzzy matching for projects, slash commands, and recent entries.
+#### Anatomy & Typography Contract
+1. **Glass Container**: Borderless \`bg-black/50 backdrop-blur-3xl\` with diffused drop shadow.
+2. **Unified \`14px\` Scale**: Plain text, placeholders, and inline \`ProjectBadge\` / \`BillingBadge\` tokens all share \`14px\` (\`text-sm\`) for seamless inline reading.
+3. **Clean Placeholder Wrapping**: Single-line placeholders (\`whitespace-nowrap\`) drop cleanly onto line 2 below badges instead of splitting awkwardly across two lines beside tags.
+4. **Explicit Defaults**: Omitting \`@project\` saves under \`No project\`; omitting \`/\` billing starts as \`Non-billable\`. Picking a project never silently forces an hourly rate.
+5. **Two-Step \`/milestone\` Flow**: Step 1 confirms milestone name on \`Enter\`; Step 2 asks for total payout on \`Enter\` and saves the milestone to the project.
+6. **Minimalist Recent List**: Focusing an empty command bar reveals recent hourly rates and milestones in a borderless vertical list (\`bg-transparent\`, \`bg-white/15\` on hover/selection).
 
-#### States & Edge Cases Covered
-- **Empty Focused**: Ready for typing with active white caret.
-- **Recognized Project**: Converted \`@Project\` token with brand color bead and remove action.
-- **Hourly / Milestone Billing**: Interleaved \`BillingBadge\` displaying live hourly yield or contract milestone.
-- **Long Text Overflow**: Extreme multi-word tasks testing flex-wrapping and container integrity.
-- **Active Editing**: Inline edit mode for an already-running chronograph timer.
+#### Keyboard Shortcuts
+- \`@\`: Fuzzy project selector (+ pure-white \`Create project\` option).
+- \`/\`: Billing selector (\`/hourly\`, \`/milestone\`, \`/none\`).
+- \`Backspace\`: Removes preceding token badge when caret is at boundary.
+- \`ArrowLeft\` / \`ArrowRight\`: Steps smoothly across inline badges.
+- \`Enter\`: Confirms selection / advances milestone step / starts timer.
+- \`Escape\`: Closes popover or cancels in-flight edit mode.
         `,
       },
     },
   },
   argTypes: {
     autoFocus: {
-      description: 'Automatically sets focus and caret to the trailing text input on mount.',
-      control: 'boolean',
+      description: "Automatically sets focus and caret to the trailing text input on mount.",
+      control: "boolean",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'true' },
+        category: "Behavior",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
       },
     },
     isEditingActive: {
-      description: 'Puts the command bar into edit mode for an active running session.',
-      control: 'boolean',
+      description: "Puts the command bar into edit mode for an active running session (US-4).",
+      control: "boolean",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        category: "State",
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     initialMemo: {
-      description: 'Initial text memo populated inside the task input.',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
+      description: "Initial text memo populated inside the task input.",
+      control: "text",
+      table: { category: "Content", type: { summary: "string" } },
     },
     initialProjectId: {
-      description: 'ID of pre-selected project token.',
-      control: 'select',
-      options: ['proj-kerd', 'proj-raycast', 'proj-design', null],
-      table: {
-        type: { summary: 'string | null' },
-      },
+      description: "ID of pre-selected project token (`null` = No project).",
+      control: "select",
+      options: ["proj-kerd", "proj-raycast", "proj-design", null],
+      table: { category: "Content", type: { summary: "string | null" } },
     },
     initialBilling: {
-      description: 'Pre-selected billing configuration ({ type, amount }).',
-      control: 'object',
-      table: {
-        type: { summary: 'BillingConfig | null' },
-      },
+      description: "Pre-selected billing configuration (`hourly`, `milestone`, or `none`).",
+      control: "object",
+      table: { category: "Content", type: { summary: "BillingConfig | null" } },
     },
     className: {
-      description: 'Additional Tailwind CSS classes applied to root container.',
-      control: 'text',
-      table: {
-        type: { summary: 'string' },
-      },
+      description: "Additional Tailwind CSS classes applied to root container.",
+      control: "text",
+      table: { category: "Appearance", type: { summary: "string" } },
     },
     onStart: {
-      description: 'Callback fired when session is initiated.',
-      action: 'started',
+      description: "Callback fired when a new tracking session is initiated.",
+      action: "started",
+      table: { category: "Events" },
     },
     onSaveActive: {
-      description: 'Callback fired when active session metadata is updated.',
-      action: 'saved',
+      description: "Callback fired when active session metadata is updated in-flight.",
+      action: "saved",
+      table: { category: "Events" },
     },
     onClose: {
-      description: 'Callback fired when closing/escaping edit mode.',
-      action: 'closed',
+      description: "Callback fired when closing/escaping edit mode.",
+      action: "closed",
+      table: { category: "Events" },
     },
   },
 }
@@ -116,11 +95,15 @@ Production command input engineered in the style of Linear and Raycast command b
 export default meta
 type Story = StoryObj<typeof TokenCommandInput>
 
-/**
- * **Default (Idle)**: Standby state without prefilled tokens.
- * Displays placeholder "What are you working on?" and dimmed action triggers.
- */
 export const DefaultIdle: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Idle (Unfocused)** · **US-1**: Clean standby bar displaying `What are you working on?` at `14px` alongside quick `@`, `/`, and Start triggers.",
+      },
+    },
+  },
   render: (args) => (
     <div className="w-[580px] p-6">
       <TokenCommandInput {...args} autoFocus={false} />
@@ -128,23 +111,15 @@ export const DefaultIdle: Story = {
   ),
 }
 
-/**
- * **Empty Focused**: Cursor focused ready for input.
- * Auto-focuses the input and demonstrates caret styling with glass contrast.
- */
-export const EmptyFocused: Story = {
-  render: (args) => (
-    <div className="w-[580px] p-6">
-      <TokenCommandInput {...args} autoFocus={true} />
-    </div>
-  ),
-}
-
-/**
- * **With Recognized Project**:
- * Demonstrates parsed `@Kerdio Core` badge token interleaved with active task description.
- */
 export const WithRecognizedProject: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Project Token Only (Non-Billable)** · **US-1**: Selecting `@Kerdio Core` inserts only the project badge (`14px`) without forcing an hourly rate — ideal for non-billable project work.",
+      },
+    },
+  },
   render: (args) => (
     <div className="w-[580px] p-6">
       <TokenCommandInput
@@ -158,11 +133,15 @@ export const WithRecognizedProject: Story = {
   ),
 }
 
-/**
- * **With Hourly Rate & Project**:
- * Shows both recognized project token and parsed `$95/h` billing rate badge.
- */
 export const WithHourlyRate: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Project + Hourly Rate** · **US-1**: Interleaves `Raycast Extension` project badge and `$95/h` billing badge inline with the session memo. Per-session rate overrides are allowed freely with no confirmation modal.",
+      },
+    },
+  },
   render: (args) => (
     <div className="w-[580px] p-6">
       <TokenCommandInput
@@ -170,19 +149,49 @@ export const WithHourlyRate: Story = {
         autoFocus={false}
         isEditingActive={true}
         initialProjectId="proj-raycast"
-        initialBilling={{ type: 'hourly', amount: 95 }}
-        initialMemo="Raycast Extension Command Palette Integration"
+        initialBilling={{ type: "hourly", amount: 95 }}
+        initialMemo="Extension Command Palette Integration"
       />
     </div>
   ),
 }
 
-/**
- * **Overflow (Long Task Text)**:
- * Tests container resilience with an extensive description, verifying multi-line
- * flex wrapping and badge placement without clipping or broken layout.
- */
+export const MilestoneSession: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Project + Milestone Token** · **US-2**: Displays the milestone badge (`[Flag] M 2 Token Command Palette · $2300`) where the milestone name truncates gracefully while the `$2300` payout stays always visible.",
+      },
+    },
+  },
+  render: (args) => (
+    <div className="w-[580px] p-6">
+      <TokenCommandInput
+        {...args}
+        autoFocus={false}
+        isEditingActive={true}
+        initialProjectId="proj-kerd"
+        initialBilling={{
+          type: "milestone",
+          amount: 2300,
+          milestoneName: "M 2 Token Command Palette",
+        }}
+        initialMemo="Two-step milestone entry & caret polish"
+      />
+    </div>
+  ),
+}
+
 export const LongTextOverflow: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Edge Case: Long Multi-Line Memo** · **US-1**: Verifies flex-wrapping resilience and container integrity when a long task description follows project and billing badges.",
+      },
+    },
+  },
   render: (args) => (
     <div className="w-[580px] p-6">
       <TokenCommandInput
@@ -190,38 +199,22 @@ export const LongTextOverflow: Story = {
         autoFocus={false}
         isEditingActive={true}
         initialProjectId="proj-design"
-        initialBilling={{ type: 'fixed', amount: 3500 }}
-        initialMemo="Comprehensive design token audit across mobile viewport breakpoints, high-DPI retina display calibration, and multi-tenant billing permissions architecture review"
+        initialBilling={{ type: "hourly", amount: 120 }}
+        initialMemo="Comprehensive design token audit across mobile viewport breakpoints, high-DPI retina display calibration, and WCAG AA monochrome contrast verification"
       />
     </div>
   ),
 }
 
-/**
- * **Milestone Mode**:
- * Active milestone project showing suggestion chip ("Continue: Milestone 1: Prototype")
- * and flat milestone deliverable fee.
- */
-export const MilestoneSession: Story = {
-  render: (args) => (
-    <div className="w-[580px] p-6">
-      <TokenCommandInput
-        {...args}
-        autoFocus={false}
-        isEditingActive={true}
-        initialProjectId="proj-kerd"
-        initialBilling={{ type: 'milestone', amount: 500 }}
-        initialMemo="Milestone 1: Production UI Core"
-      />
-    </div>
-  ),
-}
-
-/**
- * **Editing Active Session**:
- * Live editing overlay for currently running timer with quick save checkmark button.
- */
 export const EditingActiveSession: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: In-Flight Active Edit** · **US-4**: Opened when clicking the top session header during a running timer. Replaces the Start icon with a Save checkmark while preserving elapsed time.",
+      },
+    },
+  },
   render: (args) => (
     <div className="w-[580px] p-6">
       <TokenCommandInput
@@ -229,180 +222,113 @@ export const EditingActiveSession: Story = {
         autoFocus={false}
         isEditingActive={true}
         initialProjectId="proj-kerd"
-        initialBilling={{ type: 'hourly', amount: 120 }}
+        initialBilling={{ type: "hourly", amount: 85 }}
         initialMemo="Auditing SVG Bezels and Storybook Interactions"
       />
     </div>
   ),
 }
 
-/**
- * **Interactive: Typing & Project Autocomplete Selection**
- *
- * Simulates user typing a task description, typing `@` to trigger the project
- * suggestion dropdown, and selecting an item via keyboard or click.
- * Live execution verifiable on the **Interactions** tab.
- */
 export const InteractiveTypingAndProjectSelect: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Interactive Flow (US-1): `@` Project Autocomplete** — Types a memo, triggers `@ker`, selects `Kerdio Core` from the floating popover, and verifies conversion into an inline project token.",
+      },
+    },
+  },
   render: () => (
     <div className="w-[580px] p-6">
-      <TokenCommandInput autoFocus={true} />
+      <TokenCommandInput autoFocus={false} />
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const inputs = canvas.getAllByRole('textbox')
+    const inputs = canvas.getAllByRole("textbox")
     const primaryInput = inputs[0]
 
     await expect(primaryInput).toBeInTheDocument()
-
-    // 1. Focus input and type session memo
     await userEvent.click(primaryInput)
-    await userEvent.type(primaryInput, 'Engine calibration ')
+    await userEvent.type(primaryInput, "Engine calibration @ker")
 
-    // 2. Type '@' to open project popover
-    await userEvent.type(primaryInput, '@ker')
-
-    // 3. Verify project dropdown suggestion is rendered
     const projectOption = await canvas.findByText(/Kerdio Core/i)
     await expect(projectOption).toBeInTheDocument()
-
-    // 4. Click the project option to convert into a token badge
     await userEvent.click(projectOption)
 
-    // 5. Verify input now contains the tokenized state
-    const badge = await canvas.findByText('Kerdio Core')
+    const badge = await canvas.findByText("Kerdio Core")
     await expect(badge).toBeInTheDocument()
   },
 }
 
-/**
- * **Interactive: Slash Command Billing Selection & Prompt**
- *
- * Simulates user entering a command prefix `\`/\`` to invoke billing rate options
- * (Hourly, Fixed, Milestone) and picking an option.
- */
-export const InteractiveSlashBillingCommand: Story = {
+export const InteractiveSlashHourlyCommand: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Interactive Flow (US-1): `/` Hourly Rate Entry** — Types `/` to open the billing command menu, picks `/hourly`, and verifies the inline rate prompt (`Rate (e.g. 85)`).",
+      },
+    },
+  },
   render: () => (
     <div className="w-[580px] p-6">
-      <TokenCommandInput autoFocus={true} />
+      <TokenCommandInput autoFocus={false} />
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const inputs = canvas.getAllByRole('textbox')
+    const inputs = canvas.getAllByRole("textbox")
     const primaryInput = inputs[0]
 
     await expect(primaryInput).toBeInTheDocument()
-
-    // 1. Click input and trigger slash command
     await userEvent.click(primaryInput)
-    await userEvent.type(primaryInput, 'Deep focus sprint /')
+    await userEvent.type(primaryInput, "Deep focus sprint /")
 
-    // 2. Verify slash command options appear in popover
     const hourlyOption = await canvas.findByText(/\/hourly/i)
     await expect(hourlyOption).toBeInTheDocument()
-
-    // 3. Select Hourly Rate option
     await userEvent.click(hourlyOption)
 
-    // 4. Verify input prompt displays specific rate placeholder
-    const activeInputs = canvas.getAllByRole('textbox')
+    const activeInputs = canvas.getAllByRole("textbox")
     const activeInput = activeInputs[activeInputs.length - 1]
-    await expect(activeInput).toHaveAttribute('placeholder', 'Rate (e.g. 85)')
+    await expect(activeInput).toHaveAttribute("placeholder", "Rate (e.g. 85)")
   },
 }
 
-/**
- * **Interactive: Open Milestone Chip Selection**
- *
- * Verifies selecting an open milestone chip directly assigns the milestone
- * name and billing amount into the command bar.
- */
-export const InteractiveSelectMilestoneChip: Story = {
+export const InteractiveTwoStepMilestoneFlow: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Interactive Flow (US-2): Two-Step `/milestone` Creation** — Triggers `/milestone`, enters a milestone name (Step 1 → `Enter`), verifies the price prompt appears (Step 2), enters `1800` → `Enter`, and confirms the tokenized milestone badge.",
+      },
+    },
+  },
   render: () => (
     <div className="w-[580px] p-6">
-      <TokenCommandInput
-        autoFocus={false}
-        initialProjectId="proj-kerd"
-        initialMemo="Sprint "
-      />
+      <TokenCommandInput autoFocus={false} />
     </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+    const inputs = canvas.getAllByRole("textbox")
+    const primaryInput = inputs[0]
 
-    // 1. Check open milestone chip is rendered
-    const chip = await canvas.findByText(/Design tokens & bezels/i)
-    await expect(chip).toBeInTheDocument()
+    await userEvent.click(primaryInput)
+    await userEvent.type(primaryInput, "/")
 
-    // 2. Click open milestone chip
-    await userEvent.click(chip)
+    const milestoneOption = await canvas.findByText(/\/milestone/i)
+    await expect(milestoneOption).toBeInTheDocument()
+    await userEvent.click(milestoneOption)
 
-    // 3. Check milestone token or badge appeared
-    const milestoneBadge = await canvas.findByText(/Design tokens & bezels/i)
-    await expect(milestoneBadge).toBeInTheDocument()
-  },
-}
+    const step1Inputs = canvas.getAllByRole("textbox")
+    const nameInput = step1Inputs[step1Inputs.length - 1]
+    await userEvent.type(nameInput, "M 3 Arc Engine{enter}")
 
-/**
- * **Billing Override Badge**:
- * Custom billing ($140/h) entered before selecting `@Kerdio Core` (default $85/h).
- * The project's default billing is NOT added; instead, an amber `Override` badge
- * appears in the controls row with hover tooltip.
- */
-export const BillingOverrideBadge: Story = {
-  render: (args) => (
-    <div className="w-[580px] p-6">
-      <TokenCommandInput
-        {...args}
-        autoFocus={false}
-        initialProjectId="proj-kerd"
-        initialBilling={{ type: 'hourly', amount: 140 }}
-        initialMemo="Custom consulting rate audit"
-      />
-    </div>
-  ),
-}
+    const step2Inputs = canvas.getAllByRole("textbox")
+    const priceInput = step2Inputs[step2Inputs.length - 1]
+    await userEvent.type(priceInput, "1800{enter}")
 
-/**
- * **Interactive: Billing Override Confirmation Scope Modal**
- *
- * Simulates confirming a session with an active billing override,
- * verifying that the scope modal pops up asking to apply to
- * "Current session only" vs "Current & future sessions".
- */
-export const InteractiveBillingOverrideConfirmation: Story = {
-  render: () => (
-    <div className="w-[580px] p-6">
-      <TokenCommandInput
-        autoFocus={false}
-        initialProjectId="proj-kerd"
-        initialBilling={{ type: 'hourly', amount: 150 }}
-        initialMemo="Urgent architectural spike"
-      />
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-
-    // 1. Verify Override badge is visible in controls row
-    const overrideBadge = await canvas.findByText(/Override/i)
-    await expect(overrideBadge).toBeInTheDocument()
-
-    // 2. Click start session button
-    const buttons = canvas.getAllByRole('button')
-    const startButton = buttons[buttons.length - 1]
-    await userEvent.click(startButton)
-
-    // 3. Verify scope selection modal is displayed
-    const modalTitle = await canvas.findByText(/Project Billing Override/i)
-    await expect(modalTitle).toBeInTheDocument()
-
-    const currentSessionOption = await canvas.findByText(/Current session only/i)
-    await expect(currentSessionOption).toBeInTheDocument()
-
-    const futureSessionsOption = await canvas.findByText(/Current & future sessions/i)
-    await expect(futureSessionsOption).toBeInTheDocument()
+    await expect(await canvas.findByText(/M 3 Arc Engine/i)).toBeInTheDocument()
+    await expect(await canvas.findByText(/\$1800/i)).toBeInTheDocument()
   },
 }
