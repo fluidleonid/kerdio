@@ -28,7 +28,7 @@ export const DefaultIdle: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TrackerView />
       </div>
     )
@@ -61,7 +61,7 @@ export const ActiveHourlyTracking: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TrackerView />
       </div>
     )
@@ -94,7 +94,7 @@ export const ActiveMilestoneTracking: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TrackerView />
       </div>
     )
@@ -127,7 +127,7 @@ export const NoProjectNonBillable: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TrackerView />
       </div>
     )

@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { MemoryRouter } from "react-router-dom"
 import { TrackerView } from "@/widgets/tracker-view"
 import { TodayLogDrawer } from "@/widgets/today-log"
 import { useTrackerStore } from "@/entities/tracker"
@@ -28,11 +27,9 @@ export const IdleCockpit: StoryObj = {
     }, [])
 
     return (
-      <MemoryRouter initialEntries={["/"]}>
-        <div className="relative min-h-dvh w-screen overflow-hidden">
-          <TrackerView />
-        </div>
-      </MemoryRouter>
+      <div className="relative h-[560px] w-full overflow-hidden transform-gpu">
+        <TrackerView />
+      </div>
     )
   },
 }
@@ -63,11 +60,9 @@ export const ActiveTimerCockpit: StoryObj = {
     }, [])
 
     return (
-      <MemoryRouter initialEntries={["/"]}>
-        <div className="relative min-h-dvh w-screen overflow-hidden">
-          <TrackerView />
-        </div>
-      </MemoryRouter>
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
+        <TrackerView />
+      </div>
     )
   },
 }
@@ -115,12 +110,10 @@ export const TodayLogReceiptOpen: StoryObj = {
     }, [])
 
     return (
-      <MemoryRouter initialEntries={["/"]}>
-        <div className="relative min-h-dvh w-screen overflow-hidden">
-          <TrackerView />
-          <TodayLogDrawer isOpen={true} onClose={() => {}} />
-        </div>
-      </MemoryRouter>
+      <div className="relative h-[640px] w-full overflow-hidden transform-gpu">
+        <TrackerView />
+        <TodayLogDrawer isOpen={true} onClose={() => {}} />
+      </div>
     )
   },
 }

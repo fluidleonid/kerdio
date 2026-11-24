@@ -5,15 +5,18 @@ import { MemoryRouter } from "react-router-dom"
 
 const preview: Preview = {
   decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <TooltipProvider delayDuration={150}>
-          <div className="font-sans antialiased text-white">
-            <Story />
-          </div>
-        </TooltipProvider>
-      </MemoryRouter>
-    ),
+    (Story, context) => {
+      const initialEntries = context.parameters?.router?.initialEntries || ["/"]
+      return (
+        <MemoryRouter initialEntries={initialEntries}>
+          <TooltipProvider delayDuration={150}>
+            <div className="font-sans antialiased text-white">
+              <Story />
+            </div>
+          </TooltipProvider>
+        </MemoryRouter>
+      )
+    },
   ],
   parameters: {
     layout: "padded",

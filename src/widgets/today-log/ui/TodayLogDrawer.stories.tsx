@@ -114,7 +114,7 @@ export const ReceiptWithProjectsAndMilestones: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TodayLogDrawer {...args} />
       </div>
     )
@@ -128,7 +128,7 @@ export const EmptyState: Story = {
     }, [])
 
     return (
-      <div className="relative h-dvh w-screen overflow-hidden">
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
         <TodayLogDrawer {...args} />
       </div>
     )
