@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { X, Copy, Check, FileSpreadsheet, Trash2 } from "lucide-react"
 import { useTrackerStore } from "@/entities/tracker"
+import type { Project } from "@/entities/project"
 import type { TimeSession } from "@/entities/session"
 import { Button } from "@/shared/ui"
 import { capitalizeMemo } from "@/shared/lib"
@@ -8,6 +9,12 @@ import { capitalizeMemo } from "@/shared/lib"
 interface TodayLogDrawerProps {
   isOpen: boolean
   onClose: () => void
+  /** Optional isolated sessions list (useful for Storybook previews/tests without mutating global store) */
+  sessionsOverride?: TimeSession[]
+  /** Optional isolated projects list paired with sessionsOverride */
+  projectsOverride?: Project[]
+  /** Optional delete handler paired with sessionsOverride */
+  onDeleteSession?: (id: string) => void
 }
 
 function formatDuration(seconds: number): string {
@@ -47,8 +54,17 @@ interface ProjectReceiptGroup {
 const RECEIPT_GRID =
   "grid grid-cols-[minmax(0,1fr)_38px_38px_46px_64px_22px] sm:grid-cols-[minmax(0,1fr)_44px_44px_54px_74px_24px] items-baseline gap-x-2"
 
-export function TodayLogDrawer({ isOpen, onClose }: TodayLogDrawerProps) {
-  const { sessions, projects, deleteSession } = useTrackerStore()
+export function TodayLogDrawer({
+  isOpen,
+  onClose,
+  sessionsOverride,
+  projectsOverride,
+  onDeleteSession,
+}: TodayLogDrawerProps) {
+  const store = useTrackerStore()
+  const sessions = sessionsOverride ?? store.sessions
+  const projects = projectsOverride ?? store.projects
+  const deleteSession = onDeleteSession ?? store.deleteSession
   const [copied, setCopied] = useState(false)
 
   // Close on Escape
