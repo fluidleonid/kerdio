@@ -28,7 +28,12 @@ const preview: Preview = {
           "Design System",
           ["Colors & Gradients", "Typography", "Glass & Shadows"],
           "Screens",
-          ["Single-Day MVP Cockpit"],
+          [
+            "Single-Day MVP Cockpit",
+            "Journal (Roadmap)",
+            "Projects (Roadmap)",
+            "Reports (Roadmap)",
+          ],
           "Features",
           ["Chronograph", "Tracker Command Bar"],
           "Widgets",

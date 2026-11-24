@@ -124,7 +124,7 @@ export const ActiveTimerCockpit: StoryObj = {
     docs: {
       description: {
         story:
-          "**Screen 2 · Active Horological Focus (US-3)**: Running 1h 10m hourly session (`Kerdio Core` · `$85/h`). Centered session header above, 12-hour chronograph dial in physical center, and quick transport controls (`Space`, `⌘↵`, `Esc`) below.",
+          "**Screen 2 · Active Horological Focus — Hourly (US-3)**: Running 1h 10m hourly session (`Kerdio Core` · `$85/h`). Centered session header above, 12-hour chronograph dial in physical center, and quick transport controls (`Space`, `⌘↵`, `Esc`) below.",
       },
     },
   },
@@ -144,6 +144,108 @@ export const ActiveTimerCockpit: StoryObj = {
             elapsedSeconds: durationSeconds,
             rate: 85,
             billingType: "hourly",
+          }}
+        />
+      </div>
+    )
+  },
+}
+
+export const ActiveMilestoneCockpit: StoryObj = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Screen 3 · Active Horological Focus — Milestone (US-2 / US-3)**: Running 1h 30m milestone session (`Kerdio Core` · `M 2 Token Command Palette` · `$2300`). Top header displays the milestone flag pill; clicking the dial centerpiece reveals the live effective hourly rate.",
+      },
+    },
+  },
+  render: () => {
+    const now = Date.now()
+    const durationSeconds = 5400
+    return (
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
+        <TrackerView
+          sessionsOverride={createTodaySessions()}
+          timerOverride={{
+            ...IDLE_TIMER,
+            status: "running",
+            memo: "Two-step milestone entry & caret polish",
+            projectId: "proj-kerd",
+            milestoneId: "ms-kerd-2",
+            milestoneName: "M 2 Token Command Palette",
+            startTime: now - durationSeconds * 1000,
+            elapsedSeconds: durationSeconds,
+            rate: null,
+            billingType: "milestone",
+            fixedBudget: 2300,
+          }}
+        />
+      </div>
+    )
+  },
+}
+
+export const PausedCockpit: StoryObj = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Screen 4 · Paused Focus Session (US-3)**: Paused at 1h 20m (`Raycast Extension` · `$95/h`). Inward particles and `15s` digit pulse stop immediately; Pause button switches to Play (`Space` to resume).",
+      },
+    },
+  },
+  render: () => {
+    const now = Date.now()
+    const durationSeconds = 4800
+    return (
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
+        <TrackerView
+          sessionsOverride={createTodaySessions()}
+          timerOverride={{
+            ...IDLE_TIMER,
+            status: "paused",
+            memo: "Extension store manifest & icons",
+            projectId: "proj-raycast",
+            startTime: null,
+            pausedAt: now,
+            accumulatedSeconds: durationSeconds,
+            elapsedSeconds: durationSeconds,
+            rate: 95,
+            billingType: "hourly",
+            segments: [{ startTime: now - durationSeconds * 1000, endTime: now }],
+          }}
+        />
+      </div>
+    )
+  },
+}
+
+export const NoProjectNonBillableCockpit: StoryObj = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**Screen 5 · No Project & Non-Billable Focus (US-1)**: Session started with a memo only — explicitly displays the neutral `No project` badge in the header and `Non-billable` beneath the dial.",
+      },
+    },
+  },
+  render: () => {
+    const now = Date.now()
+    const durationSeconds = 1200
+    return (
+      <div className="relative h-[620px] w-full overflow-hidden transform-gpu">
+        <TrackerView
+          sessionsOverride={[]}
+          timerOverride={{
+            ...IDLE_TIMER,
+            status: "running",
+            memo: "Inbox triage & daily planning",
+            projectId: null,
+            startTime: now - durationSeconds * 1000,
+            elapsedSeconds: durationSeconds,
+            rate: null,
+            billingType: "none",
           }}
         />
       </div>

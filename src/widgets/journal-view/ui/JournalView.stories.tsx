@@ -1,31 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { JournalView } from './JournalView'
+import { useEffect } from "react"
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { JournalView } from "./JournalView"
+import { useTrackerStore } from "@/entities/tracker"
+import { createWeeklyDemoSessions } from "@/stories/mock-sessions"
 
-/**
- * # Journal View Widget
- *
- * Visual 24-hour weekly timeline and calendar grid for tracked work sessions,
- * hours analytics, and accrued financial yield.
- *
- * ### Architectural Features
- * - **24-Hour Calendar Grid**: Vertical 24-hour columns (00:00 to 23:00) with 56px hour rows.
- * - **Session Blocks**: Color-coded blocks mapped precisely to session start time and duration.
- * - **Weekly Metrics**: Summaries for total hours, accrued billing, and session count.
- * - **Real-Time Indicator**: Live horizontal indicator line for today's current minute.
- * - **Manual Logging**: Integrated modal dialog for manual time entry.
- */
 const meta: Meta<typeof JournalView> = {
-  title: 'Roadmap (Planned)/Journal View',
+  title: "Roadmap (Planned)/Journal View",
   component: JournalView,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component: `
-### Journal & Calendar Widget
+### Journal & Weekly Timeline Widget (US-R1 · Roadmap)
 
-Full calendar interface providing complete visibility into daily and weekly productivity patterns, client billable hours, and logged intervals.
+Visual 24-hour weekly timeline and calendar grid for tracked work sessions, hours analytics, and accrued financial yield (planned for the full multi-page version on branch \`full\`).
         `,
       },
     },
@@ -35,14 +25,24 @@ Full calendar interface providing complete visibility into daily and weekly prod
 export default meta
 type Story = StoryObj<typeof JournalView>
 
-/**
- * **Default View**:
- * Standard weekly calendar grid populated with sessions.
- */
 export const Default: Story = {
-  render: () => (
-    <div className="min-h-screen w-full bg-[#140501] py-6">
-      <JournalView />
-    </div>
-  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "**State: Populated Weekly Timeline** · **US-R1**: Standard 24-hour calendar grid populated with multi-day project & milestone sessions.",
+      },
+    },
+  },
+  render: () => {
+    useEffect(() => {
+      useTrackerStore.setState({ sessions: createWeeklyDemoSessions() })
+    }, [])
+
+    return (
+      <div className="min-h-screen w-full bg-[#140501] py-6">
+        <JournalView />
+      </div>
+    )
+  },
 }
